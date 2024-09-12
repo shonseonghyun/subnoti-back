@@ -28,6 +28,7 @@ public enum ErrorCode {
     MATCH_ALREADY_APPLY_SAME_TIME(HttpStatus.BAD_REQUEST,"M08" ,"해당 시간대에 이미 신청한 다른 매치가 존재합니다." ),
     MATCH_ALREADY_REQ_SAME_TIME(HttpStatus.BAD_REQUEST,"M09" ,"해당 스타디움은 요청 시간대에 등록된 다른 매치가 존재합니다." ),
     MEMBER_LEVEL_NOT_FOUND(HttpStatus.BAD_REQUEST,"M10" ,"존재하지 않는 유저 레벌 코드입니다." ),
+    EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST,"M11","존재하지 않는 이메일입니다."),
     LEVEL_RULE_REJECT(HttpStatus.BAD_REQUEST,"L00" , "레벨 제한으로 인해 신청이 불가합니다." ),
     GENDER_RULE_REJECT(HttpStatus.BAD_REQUEST,"G00" , "성별 제한으로 인해 신청이 불가합니다." ),
     FILE_UPLOAD_FAIL(HttpStatus.BAD_REQUEST,"F00" ,"파일 업로드에 실패하였습니다." );
