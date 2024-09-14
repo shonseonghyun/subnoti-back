@@ -28,7 +28,7 @@ public class MemberServiceHelper implements UserDetailsService {
         final String email = username;
 
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(()->new EmailNotFoundException(ErrorCode.MEMBER_NOT_FOUND.getMessage())); //auth handler에서 잡힌다.
+                .orElseThrow(()->new EmailNotFoundException(ErrorCode.MEMBER_NOT_FOUND.getCode())); //auth handler에서 잡힌다.
 
         return CustomUserDetails.from(member);
     }
