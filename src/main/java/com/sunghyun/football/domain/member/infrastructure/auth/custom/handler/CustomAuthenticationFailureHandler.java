@@ -24,8 +24,10 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         //httpStatus를 건드리지 못하기에 아래로 개선하였다.
 //        om.writeValue(response.getOutputStream(), ApiResponseDto.toResponse(ErrorCode.EMAIL_NOT_FOUND));
+        final String code = exception.getMessage();
+        ErrorCode errorCode = ErrorCode.getErrorCodeEnum(code);
 
-        ApiResponseDto apiResponseDto =ApiResponseDto.toResponse(ErrorCode.EMAIL_NOT_FOUND);
+        ApiResponseDto apiResponseDto =ApiResponseDto.toResponse(errorCode);
         String jsonErrorResponse = om.writeValueAsString(apiResponseDto);
 
         response.setStatus(HttpStatus.BAD_REQUEST.value());

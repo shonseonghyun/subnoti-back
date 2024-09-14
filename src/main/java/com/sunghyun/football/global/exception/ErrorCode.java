@@ -4,10 +4,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+import java.util.Arrays;
+
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
     SUCCESS(HttpStatus.OK,"S00","사용자 요청 처리 성공하였습니다."),
+    ERROR_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST,"E00","존재하지 않는 에러코드입니다"),
     DUPLICATED_REGISTER(HttpStatus.BAD_REQUEST, "D00", "특정 필드의 데이터 값은 이미 존재합니다."),
     DUPLICATED_TEL_REGISTER(HttpStatus.BAD_REQUEST, "D01","이미 존재하는 휴대폰 번호입니다."),
     DUPLICATED_EMAIL_REGISTER(HttpStatus.BAD_REQUEST,"D02", "이미 존재하는 이메일입니다."),
@@ -31,10 +34,16 @@ public enum ErrorCode {
     EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST,"M11","존재하지 않는 이메일입니다."),
     LEVEL_RULE_REJECT(HttpStatus.BAD_REQUEST,"L00" , "레벨 제한으로 인해 신청이 불가합니다." ),
     GENDER_RULE_REJECT(HttpStatus.BAD_REQUEST,"G00" , "성별 제한으로 인해 신청이 불가합니다." ),
-    FILE_UPLOAD_FAIL(HttpStatus.BAD_REQUEST,"F00" ,"파일 업로드에 실패하였습니다." );
+    FILE_UPLOAD_FAIL(HttpStatus.BAD_REQUEST,"F00" ,"파일 업로드에 실패하였습니다." ),
+    HTTP_METHOD_NOT_SUPPORT(HttpStatus.BAD_REQUEST,"H00" , "로그인 요청에 대한 지원되지 않는 Http Method입니다." );
 
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;
 
+    public static ErrorCode getErrorCodeEnum(String code) {
+        return Arrays.stream(ErrorCode.values()).filter(errCode->errCode.getCode().equals(code))
+                .findFirst()
+                .orElseThrow(()->new AppException(ERROR_CODE_NOT_FOUND));
+    }
 }
