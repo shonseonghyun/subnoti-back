@@ -1,11 +1,13 @@
 package com.sunghyun.football.domain.member.infrastructure;
 
 import com.sunghyun.football.domain.member.domain.Member;
+import com.sunghyun.football.domain.member.domain.MemberRole;
 import com.sunghyun.football.domain.member.domain.repository.MemberRepository;
 import com.sunghyun.football.domain.member.infrastructure.entity.MemberEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -13,6 +15,7 @@ import java.util.Optional;
 public class MemberRepositoryImpl implements MemberRepository {
 
     private final SpringJpaMemberRepository springJpaMemberRepository;
+    private final SpringJpaMemberRoleRepository springJpaMemberRoleRepository;
 
     @Override
     public Optional<Member> findByTel(String tel) {

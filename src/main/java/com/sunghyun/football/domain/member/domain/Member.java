@@ -4,10 +4,11 @@ package com.sunghyun.football.domain.member.domain;
 import com.sunghyun.football.domain.member.domain.dto.MemberUpdReqDto;
 import com.sunghyun.football.domain.member.domain.enums.Gender;
 import com.sunghyun.football.domain.member.domain.enums.MemberLevelType;
-import com.sunghyun.football.domain.member.domain.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -29,7 +30,7 @@ public class Member {
 
     private MemberLevelType level;
 
-    private Role role;
+    private List<MemberRole> role;
 
     public void updateMember(MemberUpdReqDto memberUpdReqDto){
         if(!(memberUpdReqDto.getMemberLevelType()==null)){

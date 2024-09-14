@@ -39,7 +39,7 @@ class MemberDuplicationCheckerTest {
                 .email(email)
                 .build()
                 ;
-        doReturn(Optional.of(member())).when(memberRepository).findByEmail(email);
+        doReturn(Optional.of(MemberEntity.from(member()))).when(memberRepository).findByEmail(email);
         doReturn(Optional.empty()).when(memberRepository).findByTel(tel);
 
         Assertions.assertThat(target.checkDuplicatiedFields(memberJoinReqDto)).isEqualTo(true);
@@ -60,8 +60,8 @@ class MemberDuplicationCheckerTest {
         Assertions.assertThat(target.checkDuplicatiedFields(memberJoinReqDto)).isEqualTo(false);
     }
 
-    private MemberEntity member() {
-        return MemberEntity.builder()
+    private Member member() {
+        return Member.builder()
                 .email(email)
                 .tel(tel)
                 .name(name)

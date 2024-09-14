@@ -1,6 +1,7 @@
 package com.sunghyun.football.domain.member.application.dto;
 
 import com.sunghyun.football.domain.member.domain.Member;
+import com.sunghyun.football.domain.member.domain.MemberRole;
 import com.sunghyun.football.domain.member.domain.enums.Gender;
 import com.sunghyun.football.domain.member.domain.enums.MemberLevelType;
 import com.sunghyun.football.domain.member.domain.enums.Role;
@@ -8,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Getter
 @Builder
@@ -28,7 +31,7 @@ public class SelectMemberResDto {
 
     private MemberLevelType level;
 
-    private Role role;
+    private List<Role> role;
 
     public static SelectMemberResDto from(Member member) {
         SelectMemberResDto selectMemberResDto = new SelectMemberResDto();
@@ -39,7 +42,7 @@ public class SelectMemberResDto {
         selectMemberResDto.gender = member.getGender();
         selectMemberResDto.tel = member.getTel();
         selectMemberResDto.level = member.getLevel();
-        selectMemberResDto.role = member.getRole();
+        selectMemberResDto.role = member.getRole().stream().map(MemberRole::getRole).toList();
         return selectMemberResDto;
     }
 }

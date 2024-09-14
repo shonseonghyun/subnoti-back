@@ -1,16 +1,19 @@
 package com.sunghyun.football.domain.member.infrastructure;
 
 import com.sunghyun.football.domain.member.domain.Member;
-import com.sunghyun.football.domain.member.domain.enums.MemberLevelType;
-import com.sunghyun.football.domain.member.domain.repository.MemberRepository;
+import com.sunghyun.football.domain.member.domain.MemberRole;
 import com.sunghyun.football.domain.member.domain.dto.MemberUpdReqDto;
 import com.sunghyun.football.domain.member.domain.enums.Gender;
+import com.sunghyun.football.domain.member.domain.enums.MemberLevelType;
+import com.sunghyun.football.domain.member.domain.enums.Role;
+import com.sunghyun.football.domain.member.domain.repository.MemberRepository;
 import com.sunghyun.football.repository.TestRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Optional;
 
 class MemberRepositoryTest extends TestRepository {
@@ -45,6 +48,7 @@ class MemberRepositoryTest extends TestRepository {
         //then
         Assertions.assertThat(saveMember.getName()).isEqualTo(name);
         Assertions.assertThat(saveMember.getGender()).isEqualTo(gender);
+        Assertions.assertThat(saveMember.getRole().size()).isEqualTo(1);
     }
 
     @DisplayName("Member 조회")
@@ -59,6 +63,7 @@ class MemberRepositoryTest extends TestRepository {
 
         //then
         Assertions.assertThat(selectedMember.getMemberNo()).isNotNull();
+        Assertions.assertThat(selectedMember.getRole().size()).isEqualTo(1);
     }
 
     @DisplayName("Member 수정")
@@ -103,8 +108,11 @@ class MemberRepositoryTest extends TestRepository {
         memberRepository.delete(savedMember);
 
         //then
-        Optional<Member> selectedBook = memberRepository.findByMemberNo(savedMemberNo);
-        Assertions.assertThat(selectedBook).isNotPresent();
+        Optional<Member> selectedMember = memberRepository.findByMemberNo(savedMemberNo);
+//        List<MemberRole> selectedAllMemberRole = memberRepository.findMemberRoleByMemberNo(savedMemberNo);
+
+        Assertions.assertThat(selectedMember).isNotPresent();
+//        Assertions.assertThat(selectedAllMemberRole).isNotPr
     }
 
     private Member member(){
@@ -114,6 +122,8 @@ class MemberRepositoryTest extends TestRepository {
                 .pwd(pwd)
                 .birthDt(birthDt)
                 .gender(gender)
+                .level(MemberLevelType.ROOKIE)
+                .role(List.of(MemberRole.builder().role(Role.USER).build()))
                 .build()
                 ;
     }

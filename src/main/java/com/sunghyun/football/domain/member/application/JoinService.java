@@ -3,6 +3,7 @@ package com.sunghyun.football.domain.member.application;
 import com.sunghyun.football.domain.member.application.dto.MemberJoinReqDto;
 import com.sunghyun.football.domain.member.application.dto.MemberJoinResDto;
 import com.sunghyun.football.domain.member.domain.Member;
+import com.sunghyun.football.domain.member.domain.MemberRole;
 import com.sunghyun.football.domain.member.domain.enums.MemberLevelType;
 import com.sunghyun.football.domain.member.domain.enums.Role;
 import com.sunghyun.football.domain.member.domain.repository.MemberRepository;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -50,7 +52,7 @@ public class JoinService {
                 .birthDt(memberJoinReqDto.getBirthDt())
                 .gender(memberJoinReqDto.getGender())
                 .level(MemberLevelType.ROOKIE)
-                .role(Role.USER)
+                .role(List.of(new MemberRole(Role.USER)))
                 .build()
                 ;
 

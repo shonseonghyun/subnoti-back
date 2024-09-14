@@ -4,12 +4,13 @@ import com.sunghyun.football.domain.match.infrastructure.entity.converter.Member
 import com.sunghyun.football.domain.member.domain.Member;
 import com.sunghyun.football.domain.member.domain.enums.Gender;
 import com.sunghyun.football.domain.member.domain.enums.MemberLevelType;
-import com.sunghyun.football.domain.member.domain.enums.Role;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "member")
@@ -38,21 +39,9 @@ public class MemberEntity {
     @Convert(converter = MemberLevelTypeConverter.class)
     private MemberLevelType level;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
-
-    @Builder
-    public MemberEntity(String email, String pwd, String name, String birthDt, Gender gender, String tel) {
-        this.email = email;
-        this.pwd = pwd;
-        this.name = name;
-        this.birthDt = birthDt;
-        this.gender = gender;
-        this.tel = tel;
-        this.level = MemberLevelType.ROOKIE;
-        this.role = Role.USER;
-    }
-
+    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.REMOVE} /*,orphanRemoval = true */ ) //remove나 orphan 둘중 하나만 있어도 부모 시 자식도 함께 삭제된다..
+    @JoinColumn(name = "member_no")
+    private List<MemberRoleEntity> role;
 
     public static MemberEntity from(Member member){
         MemberEntity memberEntity = new MemberEntity();
@@ -64,7 +53,7 @@ public class MemberEntity {
         memberEntity.gender = member.getGender();
         memberEntity.tel = member.getTel();
         memberEntity.level = member.getLevel();
-        memberEntity.role = member.getRole();
+        memberEntity.role = member.getRole().stream().map(MemberRoleEntity::from).collect(Collectors.toList());
         return memberEntity;
     }
 
@@ -78,7 +67,7 @@ public class MemberEntity {
                 .tel(tel)
                 .gender(gender)
                 .level(level)
-                .role(role)
+                .role(role.stream().map(MemberRoleEntity::toModel).collect(Collectors.toList()))
                 .build()
                 ;
     }
