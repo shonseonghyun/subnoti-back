@@ -18,6 +18,7 @@ public class MemberJoinReqDto {
     @NotNull
     private String email;
 
+    @NotNull
     private String pwd;
 
     @NotNull

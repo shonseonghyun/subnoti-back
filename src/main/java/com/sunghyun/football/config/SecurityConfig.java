@@ -1,6 +1,5 @@
 package com.sunghyun.football.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sunghyun.football.domain.member.infrastructure.auth.custom.filter.CustomAuthenticationFilter;
 import com.sunghyun.football.domain.member.infrastructure.auth.custom.provider.CustomAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +45,7 @@ public class SecurityConfig{
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
         ProviderManager providerManager = (ProviderManager) authenticationConfiguration.getAuthenticationManager();
-        //주석 처리 => 프레임워크 내부에서 스프링 시큐리티 초기 설정 시 AuthencationProvider를 상속받은 클래스의 등록된 빈이 있는지 확인 후 등록하는 과정을 진행한다.
+        //주석 처리 => 프레임워크에서 스프링 시큐리티 초기 설정 시 AuthenticationProvider를 상속받은 클래스의 등록된 빈이 있는지 확인 후 등록하는 과정을 내부적으로 진행한다. (AuthenticationProvider 빈 등록 위에서 진행)
         //AbstractConfiguredSecurityBuilder, InitializeUserDetailsManagerConfigurer 디버깅
 //        providerManager.getProviders().add(this.customAuthenticationProvider());
         return providerManager;
@@ -55,6 +54,7 @@ public class SecurityConfig{
     @Bean
     public AbstractAuthenticationProcessingFilter abstractAuthenticationProcessingFilter(AuthenticationManager authenticationManager) {
         AbstractAuthenticationProcessingFilter customAuthenticationFilter = new CustomAuthenticationFilter(
+//                requestMatcher(),
                 loginUrl,
                 authenticationManager,
                 customAuthenticationSuccessHandler,
@@ -64,6 +64,11 @@ public class SecurityConfig{
         return customAuthenticationFilter;
     }
 
+//    @Bean
+//    public RequestMatcher requestMatcher(){
+//        return AntPathRequestMatcher.antMatcher(HttpMethod.POST,loginUrl);
+//    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -72,7 +77,7 @@ public class SecurityConfig{
                 //h2 허용 설정
                 .headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .authorizeHttpRequests(authorizeRequest-> authorizeRequest
-                                .requestMatchers("/**/**").permitAll()
+                                .requestMatchers("/**").permitAll()
 //                                .anyRequest().permitAll()
                 )
                 .addFilterAt(this.abstractAuthenticationProcessingFilter(this.authenticationManager()),UsernamePasswordAuthenticationFilter.class);
