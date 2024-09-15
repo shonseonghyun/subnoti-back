@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,11 +25,12 @@ public class MemberServiceHelper implements UserDetailsService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         final String email = username;
 
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(()->new EmailNotFoundException(ErrorCode.MEMBER_NOT_FOUND.getCode())); //auth handler에서 잡힌다.
+                .orElseThrow(()->new EmailNotFoundException(ErrorCode.EMAIL_NOT_FOUND.getCode())); //auth handler에서 잡힌다.
 
         return CustomUserDetails.from(member);
     }
