@@ -21,7 +21,9 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -37,6 +39,9 @@ public class SecurityConfig{
     private final AuthenticationSuccessHandler customAuthenticationSuccessHandler;
     private final AuthenticationFailureHandler customAuthenticationFailureHandler;
     private final JwtProvider jwtProvider;
+    private final AccessDeniedHandler accessDeniedHandler;
+    private final AuthenticationEntryPoint authenticationEntryPoint;
+
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -96,8 +101,8 @@ public class SecurityConfig{
                                 .anyRequest().permitAll()
                 )
                 //ExceptionTranslationFilter.handleAccessDeniedException 확인하면 아래 주석 내용이 보인다.
-//                .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint()) //익명의사용자가 권한필요한 페이지 접근 거절 시 후처리
-//                .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer.accessDeniedHandler()) //접근을 위한 특정 권한이 필요한 페이지에 익명의 사용자가 아니면서 권한이 없는 경우
+                .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(authenticationEntryPoint)) //익명의사용자가 권한필요한 페이지 접근 거절 시 후처리
+                .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer.accessDeniedHandler(accessDeniedHandler)) //접근을 위한 특정 권한이 필요한 페이지에 익명의 사용자가 아니면서 권한이 없는 경우
                 .addFilterAt(this.abstractAuthenticationProcessingFilter(this.authenticationManager()),UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(this.jwtAuthenticationFilter(),UsernamePasswordAuthenticationFilter.class)
                 ;
