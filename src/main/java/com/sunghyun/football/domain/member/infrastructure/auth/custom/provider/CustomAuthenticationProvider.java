@@ -1,8 +1,9 @@
 package com.sunghyun.football.domain.member.infrastructure.auth.custom.provider;
 
+import com.sunghyun.football.global.exception.ErrorCode;
+import com.sunghyun.football.global.exception.exceptions.member.auth.PasswordNotMatchException;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -29,7 +30,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
         //유저 비밀번호 일치여부 체크
         if(!passwordEncoder.matches(pwd,user.getPassword())){
-            throw new BadCredentialsException("pwd is not matches");
+            throw new PasswordNotMatchException(ErrorCode.PASSWORD_NOT_MATCH.getCode());
         }
 
         //인증완료된 인증객체 리턴

@@ -35,7 +35,9 @@ public enum ErrorCode {
     LEVEL_RULE_REJECT(HttpStatus.BAD_REQUEST,"L00" , "레벨 제한으로 인해 신청이 불가합니다." ),
     GENDER_RULE_REJECT(HttpStatus.BAD_REQUEST,"G00" , "성별 제한으로 인해 신청이 불가합니다." ),
     FILE_UPLOAD_FAIL(HttpStatus.BAD_REQUEST,"F00" ,"파일 업로드에 실패하였습니다." ),
-    HTTP_METHOD_NOT_SUPPORT(HttpStatus.BAD_REQUEST,"H00" , "로그인 요청에 대한 지원되지 않는 Http Method입니다." );
+    HTTP_METHOD_NOT_SUPPORT(HttpStatus.BAD_REQUEST,"H00" , "로그인 요청에 대한 지원되지 않는 Http Method입니다." ),
+    PASSWORD_NOT_MATCH(HttpStatus.BAD_REQUEST,"P01" , "비밀번호가 일치하지 않습니다." )
+    ;
 
     private final HttpStatus httpStatus;
     private final String code;
