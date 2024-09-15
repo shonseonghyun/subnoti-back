@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -15,19 +14,19 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class CustomUserDetails implements UserDetails {
-
     private Long memberNo;
     private String email;
     private String pwd;
     private String name;
-    private List<GrantedAuthority> authorities;
+    private List<CustomGrantedAuthority> authorities;
+
     public static CustomUserDetails from(Member member){
         CustomUserDetails customUserDetails = new CustomUserDetails();
         customUserDetails.memberNo=member.getMemberNo();
         customUserDetails.email=member.getEmail();
         customUserDetails.pwd=member.getPwd();
         customUserDetails.name=member.getName();
-//        customUserDetails.authorities = Arrays.asList(member.getRole());
+        customUserDetails.authorities = member.getRole().stream().map(CustomGrantedAuthority::new).toList();
         return customUserDetails;
     }
     @Override
