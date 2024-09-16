@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -11,9 +12,11 @@ import java.util.Date;
 @Slf4j
 @Component
 public class JwtProvider {
-    private final String secretKey= "secretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKey";
+    @Value("${jwt.secretKey}")
+    private String secretKey;
 
-    private final Long tokenValidTime = 1000 * 60 * 24 *30 * 60 * 24L;
+    @Value("${jwt.expirationTime}")
+    private Long expirationTime;
 
     public String generateAccessToken(String email){
         long now = System.currentTimeMillis();
@@ -24,7 +27,7 @@ public class JwtProvider {
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date(now))
-                .setExpiration(new Date(now - tokenValidTime))
+                .setExpiration(new Date(now + expirationTime))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
