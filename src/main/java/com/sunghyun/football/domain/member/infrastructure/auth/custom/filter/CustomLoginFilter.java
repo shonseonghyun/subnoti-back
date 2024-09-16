@@ -22,10 +22,10 @@ import java.io.IOException;
 
 //@Component
 //@RequiredArgsConstructor
-public class CustomAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+public class CustomLoginFilter extends AbstractAuthenticationProcessingFilter {
     private ObjectMapper om =  new ObjectMapper();
 
-    public CustomAuthenticationFilter(
+    public CustomLoginFilter(
 //            final RequestMatcher requestMatcher,
             final String filterProcessesUrl,
             final AuthenticationManager authenticationManager,
