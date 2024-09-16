@@ -1,8 +1,10 @@
 package com.sunghyun.football.domain.member.infrastructure.auth.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.sunghyun.football.global.exception.ErrorCode;
+import com.sunghyun.football.global.exception.exceptions.member.auth.jwt.JwtExpiredException;
+import com.sunghyun.football.global.exception.exceptions.member.auth.jwt.JwtParseException;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -33,13 +35,25 @@ public class JwtProvider {
     }
 
     public Claims parseAccessToken(String token){
+        if(!token.startsWith("Bearer")){
+            log.info("토큰 Bearer 형식으로 이루어져 있지 않습니다.");
+            throw new JwtParseException(ErrorCode.JWT_PARSE_FAIL);
+        }
         String accessTokenWithoutPrefix = token.split(" ")[1];
-        return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(accessTokenWithoutPrefix)
-                .getBody()
-                ;
+        try{
+            return Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(accessTokenWithoutPrefix)
+                    .getBody()
+                    ;
+        }catch(SignatureException | MalformedJwtException |IllegalArgumentException e){
+            log.error("토큰 형식이 올바르지 않습니다.");
+            throw new JwtParseException(ErrorCode.JWT_PARSE_FAIL);
+        }catch(ExpiredJwtException e){
+            log.error("토큰 유효기간 만료");
+            throw new JwtExpiredException(ErrorCode.JWT_EXPIRED);
+        }
     }
 
     public String getEmail(String token){

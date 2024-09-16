@@ -38,7 +38,10 @@ public enum ErrorCode {
     HTTP_METHOD_NOT_SUPPORT(HttpStatus.BAD_REQUEST,"H00" , "로그인 요청에 대한 지원되지 않는 Http Method입니다." ),
     PASSWORD_NOT_MATCH(HttpStatus.BAD_REQUEST,"P01" , "비밀번호가 일치하지 않습니다." ),
     ACCESSED_DENIED(HttpStatus.BAD_REQUEST,"A00" ,"접근 권한이 올바르지 않습니다." ),
-    AUTHENTICATION_REQUIRED(HttpStatus.BAD_REQUEST,"A01" , "인증이 필요합니다.");
+    AUTHENTICATION_REQUIRED(HttpStatus.BAD_REQUEST,"A01" , "인증이 필요합니다."),
+    JWT_PARSE_FAIL(HttpStatus.BAD_REQUEST,"T00" ,"토큰 파싱에 실패하였습니다." ),
+    JWT_EXPIRED(HttpStatus.BAD_REQUEST,"T01" ,"토큰의 유효기간이 만료되었습니다." )
+    ;
 
     private final HttpStatus httpStatus;
     private final String code;

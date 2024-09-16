@@ -1,11 +1,11 @@
 package com.sunghyun.football.config;
 
 import com.sunghyun.football.domain.member.domain.enums.Role;
-import com.sunghyun.football.domain.member.infrastructure.auth.custom.filter.CustomAuthenticationFilter;
 import com.sunghyun.football.domain.member.infrastructure.auth.custom.filter.CustomJwtAuthenticationFilter;
+import com.sunghyun.football.domain.member.infrastructure.auth.custom.filter.CustomLoginFilter;
+import com.sunghyun.football.domain.member.infrastructure.auth.custom.filter.JwtExceptionFilter;
 import com.sunghyun.football.domain.member.infrastructure.auth.custom.provider.CustomAuthenticationProvider;
 import com.sunghyun.football.domain.member.infrastructure.auth.jwt.JwtProvider;
-import jakarta.servlet.GenericFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -63,9 +63,9 @@ public class SecurityConfig{
         return providerManager;
     }
 
-//    @Bean //applicationFilterChain
+//    @Bean //applicationFilterChain필터에도 추가되어버리기에 주석처리
     public AbstractAuthenticationProcessingFilter abstractAuthenticationProcessingFilter(AuthenticationManager authenticationManager) {
-        AbstractAuthenticationProcessingFilter customAuthenticationFilter = new CustomAuthenticationFilter(
+        AbstractAuthenticationProcessingFilter customAuthenticationFilter = new CustomLoginFilter(
 //                requestMatcher(),
                 loginUrl,
                 authenticationManager,
@@ -77,8 +77,12 @@ public class SecurityConfig{
     }
 
 //    @Bean
-    public GenericFilter jwtAuthenticationFilter(){
+    public CustomJwtAuthenticationFilter jwtAuthenticationFilter(){
         return new CustomJwtAuthenticationFilter(userDetailsService,jwtProvider);
+    }
+    
+    public JwtExceptionFilter jwtExceptionFilter(){
+        return new JwtExceptionFilter();
     }
 
 //    @Bean
@@ -105,6 +109,8 @@ public class SecurityConfig{
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer.accessDeniedHandler(accessDeniedHandler)) //접근을 위한 특정 권한이 필요한 페이지에 익명의 사용자가 아니면서 권한이 없는 경우
                 .addFilterAt(this.abstractAuthenticationProcessingFilter(this.authenticationManager()),UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(this.jwtAuthenticationFilter(),UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(this.jwtExceptionFilter(),CustomJwtAuthenticationFilter.class)
+
                 ;
 
         return http.build();
