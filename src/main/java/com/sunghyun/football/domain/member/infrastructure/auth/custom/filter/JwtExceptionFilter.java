@@ -14,10 +14,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
 public class JwtExceptionFilter extends OncePerRequestFilter {
-
-    private final ObjectMapper om = new ObjectMapper();
+    private final ObjectMapper om;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

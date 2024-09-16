@@ -1,5 +1,6 @@
 package com.sunghyun.football.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sunghyun.football.domain.member.domain.enums.Role;
 import com.sunghyun.football.domain.member.infrastructure.auth.custom.filter.CustomJwtAuthenticationFilter;
 import com.sunghyun.football.domain.member.infrastructure.auth.custom.filter.CustomLoginFilter;
@@ -18,6 +19,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,6 +43,7 @@ public class SecurityConfig{
     private final JwtProvider jwtProvider;
     private final AccessDeniedHandler accessDeniedHandler;
     private final AuthenticationEntryPoint authenticationEntryPoint;
+    private final ObjectMapper om;
 
 
     @Bean
@@ -82,7 +85,7 @@ public class SecurityConfig{
     }
     
     public JwtExceptionFilter jwtExceptionFilter(){
-        return new JwtExceptionFilter();
+        return new JwtExceptionFilter(om);
     }
 
 //    @Bean
@@ -104,6 +107,7 @@ public class SecurityConfig{
                                 .requestMatchers("/api/v1/admin/**").hasAnyAuthority(Role.ADMIN.name())
                                 .anyRequest().permitAll()
                 )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 //ExceptionTranslationFilter.handleAccessDeniedException 확인하면 아래 주석 내용이 보인다.
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(authenticationEntryPoint)) //익명의사용자가 권한필요한 페이지 접근 거절 시 후처리
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer.accessDeniedHandler(accessDeniedHandler)) //접근을 위한 특정 권한이 필요한 페이지에 익명의 사용자가 아니면서 권한이 없는 경우
