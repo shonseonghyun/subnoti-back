@@ -1,6 +1,7 @@
 package com.sunghyun.football.domain.member.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sunghyun.football.config.SecurityConfig;
 import com.sunghyun.football.domain.member.application.JoinService;
 import com.sunghyun.football.domain.member.application.MemberApplication;
 import com.sunghyun.football.domain.member.application.dto.MemberJoinReqDto;
@@ -16,19 +17,27 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(MemberApi.class)
+@WebMvcTest(value = MemberApi.class,
+excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class) })
+//@Import(SecurityConfig.class)
+//@ComponentScan(basePackages = {"com.sunghyun.football"})
+//excludeFilters = {
+//@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class)}
 class MemberApiTest{
 
     @Autowired
@@ -58,12 +67,15 @@ class MemberApiTest{
 
     @DisplayName("회원가입 - body데이터 인입되지 않는 경우")
     @Test
+    @WithMockUser
     void joinWithNotExistParam() throws Exception {
         //given
         final String url = "/api/v1/member";
 
         //when
-        final ResultActions resultActions = mockMvc.perform(post(url));
+        final ResultActions resultActions = mockMvc.perform(post(url)
+                .with(csrf())
+        );
 
         //then
         resultActions.andExpect(status().isBadRequest());
@@ -71,6 +83,7 @@ class MemberApiTest{
 
     @DisplayName("회원가입 정상처리")
     @Test
+    @WithMockUser
     void joinMember() throws Exception {
         //given
         final String url = "/api/v1/member";
@@ -90,7 +103,9 @@ class MemberApiTest{
          ;
 
         //when
-        final ResultActions resultActions = mockMvc.perform(post(url)
+        final ResultActions resultActions = mockMvc.perform(
+                post(url)
+                        .with(csrf())
                         .content(content)
                 .contentType(MediaType.APPLICATION_JSON)
         )
@@ -140,6 +155,7 @@ class MemberApiTest{
 
     @DisplayName("회원수정 정상처리")
     @Test
+    @WithMockUser
     void updateMemberWithNotAcceptableParameter() throws Exception {
         //given
         final String url = "/api/v1/member/"+memberNo;
@@ -147,6 +163,7 @@ class MemberApiTest{
 
         //then
         final ResultActions resultActions = mockMvc.perform(put(url)
+                        .with(csrf())
                 .content(objectMapper.writeValueAsString(memberUpdReqDto))
                 .contentType(MediaType.APPLICATION_JSON))
                 ;
@@ -170,6 +187,7 @@ class MemberApiTest{
    @DisplayName("회원탈퇴 - 회원번호 필드에 올바르지않은 필드값 인입(null, 글자)")
 //    @ParameterizedTest
    @Test
+   @WithMockUser
 //    @MethodSource("invalidJoinParameter")
 //    @ValueSource(strings = {"test"})
 //    @NullSource
@@ -179,7 +197,9 @@ class MemberApiTest{
         final String url = "/api/v1/member/"+parameter;
 
         //when
-        final ResultActions resultActions=mockMvc.perform(delete(url));
+        final ResultActions resultActions=mockMvc.perform(delete(url)
+                        .with(csrf())
+        );
 
         //then
         resultActions.andExpect(status().isBadRequest())
@@ -196,6 +216,7 @@ class MemberApiTest{
 
     @DisplayName("회원탈퇴 실패_존재하지 않는 회원번호")
     @Test
+    @WithMockUser
     void joinMemberWithNotExistMemberNo() throws Exception {
         //given
         Long memberNo = 1L;
@@ -205,7 +226,9 @@ class MemberApiTest{
                 .when(memberApplication).deleteMember(memberNo);
 
         //when
-        final ResultActions resultActions=mockMvc.perform(delete(url));
+        final ResultActions resultActions=mockMvc.perform(delete(url)
+                .with(csrf())
+        );
 
         //then
         resultActions.andExpect(status().isBadRequest())
@@ -215,13 +238,16 @@ class MemberApiTest{
 
     @DisplayName("회원탈퇴 정상처리")
     @Test
+    @WithMockUser
     void deleteMember() throws Exception {
         //given
         Long memberNo = 1L;
         final String url = "/api/v1/member/"+memberNo;
 
         //when
-        final ResultActions resultActions=mockMvc.perform(delete(url));
+        final ResultActions resultActions=mockMvc.perform(delete(url)
+                .with(csrf())
+        );
 
         //then
         resultActions.andExpect(status().isOk());
