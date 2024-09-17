@@ -1,6 +1,8 @@
 package com.sunghyun.football.domain.member.infrastructure.auth.custom.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sunghyun.football.domain.member.domain.RefreshTokenRedis;
+import com.sunghyun.football.domain.member.domain.repository.TokenRepository;
 import com.sunghyun.football.domain.member.infrastructure.auth.jwt.JwtProvider;
 import com.sunghyun.football.global.exception.ErrorCode;
 import com.sunghyun.football.global.response.ApiResponseDto;
@@ -24,15 +26,19 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
     private final ObjectMapper om;
     private final JwtProvider jwtProvider;
+    private final TokenRepository tokenRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        //토큰 생성
-        final String accessToken=jwtProvider.generateAccessToken(authentication.getName());
-        log.info("accessToken issued");
-        log.info("accessToken= {}",accessToken);
-//        final String refreshToken="refreshToken";
+        final String email = authentication.getName();
+        log.info("로그인 성공 [email:{}]",email);
 
+        //토큰 생성
+        final String accessToken=jwtProvider.generateAccessToken(email);
+        final String refreshToken=jwtProvider.generateRefreshToken();
+
+        log.info("AccessToken is issued [{}]", accessToken);
+        log.info("RefreshToken is issued [{}]", refreshToken);
 
         //유저 정보와 토큰 응답 필수
         /*
@@ -43,10 +49,13 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         //토큰 쿠키
         Cookie cookieForAccessToken  = new Cookie("accessToken",accessToken);
-//        Cookie cookieForRefreshToken  = new Cookie("refreshToken",refreshToken);
+        Cookie cookieForRefreshToken  = new Cookie("refreshToken",refreshToken);
 
         response.addCookie(cookieForAccessToken);
-//        response.addCookie(cookieForRefreshToken);
+        response.addCookie(cookieForRefreshToken);
+
+        //redis를 위한 refresh토큰 객체 생성 및 저장
+        tokenRepository.save(new RefreshTokenRedis(refreshToken,email));
 
         //유저정보 body
         om.writeValue(response.getOutputStream(), ApiResponseDto.toResponse(ErrorCode.SUCCESS));
