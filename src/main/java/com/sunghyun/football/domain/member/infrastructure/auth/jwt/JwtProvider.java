@@ -1,6 +1,7 @@
 package com.sunghyun.football.domain.member.infrastructure.auth.jwt;
 
 import com.sunghyun.football.domain.member.domain.RefreshTokenRedis;
+import com.sunghyun.football.domain.member.domain.repository.TokenRedisRepository;
 import com.sunghyun.football.domain.member.domain.repository.TokenRepository;
 import com.sunghyun.football.global.exception.ErrorCode;
 import com.sunghyun.football.global.exception.exceptions.member.auth.jwt.JwtExpiredException;
@@ -28,7 +29,8 @@ public class JwtProvider {
     @Value("${jwt.refresh.expirationTime}")
     private Long refreshTokenExpirationTime;
 
-    private final TokenRepository tokenRepository;
+//    private final TokenRepository tokenRepository;
+    private final TokenRedisRepository tokenRepository;
 
 //    public boolean checkRefreshTokenExist(final String refreshToken){
 //        Optional<RefreshTokenRedis> token = tokenRepository.findByRefreshToken(refreshToken);
@@ -96,15 +98,14 @@ public class JwtProvider {
     }
 
     public String generateNewAccessTokenWithRefreshToken(final String refreshToken) {
-        final RefreshTokenRedis refreshTokenRedis = tokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(()->new JwtNotFoundException(ErrorCode.JWT_NOT_FOUND));
+        final RefreshTokenRedis refreshTokenRedis = tokenRepository.findByRefreshToken(refreshToken);
         final String email = refreshTokenRedis.getEmail();
 
         log.info("리프래쉬 토큰을 통한 유저 이메일 추출 [이메일: {}]",email);
 
         String newAccessToken = generateAccessToken(email);
 
-        log.info("AccessToken is issued [{}]", newAccessToken);
+        log.info("New AccessToken is issued [{}]", newAccessToken);
 
         return newAccessToken;
     }
