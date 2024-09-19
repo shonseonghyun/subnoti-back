@@ -1,11 +1,9 @@
 package com.sunghyun.football.domain.member.infrastructure.auth.jwt;
 
 import com.sunghyun.football.domain.member.domain.RefreshTokenRedis;
-import com.sunghyun.football.domain.member.domain.repository.TokenRedisRepository;
 import com.sunghyun.football.domain.member.domain.repository.TokenRepository;
 import com.sunghyun.football.global.exception.ErrorCode;
 import com.sunghyun.football.global.exception.exceptions.member.auth.jwt.JwtExpiredException;
-import com.sunghyun.football.global.exception.exceptions.member.auth.jwt.JwtNotFoundException;
 import com.sunghyun.football.global.exception.exceptions.member.auth.jwt.JwtParseException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
@@ -29,8 +27,7 @@ public class JwtProvider {
     @Value("${jwt.refresh.expirationTime}")
     private Long refreshTokenExpirationTime;
 
-//    private final TokenRepository tokenRepository;
-    private final TokenRedisRepository tokenRepository;
+    private final TokenRepository tokenRepository;
 
 //    public boolean checkRefreshTokenExist(final String refreshToken){
 //        Optional<RefreshTokenRedis> token = tokenRepository.findByRefreshToken(refreshToken);

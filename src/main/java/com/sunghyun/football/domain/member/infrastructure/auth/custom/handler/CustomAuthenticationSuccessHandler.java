@@ -2,7 +2,6 @@ package com.sunghyun.football.domain.member.infrastructure.auth.custom.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sunghyun.football.domain.member.domain.RefreshTokenRedis;
-import com.sunghyun.football.domain.member.domain.repository.TokenRedisRepository;
 import com.sunghyun.football.domain.member.domain.repository.TokenRepository;
 import com.sunghyun.football.domain.member.infrastructure.auth.jwt.JwtProvider;
 import com.sunghyun.football.global.exception.ErrorCode;
@@ -27,8 +26,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
     private final ObjectMapper om;
     private final JwtProvider jwtProvider;
-//    private final TokenRepository tokenRepository;
-    private final TokenRedisRepository tokenRepository;
+    private final TokenRepository tokenRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {

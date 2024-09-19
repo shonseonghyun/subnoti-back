@@ -1,7 +1,7 @@
 package com.sunghyun.football.domain.member.infrastructure;
 
 import com.sunghyun.football.domain.member.domain.RefreshTokenRedis;
-import com.sunghyun.football.domain.member.domain.repository.TokenRedisRepository;
+import com.sunghyun.football.domain.member.domain.repository.TokenRepository;
 import com.sunghyun.football.global.exception.ErrorCode;
 import com.sunghyun.football.global.exception.exceptions.member.auth.jwt.JwtNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -14,9 +14,9 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-@Repository
+//@Repository
 @RequiredArgsConstructor
-public class TokenRedisRepositoryImpl implements TokenRedisRepository {
+public class TokenRedisTemplateRepositoryImpl implements TokenRepository {
     private final RedisTemplate redisTemplate;
 
     public void save(final RefreshTokenRedis refreshTokenRedis){
