@@ -29,6 +29,11 @@ public class CustomUserDetails implements UserDetails {
         customUserDetails.authorities = member.getRole().stream().map(CustomGrantedAuthority::new).toList();
         return customUserDetails;
     }
+
+    public Long getMemberNo(){
+        return memberNo;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;

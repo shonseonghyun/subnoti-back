@@ -3,6 +3,8 @@ package com.sunghyun.football.domain.member.infrastructure.auth.custom.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sunghyun.football.domain.member.domain.RefreshTokenRedis;
 import com.sunghyun.football.domain.member.domain.repository.TokenRepository;
+import com.sunghyun.football.domain.member.infrastructure.auth.UserDetails.CustomUserDetails;
+import com.sunghyun.football.domain.member.infrastructure.auth.dto.MemberLoginResDto;
 import com.sunghyun.football.domain.member.infrastructure.auth.jwt.JwtProvider;
 import com.sunghyun.football.global.exception.ErrorCode;
 import com.sunghyun.football.global.response.ApiResponseDto;
@@ -30,7 +32,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        final String email = authentication.getName();
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        final String email = customUserDetails.getUsername();
         log.info("로그인 성공 [email:{}]",email);
 
         //토큰 생성
@@ -50,7 +53,10 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         //토큰 쿠키
         Cookie cookieForAccessToken  = new Cookie("accessToken",accessToken);
         Cookie cookieForRefreshToken  = new Cookie("refreshToken",refreshToken);
-
+        cookieForAccessToken.setDomain("localhost");
+        cookieForRefreshToken.setDomain("localhost");
+        cookieForAccessToken.setPath("/");
+        cookieForRefreshToken.setPath("/");
         response.addCookie(cookieForAccessToken);
         response.addCookie(cookieForRefreshToken);
 
@@ -58,6 +64,5 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         tokenRepository.save(new RefreshTokenRedis(refreshToken,email));
 
         //유저정보 body
-        om.writeValue(response.getOutputStream(), ApiResponseDto.toResponse(ErrorCode.SUCCESS));
-    }
+        om.writeValue(response.getOutputStream(), ApiResponseDto.toResponse(ErrorCode.SUCCESS, MemberLoginResDto.from(customUserDetails)));    }
 }
