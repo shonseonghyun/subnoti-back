@@ -1,6 +1,7 @@
 package com.sunghyun.football.domain.match.application;
 
 import com.sunghyun.football.domain.match.application.dto.RegMatchReqDto;
+import com.sunghyun.football.domain.match.domain.MatchViewCount;
 import com.sunghyun.football.domain.match.domain.dto.SearchMatchesReqDto;
 import com.sunghyun.football.domain.match.application.dto.SelectMatchResDto;
 import com.sunghyun.football.domain.match.application.dto.SelectSimpleMatchResDto;
@@ -146,6 +147,7 @@ class MatchApplicationTest {
         //then
         verify(matchServiceHelper,times(1)).findExistingMatch(matchNo);
         Assertions.assertThat(selectMatchResDto.getHeadCount()).isEqualTo(headCount);
+        Assertions.assertThat(selectMatchResDto.getViewCount()).isEqualTo(1);
     }
 
 
@@ -324,6 +326,7 @@ class MatchApplicationTest {
                 .genderRule(GenderRule.FEMALE)
                 .matchState(MatchState.MATCH_REG_MANAGER_BEFORE)
                 .matchStatus(MatchStatus.MATCH_START_BEFORE)
+                .viewCount(MatchViewCount.builder().viewCount(0).build())
                 .build();
     }
 

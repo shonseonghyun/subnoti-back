@@ -1,47 +1,53 @@
 package com.sunghyun.football.domain.match.application;
 
 import com.sunghyun.football.domain.match.application.dto.RegMatchReqDto;
-import com.sunghyun.football.domain.match.domain.dto.SearchMatchesReqDto;
 import com.sunghyun.football.domain.match.application.dto.SelectMatchResDto;
 import com.sunghyun.football.domain.match.application.dto.SelectSimpleMatchResDto;
 import com.sunghyun.football.domain.match.domain.Match;
 import com.sunghyun.football.domain.match.domain.MatchPlayer;
+import com.sunghyun.football.domain.match.domain.MatchViewCount;
+import com.sunghyun.football.domain.match.domain.dto.SearchMatchesReqDto;
 import com.sunghyun.football.domain.match.domain.enums.MatchState;
 import com.sunghyun.football.domain.match.domain.enums.MatchStatus;
 import com.sunghyun.football.domain.match.domain.repository.MatchRepository;
+import com.sunghyun.football.domain.match.infrastructure.SpringJpaMatchRepository;
 import com.sunghyun.football.domain.member.application.dto.SelectMemberResDto;
 import com.sunghyun.football.domain.member.domain.enums.MemberLevelType;
 import com.sunghyun.football.domain.stadium.application.dto.SelectStadiumResDto;
 import com.sunghyun.football.global.exception.ErrorCode;
 import com.sunghyun.football.global.exception.exceptions.match.MatchAlreadyRegSameTimeException;
 import com.sunghyun.football.global.exception.exceptions.match.MatchApplyInSameTimeException;
+import com.sunghyun.football.global.exception.exceptions.match.MatchNotFoundException;
 import com.sunghyun.football.global.feign.MemberOpenFeignClient;
 import com.sunghyun.football.global.feign.StadiumOpenFeignClient;
 import com.sunghyun.football.global.response.ApiResponseDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MatchApplication {
     private final MatchRepository matchRepository;
     private final MatchServiceHelper matchServiceHelper;
+    private final SpringJpaMatchRepository springJpaMatchRepository;
 
     private final StadiumOpenFeignClient stadiumOpenFeignClient;
     private final MemberOpenFeignClient memberOpenFeignClient;
 
-    public void getMatches(){
-
-    }
-
+    @Transactional
     public SelectMatchResDto getMatch(final Long matchNo){
         SelectMemberResDto selectedManagerResDto = null;
         SelectStadiumResDto selectedStadiumResDto =null;
         Map<Long,SelectMemberResDto> selectedMembersMap = new HashMap();
 
-        Match selectedMatch = matchServiceHelper.findExistingMatch(matchNo);
+//        Match selectedMatch = matchServiceHelper.findExistingMatch(matchNo);
+        Match selectedMatch = matchRepository.findByMatchNoPessimistic(matchNo)
+                .orElseThrow(()->new MatchNotFoundException(ErrorCode.MATCH_NOT_FOUND));
 
         //스타디움 정보 구하기
         ApiResponseDto<SelectStadiumResDto> stadiumResponse = stadiumOpenFeignClient.checkExistStadium(selectedMatch.getStadiumNo());
@@ -67,8 +73,27 @@ public class MatchApplication {
             memberLevelTypes.add(memberLevelType);
         }
         selectedMatch.setAndCalAvgLevel(memberLevelTypes);
+        selectedMatch.isClicked();
+
+        matchRepository.save(selectedMatch);
 
         return SelectMatchResDto.from(selectedMatch,selectedStadiumResDto,selectedManagerResDto,selectedMembersMap);
+    }
+
+    @Transactional // (isolation = Isolation.READ_UNCOMMITTED) //지연로딩 초기화 에러 발생 방지
+    public /*synchronized*/ void clickedMatch(Long matchNo){
+//        Match selectedMatch = springJpaMatchRepository.findByMatchNoPessimistic(matchNo)
+//                .orElseThrow(()->new MatchNotFoundException(ErrorCode.MATCH_NOT_FOUND))
+//                .toModel()
+//                ;
+
+        Match selectedMatch = matchRepository.findByMatchNoPessimistic(matchNo)
+                .orElseThrow(()->new MatchNotFoundException(ErrorCode.MATCH_NOT_FOUND))
+                ;
+
+        selectedMatch.isClicked();
+
+        matchRepository.save(selectedMatch);
     }
 
     public void regMatch(final RegMatchReqDto regMatchReqDto) {
@@ -90,6 +115,7 @@ public class MatchApplication {
                 .matchStatus(MatchStatus.MATCH_START_BEFORE)
                 .levelRule(regMatchReqDto.getLevelRule())
                 .genderRule(regMatchReqDto.getGenderRule())
+                .viewCount(MatchViewCount.builder().viewCount(0).build())
                 .build();
 
         matchRepository.save(match);

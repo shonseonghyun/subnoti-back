@@ -2,8 +2,8 @@ package com.sunghyun.football.domain.match.infrastructure;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sunghyun.football.domain.match.domain.dto.SearchMatchesReqDto;
 import com.sunghyun.football.domain.match.domain.Match;
+import com.sunghyun.football.domain.match.domain.dto.SearchMatchesReqDto;
 import com.sunghyun.football.domain.match.domain.repository.MatchRepository;
 import com.sunghyun.football.domain.match.infrastructure.entity.MatchEntity;
 import com.sunghyun.football.domain.match.infrastructure.entity.QMatchEntity;
@@ -31,6 +31,11 @@ public class MatchRepositoryImpl implements MatchRepository {
     @Override
     public Optional<Match> findByMatchNo(Long matchNo) {
         return springJpaMatchRepository.findByMatchNo(matchNo).map(MatchEntity::toModel);
+    }
+
+    @Override
+    public Optional<Match> findByMatchNoPessimistic(Long matchNo) {
+        return springJpaMatchRepository.findByMatchNoPessimistic(matchNo).map(MatchEntity::toModel);
     }
 
     @Override

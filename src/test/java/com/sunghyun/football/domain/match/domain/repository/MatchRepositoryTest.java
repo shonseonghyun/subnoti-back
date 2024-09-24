@@ -1,5 +1,6 @@
 package com.sunghyun.football.domain.match.domain.repository;
 
+import com.sunghyun.football.domain.match.domain.MatchViewCount;
 import com.sunghyun.football.domain.match.domain.dto.SearchMatchesReqDto;
 import com.sunghyun.football.domain.match.domain.Match;
 import com.sunghyun.football.domain.match.domain.enums.GenderRule;
@@ -10,6 +11,7 @@ import com.sunghyun.football.domain.match.infrastructure.SpringJpaMatchPlayerRep
 import com.sunghyun.football.domain.match.infrastructure.SpringJpaMatchRepository;
 import com.sunghyun.football.domain.match.infrastructure.entity.MatchEntity;
 import com.sunghyun.football.domain.match.infrastructure.entity.MatchPlayerEntity;
+import com.sunghyun.football.domain.match.infrastructure.entity.MatchViewCountEntity;
 import com.sunghyun.football.domain.member.domain.enums.MemberLevelType;
 import com.sunghyun.football.repository.TestRepository;
 import org.assertj.core.api.Assertions;
@@ -49,12 +51,30 @@ class MatchRepositoryTest extends TestRepository{
     void regMatch(){
         //given
         MatchEntity matchEntity = createMatchEntityWithPlayer();
+
         //when
         MatchEntity savedMatchEntity = springJpaMatchRepository.save(matchEntity);
 
         //then
         Assertions.assertThat(savedMatchEntity.getStadiumNo()).isEqualTo(stadiumNo);
-        Assertions.assertThat(savedMatchEntity.getHeadCount()).isEqualTo(headCount);
+        Assertions.assertThat(savedMatchEntity.getViewCount().getViewCount()).isEqualTo(0);
+    }
+
+    @DisplayName("매치 업데이트")
+    @Test
+    void updateMatch(){
+        //given
+        MatchEntity matchEntity = createMatchEntityWithPlayer();
+        MatchEntity savedMatchEntity = springJpaMatchRepository.save(matchEntity);
+
+        //when
+        Match convertedMatch = savedMatchEntity.toModel();
+        convertedMatch.isClicked();
+
+        Match savedMatch =  matchRepository.save(convertedMatch);
+
+        Assertions.assertThat(savedMatch.getMatchNo()).isEqualTo(savedMatchEntity.getMatchNo());
+        Assertions.assertThat(savedMatch.getViewCount().getViewCount()).isEqualTo(1);
     }
 
     @Test
@@ -94,11 +114,14 @@ class MatchRepositoryTest extends TestRepository{
         //given
         MatchEntity matchEntity = createMatchEntityWithPlayer();
         MatchEntity savedMatchEntity = springJpaMatchRepository.save(matchEntity);
+
         //when
         MatchEntity selectedMatchEntity = springJpaMatchRepository.findByMatchNo(savedMatchEntity.getMatchNo()).get();
 
         //then
         Assertions.assertThat(selectedMatchEntity.getMatchNo()).isEqualTo(savedMatchEntity.getMatchNo());
+        Assertions.assertThat(selectedMatchEntity.getViewCount().getViewNo()).isNotNull();
+        Assertions.assertThat(selectedMatchEntity.getViewCount().getViewCount()).isEqualTo(0);
     }
 
     @DisplayName("매치 삭제 성공 - 신청한 사용자리스트도 함께 삭제")
@@ -186,8 +209,15 @@ class MatchRepositoryTest extends TestRepository{
                 .matchState(MatchState.MATCH_REG_MANAGER_BEFORE)
                 .matchStatus(MatchStatus.MATCH_START_BEFORE)
                 .players(players)
+                .viewCount(MatchViewCountEntity.from(createMatchViewCount()))
                 .build()
                 ;
+    }
+
+    private MatchViewCount createMatchViewCount(){
+        return MatchViewCount.builder()
+                .viewCount(0)
+                .build();
     }
 
     private MatchPlayerEntity createMatchPlayerEntity(){

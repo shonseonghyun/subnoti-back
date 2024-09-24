@@ -50,12 +50,16 @@ public class MatchEntity {
     @Convert(converter = MatchStateConverter.class)
     private MatchState matchState;
 
-    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE},orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE},orphanRemoval = true, fetch = FetchType.EAGER) //EAGER 개선 필요
     @JoinColumn(name = "match_no")
     private List<MatchPlayerEntity> players;
 
     @Convert(converter = MatchStatusConverter.class)
     private MatchStatus matchStatus;
+
+    @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @JoinColumn(name = "view_no")
+    private MatchViewCountEntity viewCount;
 
     public static MatchEntity from(Match match){
         MatchEntity matchEntity=new MatchEntity();
@@ -73,6 +77,7 @@ public class MatchEntity {
         matchEntity.matchStatus=match.getMatchStatus();
         matchEntity.genderRule=match.getGenderRule();
         matchEntity.levelRule=match.getLevelRule();
+        matchEntity.viewCount = MatchViewCountEntity.from(match.getViewCount());
         return matchEntity;
     }
 
@@ -90,6 +95,7 @@ public class MatchEntity {
                 .matchState(matchState)
                 .players(players.stream().map(MatchPlayerEntity::toModel).collect(Collectors.toList()))
                 .matchStatus(matchStatus)
+                .viewCount(viewCount.toModel())
                 .build()
                 ;
     }

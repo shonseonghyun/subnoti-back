@@ -46,6 +46,8 @@ public class Match {
 
     private Integer minPlayerNum;
 
+    private MatchViewCount viewCount;
+
     public void receivePlayer(Long memberNo, MemberLevelType memberLevelType, Gender gender) {
         MatchPlayer player = MatchPlayer.createPlayer(memberNo);
         checkRegManagerInMatch();
@@ -165,5 +167,9 @@ public class Match {
         MemberLevelType averageLevel = MemberLevelType.getMemberLevel(averageLevelNum);
         setAvgMatchLevel(averageLevel);
         setLevels(levels);
+    }
+
+    public void isClicked() {
+        viewCount.isClicked();
     }
 }

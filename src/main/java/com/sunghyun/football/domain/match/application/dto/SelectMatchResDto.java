@@ -47,6 +47,8 @@ import java.util.stream.Collectors;
 
     private EnumMapperValue levelRule;
 
+    private Integer viewCount;
+
     public static SelectMatchResDto from(Match match, SelectStadiumResDto stadiumResDto) {
         SelectMatchResDto selectMatchResDto = new SelectMatchResDto();
         selectMatchResDto.matchNo = match.getMatchNo();
@@ -62,6 +64,7 @@ import java.util.stream.Collectors;
                                     .collect(Collectors.toList());
         selectMatchResDto.levelRule = new EnumMapperValue(match.getLevelRule());
         selectMatchResDto.genderRule = new EnumMapperValue(match.getGenderRule());
+        selectMatchResDto.viewCount = match.getViewCount().getViewCount();
 
         return selectMatchResDto;
     }
@@ -82,6 +85,7 @@ import java.util.stream.Collectors;
 
         //매치 레벨(레벨들,평균레벨)
         selectMatchResDto.avgMatchLevel=new EnumMapperValue(match.getAvgMatchLevel());
+        
         return selectMatchResDto;
     }
 
