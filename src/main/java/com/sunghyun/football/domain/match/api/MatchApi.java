@@ -2,19 +2,22 @@ package com.sunghyun.football.domain.match.api;
 
 import com.sunghyun.football.domain.match.application.MatchApplication;
 import com.sunghyun.football.domain.match.application.dto.RegMatchReqDto;
-import com.sunghyun.football.domain.match.domain.dto.SearchMatchesReqDto;
 import com.sunghyun.football.domain.match.application.dto.SelectMatchResDto;
 import com.sunghyun.football.domain.match.application.dto.SelectSimpleMatchResDto;
+import com.sunghyun.football.domain.match.domain.dto.SearchMatchesReqDto;
 import com.sunghyun.football.domain.stadium.enums.EnumMapper;
 import com.sunghyun.football.global.exception.ErrorCode;
 import com.sunghyun.football.global.response.ApiResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
@@ -35,9 +38,24 @@ public class MatchApi {
     }
 
     @GetMapping("/match/{matchNo}")
-    public ApiResponseDto getMatch(@PathVariable("matchNo") Long matchNo){
-        SelectMatchResDto selectMatchResDto = matchApplication.getMatch(matchNo);
+    public ApiResponseDto getMatch(@PathVariable("matchNo") Long matchNo) throws InterruptedException {
+        SelectMatchResDto selectMatchResDto = null;
+        while(true){
+            try{
+                /*SelectMatchResDto*/ selectMatchResDto = matchApplication.getMatch(matchNo);
+                break;
+            }catch (ObjectOptimisticLockingFailureException e){
+                log.error("retry plus view for click");
+                Thread.sleep(50);
+            }
+        }
         return ApiResponseDto.toResponse(ErrorCode.SUCCESS,selectMatchResDto);
+    }
+
+    @GetMapping("/match/view/{matchNo}")
+    public ApiResponseDto getMatchView(@PathVariable("matchNo") Long matchNo){
+        matchApplication.clickedMatch(matchNo);
+        return ApiResponseDto.toResponse(ErrorCode.SUCCESS);
     }
 
     @PostMapping("/match")

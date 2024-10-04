@@ -1,12 +1,11 @@
 package com.sunghyun.football.domain.match.application;
 
 import com.sunghyun.football.domain.match.application.dto.RegMatchReqDto;
-import com.sunghyun.football.domain.match.domain.MatchViewCount;
-import com.sunghyun.football.domain.match.domain.dto.SearchMatchesReqDto;
 import com.sunghyun.football.domain.match.application.dto.SelectMatchResDto;
 import com.sunghyun.football.domain.match.application.dto.SelectSimpleMatchResDto;
 import com.sunghyun.football.domain.match.domain.Match;
 import com.sunghyun.football.domain.match.domain.MatchPlayer;
+import com.sunghyun.football.domain.match.domain.dto.SearchMatchesReqDto;
 import com.sunghyun.football.domain.match.domain.enums.GenderRule;
 import com.sunghyun.football.domain.match.domain.enums.MatchState;
 import com.sunghyun.football.domain.match.domain.enums.MatchStatus;
@@ -33,6 +32,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -134,18 +134,18 @@ class MatchApplicationTest {
 
     @DisplayName("특정 매치 조회")
     @Test
-    void getMatch(){
+    void getMatch() throws InterruptedException {
         //given
         final Long matchNo = 2L;
         Match match = createMatch();
-        doReturn(match).when(matchServiceHelper).findExistingMatch(matchNo);
+        doReturn(Optional.of(match)).when(matchRepository).findByMatchNoPessimistic(matchNo);
         doReturn(ApiResponseDto.toResponse(ErrorCode.SUCCESS,SelectStadiumResDto.builder().stadiumNo(10L).build())).when(stadiumOpenFeignClient).checkExistStadium(match.getStadiumNo());
 
         //when
         SelectMatchResDto selectMatchResDto = target.getMatch(matchNo);
 
         //then
-        verify(matchServiceHelper,times(1)).findExistingMatch(matchNo);
+        verify(matchRepository,times(1)).findByMatchNoPessimistic(matchNo);
         Assertions.assertThat(selectMatchResDto.getHeadCount()).isEqualTo(headCount);
         Assertions.assertThat(selectMatchResDto.getViewCount()).isEqualTo(1);
     }
@@ -290,9 +290,9 @@ class MatchApplicationTest {
                         .startDt(startDt)
                     .stadiumNo(stadiumNo)
                                 .build();
-        doReturn(any(ApiResponseDto.class))
+//        doReturn(any(ApiResponseDto.class))
 //                .toResponse(ErrorCode.SUCCESS,SelectStadiumResDto.builder().build()))
-                .when(stadiumOpenFeignClient).checkExistStadium(1L);
+//                .when(stadiumOpenFeignClient).checkExistStadium(1L);
 
         doReturn(Arrays.asList(
                 Match.builder().build(),
@@ -326,7 +326,7 @@ class MatchApplicationTest {
                 .genderRule(GenderRule.FEMALE)
                 .matchState(MatchState.MATCH_REG_MANAGER_BEFORE)
                 .matchStatus(MatchStatus.MATCH_START_BEFORE)
-                .viewCount(MatchViewCount.builder().viewCount(0).build())
+                .viewCount(0)
                 .build();
     }
 

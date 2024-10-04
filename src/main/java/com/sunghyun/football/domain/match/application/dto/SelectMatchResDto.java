@@ -64,7 +64,8 @@ import java.util.stream.Collectors;
                                     .collect(Collectors.toList());
         selectMatchResDto.levelRule = new EnumMapperValue(match.getLevelRule());
         selectMatchResDto.genderRule = new EnumMapperValue(match.getGenderRule());
-        selectMatchResDto.viewCount = match.getViewCount().getViewCount();
+//        selectMatchResDto.viewCount = match.getViewCount().getViewCount();
+        selectMatchResDto.viewCount = match.getViewCount();
 
         return selectMatchResDto;
     }

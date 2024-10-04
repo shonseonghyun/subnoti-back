@@ -50,16 +50,19 @@ public class MatchEntity {
     @Convert(converter = MatchStateConverter.class)
     private MatchState matchState;
 
-    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE},orphanRemoval = true, fetch = FetchType.EAGER) //EAGER 개선 필요
+    @OneToMany(cascade = CascadeType.ALL
+//            {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.DETACH}
+            ,orphanRemoval = true) //EAGER 개선 필요
     @JoinColumn(name = "match_no")
     private List<MatchPlayerEntity> players;
 
     @Convert(converter = MatchStatusConverter.class)
     private MatchStatus matchStatus;
 
-    @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
-    @JoinColumn(name = "view_no")
-    private MatchViewCountEntity viewCount;
+//    @OneToOne(mappedBy = "match", cascade = {CascadeType.PERSIST,CascadeType.MERGE},fetch = FetchType.LAZY)
+//    private MatchViewCountEntity viewCount;
+
+    private Integer viewCount;
 
     public static MatchEntity from(Match match){
         MatchEntity matchEntity=new MatchEntity();
@@ -73,11 +76,12 @@ public class MatchEntity {
         matchEntity.levelRule = match.getLevelRule();
         matchEntity.genderRule = match.getGenderRule();
         matchEntity.matchState=match.getMatchState();
-        matchEntity.players=match.getPlayers().stream().map(matchPlayer->MatchPlayerEntity.from(matchPlayer)).collect(Collectors.toList());
+        matchEntity.players=match.getPlayers().stream().map(MatchPlayerEntity::from).collect(Collectors.toList());
         matchEntity.matchStatus=match.getMatchStatus();
         matchEntity.genderRule=match.getGenderRule();
         matchEntity.levelRule=match.getLevelRule();
-        matchEntity.viewCount = MatchViewCountEntity.from(match.getViewCount());
+//        matchEntity.viewCount = MatchViewCountEntity.from(match.getViewCount(),matchEntity);
+        matchEntity.viewCount = match.getViewCount();
         return matchEntity;
     }
 
@@ -95,7 +99,7 @@ public class MatchEntity {
                 .matchState(matchState)
                 .players(players.stream().map(MatchPlayerEntity::toModel).collect(Collectors.toList()))
                 .matchStatus(matchStatus)
-                .viewCount(viewCount.toModel())
+                .viewCount(viewCount)
                 .build()
                 ;
     }

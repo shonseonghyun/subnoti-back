@@ -5,12 +5,10 @@ import com.sunghyun.football.domain.match.application.dto.SelectMatchResDto;
 import com.sunghyun.football.domain.match.application.dto.SelectSimpleMatchResDto;
 import com.sunghyun.football.domain.match.domain.Match;
 import com.sunghyun.football.domain.match.domain.MatchPlayer;
-import com.sunghyun.football.domain.match.domain.MatchViewCount;
 import com.sunghyun.football.domain.match.domain.dto.SearchMatchesReqDto;
 import com.sunghyun.football.domain.match.domain.enums.MatchState;
 import com.sunghyun.football.domain.match.domain.enums.MatchStatus;
 import com.sunghyun.football.domain.match.domain.repository.MatchRepository;
-import com.sunghyun.football.domain.match.infrastructure.SpringJpaMatchRepository;
 import com.sunghyun.football.domain.member.application.dto.SelectMemberResDto;
 import com.sunghyun.football.domain.member.domain.enums.MemberLevelType;
 import com.sunghyun.football.domain.stadium.application.dto.SelectStadiumResDto;
@@ -34,10 +32,13 @@ import java.util.*;
 public class MatchApplication {
     private final MatchRepository matchRepository;
     private final MatchServiceHelper matchServiceHelper;
-    private final SpringJpaMatchRepository springJpaMatchRepository;
 
     private final StadiumOpenFeignClient stadiumOpenFeignClient;
     private final MemberOpenFeignClient memberOpenFeignClient;
+
+//    @PersistenceContext
+//    private EntityManager entityManager;
+
 
     @Transactional
     public SelectMatchResDto getMatch(final Long matchNo){
@@ -46,8 +47,16 @@ public class MatchApplication {
         Map<Long,SelectMemberResDto> selectedMembersMap = new HashMap();
 
 //        Match selectedMatch = matchServiceHelper.findExistingMatch(matchNo);
+
+        //비관적락
         Match selectedMatch = matchRepository.findByMatchNoPessimistic(matchNo)
                 .orElseThrow(()->new MatchNotFoundException(ErrorCode.MATCH_NOT_FOUND));
+
+        //낙관적락
+//        Match selectedMatch = matchRepository.findByMatchNoOptimistic(matchNo)
+//                .orElseThrow(()->new MatchNotFoundException(ErrorCode.MATCH_NOT_FOUND));
+
+//        MatchViewCount matchViewCount = matchRepository.findMatchViewCountByMatchNoOptimistic(matchNo).get();
 
         //스타디움 정보 구하기
         ApiResponseDto<SelectStadiumResDto> stadiumResponse = stadiumOpenFeignClient.checkExistStadium(selectedMatch.getStadiumNo());
@@ -75,6 +84,20 @@ public class MatchApplication {
         selectedMatch.setAndCalAvgLevel(memberLevelTypes);
         selectedMatch.isClicked();
 
+
+//        MatchEntity m1 = entityManager.find(MatchEntity.class,1);
+//        log.info("준영속 진행 전 영속성 컨텍스트 내 존재여부: {}",entityManager.find(MatchEntity.class,1));
+//
+//        MatchViewCountEntity mv1 = entityManager.find(MatchViewCountEntity.class,1);
+//        log.info("[준영속 before]MatchEntity 관리여부: {}",entityManager.contains(m1));
+//        log.info("[준영속 before]MatchViewCountEntity 관리여부: {}",entityManager.contains(mv1));
+//        log.info("준영속 진행");
+//        entityManager.detach(m1);
+////        entityManager.detach(mv1);
+//        log.info("[준영속 after]MatchEntity 관리여부: {}",entityManager.contains(m1));
+//        log.info("[준영속 after]MatchViewCountEntity 관리여부: {}",entityManager.contains(mv1));
+//
+//        log.info("변경되어야할 MatchviewcCount:{}",selectedMatch.getViewCount());
         matchRepository.save(selectedMatch);
 
         return SelectMatchResDto.from(selectedMatch,selectedStadiumResDto,selectedManagerResDto,selectedMembersMap);
@@ -87,13 +110,13 @@ public class MatchApplication {
 //                .toModel()
 //                ;
 
-        Match selectedMatch = matchRepository.findByMatchNoPessimistic(matchNo)
-                .orElseThrow(()->new MatchNotFoundException(ErrorCode.MATCH_NOT_FOUND))
-                ;
-
-        selectedMatch.isClicked();
-
-        matchRepository.save(selectedMatch);
+//        MatchViewCount selectedMatchViewCount = matchRepository.findMatchViewCountByMatchNoOptimistic(matchNo)
+//                .orElseThrow(()->new MatchNotFoundException(ErrorCode.MATCH_NOT_FOUND))
+//                ;
+//
+//        selectedMatchViewCount.isClicked();
+//
+//        matchRepository.save(selectedMatchViewCount);
     }
 
     public void regMatch(final RegMatchReqDto regMatchReqDto) {
@@ -103,6 +126,8 @@ public class MatchApplication {
         if(count>0){
             throw new MatchAlreadyRegSameTimeException(ErrorCode.MATCH_ALREADY_REQ_SAME_TIME);
         }
+
+//        MatchViewCount matchViewCount = MatchViewCount.builder().viewCount(0).build();
 
         Match match = Match.builder()
                 .stadiumNo(regMatchReqDto.getStadiumNo())
@@ -115,7 +140,7 @@ public class MatchApplication {
                 .matchStatus(MatchStatus.MATCH_START_BEFORE)
                 .levelRule(regMatchReqDto.getLevelRule())
                 .genderRule(regMatchReqDto.getGenderRule())
-                .viewCount(MatchViewCount.builder().viewCount(0).build())
+                .viewCount(0)
                 .build();
 
         matchRepository.save(match);
