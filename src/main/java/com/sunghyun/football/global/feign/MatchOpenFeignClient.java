@@ -7,7 +7,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "matchOpenFeignClient",url = "http://localhost:8000" , configuration = FeignConfig.class)
+@FeignClient(name = "matchOpenFeignClient",url = "${service.url}" , configuration = FeignConfig.class)
 public interface MatchOpenFeignClient {
 
     @GetMapping("/api/v1/match/{matchNo}")
