@@ -14,10 +14,19 @@ public class MatchViewCountEntity {
 
     private Integer viewCount;
 
-    public static MatchViewCountEntity from(MatchViewCount matchViewCount){
+    @OneToOne
+    @JoinColumn(name = "match_no")
+    private MatchEntity match;
+
+//    @Version //Optimistic Lock을 위한 version 컬럼
+//    private Long version;
+
+    public static MatchViewCountEntity from(MatchViewCount matchViewCount,MatchEntity matchEntity){
         MatchViewCountEntity matchViewCountEntity = new MatchViewCountEntity();
         matchViewCountEntity.viewNo = matchViewCount.getViewNo();
         matchViewCountEntity.viewCount = matchViewCount.getViewCount();
+//        matchViewCountEntity.version = matchViewCount.getVersion();
+        matchViewCountEntity.match = matchEntity;
         return matchViewCountEntity;
     }
 
@@ -25,6 +34,7 @@ public class MatchViewCountEntity {
         return MatchViewCount.builder()
                 .viewNo(viewNo)
                 .viewCount(viewCount)
+//                .version(version)
                 .build()
                 ;
     }

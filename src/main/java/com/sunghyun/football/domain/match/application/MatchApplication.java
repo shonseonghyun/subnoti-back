@@ -49,12 +49,12 @@ public class MatchApplication {
 //        Match selectedMatch = matchServiceHelper.findExistingMatch(matchNo);
 
         //비관적락
-        Match selectedMatch = matchRepository.findByMatchNoPessimistic(matchNo)
-                .orElseThrow(()->new MatchNotFoundException(ErrorCode.MATCH_NOT_FOUND));
+//        Match selectedMatch = matchRepository.findByMatchNoPessimistic(matchNo)
+//                .orElseThrow(()->new MatchNotFoundException(ErrorCode.MATCH_NOT_FOUND));
 
         //낙관적락
-//        Match selectedMatch = matchRepository.findByMatchNoOptimistic(matchNo)
-//                .orElseThrow(()->new MatchNotFoundException(ErrorCode.MATCH_NOT_FOUND));
+        Match selectedMatch = matchRepository.findByMatchNoOptimistic(matchNo)
+                .orElseThrow(()->new MatchNotFoundException(ErrorCode.MATCH_NOT_FOUND));
 
 //        MatchViewCount matchViewCount = matchRepository.findMatchViewCountByMatchNoOptimistic(matchNo).get();
 

@@ -64,6 +64,9 @@ public class MatchEntity {
 
     private Integer viewCount;
 
+    @Version
+    private Long version;
+
     public static MatchEntity from(Match match){
         MatchEntity matchEntity=new MatchEntity();
         matchEntity.matchNo=match.getMatchNo();
@@ -82,6 +85,7 @@ public class MatchEntity {
         matchEntity.levelRule=match.getLevelRule();
 //        matchEntity.viewCount = MatchViewCountEntity.from(match.getViewCount(),matchEntity);
         matchEntity.viewCount = match.getViewCount();
+        matchEntity.version = match.getVersion();
         return matchEntity;
     }
 
@@ -100,6 +104,7 @@ public class MatchEntity {
                 .players(players.stream().map(MatchPlayerEntity::toModel).collect(Collectors.toList()))
                 .matchStatus(matchStatus)
                 .viewCount(viewCount)
+                .version(version)
                 .build()
                 ;
     }

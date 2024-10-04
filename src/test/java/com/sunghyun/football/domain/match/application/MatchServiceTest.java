@@ -1,7 +1,6 @@
 package com.sunghyun.football.domain.match.application;
 
 import com.sunghyun.football.domain.match.domain.Match;
-import com.sunghyun.football.domain.match.domain.MatchViewCount;
 import com.sunghyun.football.domain.match.domain.enums.GenderRule;
 import com.sunghyun.football.domain.match.domain.enums.MatchState;
 import com.sunghyun.football.domain.match.domain.enums.MatchStatus;
@@ -9,6 +8,7 @@ import com.sunghyun.football.domain.match.domain.repository.MatchRepository;
 import com.sunghyun.football.domain.match.infrastructure.SpringJpaMatchRepository;
 import com.sunghyun.football.domain.member.domain.enums.MemberLevelType;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-//@Transactional
 @SpringBootTest
 @ActiveProfiles("local")
 public class MatchServiceTest {
@@ -46,18 +45,29 @@ public class MatchServiceTest {
     final Long managerNo = 100L;
 
     @BeforeEach
-    @Transactional
+//    @Transactional
     void setUp(){
         Match match = createMatch();
         matchRepository.save(match);
     }
 
+    @AfterEach
+    void setUpAfter(){
+        matchRepository.deleteMatch(1L);
+    }
+
     @Test
-//    @Transactional //마지막 두줄을 위하여 필요(지연로딩 초기화 실패 방지)
+    @Transactional        //마지막 두줄을 위하여 필요(지연로딩 초기화 실패 방지)
     void 조회수_증가_통합테스트(){
+        //given
+//        Match match = createMatch();
+//        springJpaMatchRepository.save(MatchEntity.from(match));
+
         final Long matchNo = 1L;
-        Match selectedMatch = matchRepository.findByMatchNo(matchNo).get();
-        Assertions.assertThat(selectedMatch.getViewCount().getViewCount()).isEqualTo(1);
+        matchApplication.getMatch(matchNo);
+
+        Match selectedMatch = matchRepository.findByMatchNo(1L).get();
+        Assertions.assertThat(selectedMatch.getViewCount()).isEqualTo(1);
     }
 
     @Test
@@ -69,11 +79,12 @@ public class MatchServiceTest {
 
         final int maxThreadCnt= 14;
         final int countDownLatchCnt = 200;
+
         ExecutorService executorService = Executors.newFixedThreadPool(maxThreadCnt);
         CountDownLatch countDownLatch = new CountDownLatch(countDownLatchCnt);
 
         //when
-        for(int i=0;i<200;i++){
+        for(int i=0;i<countDownLatchCnt;i++){
             executorService.submit(()->{
                 try{
                     //위와 다른 트랜잭션
@@ -94,7 +105,7 @@ public class MatchServiceTest {
 
 
         Match selectedMatch = matchRepository.findByMatchNo(1L).get();
-        Assertions.assertThat(selectedMatch.getViewCount().getViewCount()).isEqualTo(200);
+        Assertions.assertThat(selectedMatch.getViewCount()).isEqualTo(200);
     }
 
     private Match createMatch(){
@@ -109,10 +120,7 @@ public class MatchServiceTest {
                 .genderRule(GenderRule.FEMALE)
                 .matchState(MatchState.MATCH_REG_MANAGER_BEFORE)
                 .matchStatus(MatchStatus.MATCH_START_BEFORE)
-                .viewCount(MatchViewCount.builder().viewCount(0).build())
+                .viewCount(0)
                 .build();
     }
-
-
-
 }

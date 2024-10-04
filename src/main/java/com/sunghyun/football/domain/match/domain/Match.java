@@ -48,6 +48,8 @@ public class Match {
 
     private Integer viewCount;
 
+    private Long version;
+
     public void receivePlayer(Long memberNo, MemberLevelType memberLevelType, Gender gender) {
         MatchPlayer player = MatchPlayer.createPlayer(memberNo);
         checkRegManagerInMatch();

@@ -17,5 +17,9 @@ public interface SpringJpaMatchRepository extends JpaRepository<MatchEntity,Long
     @Query("select m from MatchEntity m where m.matchNo=:matchNo")
     Optional<MatchEntity> findByMatchNoPessimistic(@Param("matchNo") Long matchNo);
 
+    @Lock(LockModeType.OPTIMISTIC)
+    @Query("select m from MatchEntity m where m.matchNo=:matchNo")
+    Optional<MatchEntity> findByMatchNoOptimistic(@Param("matchNo") Long matchNo);
+
     List<MatchEntity> findAllByStartDt(String startDt);
 }

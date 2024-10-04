@@ -10,6 +10,7 @@ import com.sunghyun.football.domain.match.infrastructure.entity.QMatchEntity;
 import com.sunghyun.football.domain.match.infrastructure.entity.QMatchPlayerEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +30,7 @@ public class MatchRepositoryImpl implements MatchRepository {
     }
 
     @Override
+    @Transactional
     public Optional<Match> findByMatchNo(Long matchNo) {
         return springJpaMatchRepository.findByMatchNo(matchNo).map(MatchEntity::toModel);
     }
@@ -36,6 +38,11 @@ public class MatchRepositoryImpl implements MatchRepository {
     @Override
     public Optional<Match> findByMatchNoPessimistic(Long matchNo) {
         return springJpaMatchRepository.findByMatchNoPessimistic(matchNo).map(MatchEntity::toModel);
+    }
+
+    @Override
+    public Optional<Match> findByMatchNoOptimistic(Long matchNo) {
+        return springJpaMatchRepository.findByMatchNoOptimistic(matchNo).map(MatchEntity::toModel);
     }
 
     @Override
@@ -98,11 +105,7 @@ public class MatchRepositoryImpl implements MatchRepository {
                 .fetch()
                 .stream().map(MatchEntity::toModel)
                 .collect(Collectors.toList());
-                ;
         return result;
-//        return springJpaMatchRepository.findAllByStartDt(startDt).stream()
-//                .map(MatchEntity::toModel)
-//                .collect(Collectors.toList());
     }
 
     private BooleanExpression eqStartDt(String startDt) {

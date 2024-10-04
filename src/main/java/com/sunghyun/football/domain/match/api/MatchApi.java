@@ -1,6 +1,7 @@
 package com.sunghyun.football.domain.match.api;
 
 import com.sunghyun.football.domain.match.application.MatchApplication;
+import com.sunghyun.football.domain.match.application.MatchOptimisticLockFacade;
 import com.sunghyun.football.domain.match.application.dto.RegMatchReqDto;
 import com.sunghyun.football.domain.match.application.dto.SelectMatchResDto;
 import com.sunghyun.football.domain.match.application.dto.SelectSimpleMatchResDto;
@@ -11,7 +12,6 @@ import com.sunghyun.football.global.response.ApiResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +24,7 @@ import java.util.List;
 public class MatchApi {
 
     private final MatchApplication matchApplication;
+    private final MatchOptimisticLockFacade matchOptimisticLockFacade;
     private final EnumMapper enumMapper;
 
     @GetMapping("/matches")
@@ -39,16 +40,7 @@ public class MatchApi {
 
     @GetMapping("/match/{matchNo}")
     public ApiResponseDto getMatch(@PathVariable("matchNo") Long matchNo) throws InterruptedException {
-        SelectMatchResDto selectMatchResDto = null;
-        while(true){
-            try{
-                /*SelectMatchResDto*/ selectMatchResDto = matchApplication.getMatch(matchNo);
-                break;
-            }catch (ObjectOptimisticLockingFailureException e){
-                log.error("retry plus view for click");
-                Thread.sleep(50);
-            }
-        }
+        SelectMatchResDto selectMatchResDto = matchOptimisticLockFacade.getMatch(matchNo);
         return ApiResponseDto.toResponse(ErrorCode.SUCCESS,selectMatchResDto);
     }
 

@@ -57,7 +57,7 @@ class MatchRepositoryTest extends TestRepository{
 
         //then
         Assertions.assertThat(savedMatchEntity.getStadiumNo()).isEqualTo(stadiumNo);
-        Assertions.assertThat(savedMatchEntity.getViewCount().getViewCount()).isEqualTo(0);
+        Assertions.assertThat(savedMatchEntity.getViewCount()).isEqualTo(0);
     }
 
     @DisplayName("매치 업데이트")
@@ -74,7 +74,7 @@ class MatchRepositoryTest extends TestRepository{
         Match savedMatch =  matchRepository.save(convertedMatch);
 
         Assertions.assertThat(savedMatch.getMatchNo()).isEqualTo(savedMatchEntity.getMatchNo());
-        Assertions.assertThat(savedMatch.getViewCount().getViewCount()).isEqualTo(1);
+        Assertions.assertThat(savedMatch.getViewCount()).isEqualTo(1);
     }
 
     @Test
@@ -120,8 +120,7 @@ class MatchRepositoryTest extends TestRepository{
 
         //then
         Assertions.assertThat(selectedMatchEntity.getMatchNo()).isEqualTo(savedMatchEntity.getMatchNo());
-        Assertions.assertThat(selectedMatchEntity.getViewCount().getViewNo()).isNotNull();
-        Assertions.assertThat(selectedMatchEntity.getViewCount().getViewCount()).isEqualTo(0);
+        Assertions.assertThat(selectedMatchEntity.getViewCount()).isEqualTo(0);
     }
 
     @DisplayName("매치 삭제 성공 - 신청한 사용자리스트도 함께 삭제")
@@ -209,7 +208,7 @@ class MatchRepositoryTest extends TestRepository{
                 .matchState(MatchState.MATCH_REG_MANAGER_BEFORE)
                 .matchStatus(MatchStatus.MATCH_START_BEFORE)
                 .players(players)
-                .viewCount(MatchViewCountEntity.from(createMatchViewCount()))
+                .viewCount(0)
                 .build()
                 ;
     }
