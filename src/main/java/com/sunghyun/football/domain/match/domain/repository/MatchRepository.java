@@ -1,7 +1,6 @@
 package com.sunghyun.football.domain.match.domain.repository;
 
 import com.sunghyun.football.domain.match.domain.Match;
-import com.sunghyun.football.domain.match.domain.MatchViewCount;
 import com.sunghyun.football.domain.match.domain.dto.SearchMatchesReqDto;
 
 import java.util.List;
@@ -27,4 +26,8 @@ public interface MatchRepository {
     List<Match> findAll();
 
     List<Match> findAllByConditions(SearchMatchesReqDto searchMatchesReqDto);
+
+    //namedLock
+    void getLock(String key);
+    void releaseLock(String key);
 }

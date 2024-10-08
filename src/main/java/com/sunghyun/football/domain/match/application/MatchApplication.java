@@ -15,13 +15,13 @@ import com.sunghyun.football.domain.stadium.application.dto.SelectStadiumResDto;
 import com.sunghyun.football.global.exception.ErrorCode;
 import com.sunghyun.football.global.exception.exceptions.match.MatchAlreadyRegSameTimeException;
 import com.sunghyun.football.global.exception.exceptions.match.MatchApplyInSameTimeException;
-import com.sunghyun.football.global.exception.exceptions.match.MatchNotFoundException;
 import com.sunghyun.football.global.feign.MemberOpenFeignClient;
 import com.sunghyun.football.global.feign.StadiumOpenFeignClient;
 import com.sunghyun.football.global.response.ApiResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
@@ -40,21 +40,21 @@ public class MatchApplication {
 //    private EntityManager entityManager;
 
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public SelectMatchResDto getMatch(final Long matchNo){
         SelectMemberResDto selectedManagerResDto = null;
         SelectStadiumResDto selectedStadiumResDto =null;
         Map<Long,SelectMemberResDto> selectedMembersMap = new HashMap();
 
-//        Match selectedMatch = matchServiceHelper.findExistingMatch(matchNo);
+        Match selectedMatch = matchServiceHelper.findExistingMatch(matchNo);
 
         //비관적락
 //        Match selectedMatch = matchRepository.findByMatchNoPessimistic(matchNo)
 //                .orElseThrow(()->new MatchNotFoundException(ErrorCode.MATCH_NOT_FOUND));
 
         //낙관적락
-        Match selectedMatch = matchRepository.findByMatchNoOptimistic(matchNo)
-                .orElseThrow(()->new MatchNotFoundException(ErrorCode.MATCH_NOT_FOUND));
+//        Match selectedMatch = matchRepository.findByMatchNoOptimistic(matchNo)
+//                .orElseThrow(()->new MatchNotFoundException(ErrorCode.MATCH_NOT_FOUND));
 
 //        MatchViewCount matchViewCount = matchRepository.findMatchViewCountByMatchNoOptimistic(matchNo).get();
 

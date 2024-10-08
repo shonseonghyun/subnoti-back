@@ -108,6 +108,16 @@ public class MatchRepositoryImpl implements MatchRepository {
         return result;
     }
 
+    @Override
+    public void getLock(String key) {
+        springJpaMatchRepository.getLock(key);
+    }
+
+    @Override
+    public void releaseLock(String key) {
+        springJpaMatchRepository.releaseLock(key);
+    }
+
     private BooleanExpression eqStartDt(String startDt) {
         if(startDt == null || startDt.isEmpty()) {
             return null;
