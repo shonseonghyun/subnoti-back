@@ -82,7 +82,7 @@ public class MatchApplication {
             memberLevelTypes.add(memberLevelType);
         }
         selectedMatch.setAndCalAvgLevel(memberLevelTypes);
-        selectedMatch.isClicked();
+//        selectedMatch.isClicked();
 
 
 //        MatchEntity m1 = entityManager.find(MatchEntity.class,1);
@@ -119,7 +119,7 @@ public class MatchApplication {
 //        matchRepository.save(selectedMatchViewCount);
     }
 
-    public void regMatch(final RegMatchReqDto regMatchReqDto) {
+    public Long regMatch(final RegMatchReqDto regMatchReqDto) {
         stadiumOpenFeignClient.checkExistStadium(regMatchReqDto.getStadiumNo());
 
         final int count = matchRepository.findByStadiumNoAndPlayDt(regMatchReqDto.getStadiumNo(),regMatchReqDto.getStartDt(),regMatchReqDto.getStartTm());
@@ -143,7 +143,9 @@ public class MatchApplication {
                 .viewCount(0)
                 .build();
 
-        matchRepository.save(match);
+        Match savedMatch = matchRepository.save(match);
+
+        return savedMatch.getMatchNo();
     }
 
     public void regManagerInMatch(final Long matchNo, final Long managerNo) {

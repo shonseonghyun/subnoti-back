@@ -3,6 +3,7 @@ package com.sunghyun.football.domain.match.api;
 import com.sunghyun.football.domain.match.application.MatchApplication;
 import com.sunghyun.football.domain.match.application.MatchNamedLockFacade;
 import com.sunghyun.football.domain.match.application.MatchOptimisticLockFacade;
+import com.sunghyun.football.domain.match.application.ViewCountService;
 import com.sunghyun.football.domain.match.application.dto.RegMatchReqDto;
 import com.sunghyun.football.domain.match.application.dto.SelectMatchResDto;
 import com.sunghyun.football.domain.match.application.dto.SelectSimpleMatchResDto;
@@ -25,6 +26,7 @@ import java.util.List;
 public class MatchApi {
 
     private final MatchApplication matchApplication;
+    private final ViewCountService viewCountService;
     private final MatchOptimisticLockFacade matchOptimisticLockFacade;
     private final MatchNamedLockFacade matchNamedLockFacade;
     private final EnumMapper enumMapper;
@@ -41,8 +43,10 @@ public class MatchApi {
     }
 
     @GetMapping("/match/{matchNo}")
-    public ApiResponseDto getMatch(@PathVariable("matchNo") Long matchNo) throws InterruptedException {
-        SelectMatchResDto selectMatchResDto = matchNamedLockFacade.getMatch(matchNo);
+    public ApiResponseDto getMatch(@PathVariable("matchNo") Long matchNo) {
+        int viewCounts = viewCountService.addViewCountHash(matchNo);
+        SelectMatchResDto selectMatchResDto = matchNamedLockFacade.getMatch(matchNo)
+                .viewCount(viewCounts);
         return ApiResponseDto.toResponse(ErrorCode.SUCCESS,selectMatchResDto);
     }
 
@@ -54,7 +58,8 @@ public class MatchApi {
 
     @PostMapping("/match")
     public ApiResponseDto regMatch(@RequestBody @Valid RegMatchReqDto regMatchReqDto){
-        matchApplication.regMatch(regMatchReqDto);
+        Long matchNo = matchApplication.regMatch(regMatchReqDto);
+        viewCountService.regMatch(matchNo);
         return ApiResponseDto.toResponse(ErrorCode.SUCCESS);
     }
 
