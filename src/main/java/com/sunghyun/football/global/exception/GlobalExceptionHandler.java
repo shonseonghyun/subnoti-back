@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.method.MethodValidationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -63,11 +64,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return super.handleMethodValidationException(ex, headers, status, request);
     }
 
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        log.warn("HttpMessageNotReadableException happened");
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponseDto.toResponse(ErrorCode.INVALID_PARAMETER));
+    }
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({FeignException.class})
     public ResponseEntity handleFeignException(final FeignException e) throws JsonProcessingException {
+        log.error("여기에 다 잡혓나?");
         if(e.status()==HttpStatus.METHOD_NOT_ALLOWED.value()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.toResponse(ErrorCode.METHOD_NOT_ALLOWED));
+        }
+
+        else if(e.status()==HttpStatus.NOT_FOUND.value()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.toResponse(ErrorCode.MATCH_NOT_FOUND));
         }
 
         String responseJson = e.contentUTF8();
