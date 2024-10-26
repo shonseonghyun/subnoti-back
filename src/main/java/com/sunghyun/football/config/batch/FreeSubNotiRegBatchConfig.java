@@ -1,9 +1,9 @@
 package com.sunghyun.football.config.batch;
 
-import com.sunghyun.football.domain.noti.domain.enums.SendFlg;
 import com.sunghyun.football.domain.noti.infrastructure.entity.MatchFreeSubNotiEntity;
 import com.sunghyun.football.global.feign.PlabFootBallOpenFeignClient;
 import com.sunghyun.football.global.feign.dto.PlabMatchInfoResDto;
+import com.sunghyun.football.global.mail.MailService;
 import com.sunghyun.football.global.utils.MatchDateUtils;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +33,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class FreeSubNotiRegBatchConfig {
     private final EntityManagerFactory entityManagerFactory;
+    private final MailService mailService;
     private final int chunkSize=1;
     private final PlabFootBallOpenFeignClient plabFootBallOpenFeignClient;
 
@@ -67,8 +68,8 @@ public class FreeSubNotiRegBatchConfig {
                 .pageSize(chunkSize)
                 .parameterValues(parameterValues)
                 .queryString("SELECT m FROM MatchFreeSubNotiEntity m " +
-                        "where sendFlg<>'I' " +
-                        "and startDt>=:nowDt " +
+                        "where startDt>=:nowDt " +
+//                        "and sendFlg<>'I' " +
                         "order by startDt,startTm desc ")
                 .entityManagerFactory(entityManagerFactory)
                 .name("JpaPagingItemReader")
@@ -79,6 +80,7 @@ public class FreeSubNotiRegBatchConfig {
     public ItemProcessor<MatchFreeSubNotiEntity,MatchFreeSubNotiEntity> freeSubNotiRegProcessor(){
         return item->{
             //시간 체크
+            log.info(item.toString());
             log.info("매치 종료 시간:{}",item.getEndTm());
             log.info("현재 시간:{}",MatchDateUtils.getNowTmStr());
             if(item.getStartDt().compareTo(MatchDateUtils.getNowDtStr())==0){
@@ -99,16 +101,17 @@ public class FreeSubNotiRegBatchConfig {
             //알림 판단
             //X인 경우 두 필드가 true로 변한게 있다면 알림 발송, 없다면 종료
             //A인 경우 두 필드가 모두 false 변해있다면 알림 발송, 그외 경우 종료
-            if(item.getSendFlg().equals(SendFlg.NOT_SEND)){
-                if(isManagerSubFree){
-                    log.info("매니저 프리 활성화");
-                }
-                if(isSuperSubFree){
-                    log.info("슈퍼서브 활성화");
-                }
-            }
 
-
+            //첫번쨰인경우
+//            if(item.getSendFlg().equals(SendFlg.NOT_SEND)){
+//                if(isManagerSubFree){
+//                    log.info("매니저 프리 활성화");
+//                }
+//                if(isSuperSubFree){
+//                    log.info("슈퍼서브 활성화");
+//                }
+//            }
+            mailService.send();
 
             return item;
         };

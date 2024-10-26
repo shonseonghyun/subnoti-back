@@ -1,12 +1,13 @@
 package com.sunghyun.football.domain.noti.infrastructure.repository;
 
-import com.sunghyun.football.domain.member.infrastructure.entity.MemberEntity;
 import com.sunghyun.football.domain.noti.domain.MatchFreeSubNoti;
+import com.sunghyun.football.domain.noti.domain.enums.FreeSubType;
 import com.sunghyun.football.domain.noti.domain.repository.FreeSubNotiRepository;
 import com.sunghyun.football.domain.noti.infrastructure.entity.MatchFreeSubNotiEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -21,7 +22,7 @@ public class FreeSubNotiRepositoryImpl implements FreeSubNotiRepository {
     }
 
     @Override
-    public Optional<MatchFreeSubNoti> getFreeSubNoti(String email, Long matchNo) {
-        return springJpaMatchFreeSubNotiRepository.findByEmailAndMatchNo(email,matchNo).map(MatchFreeSubNotiEntity::toModel);
+    public List<FreeSubType> getFreeSubTypes(String email, Long matchNo) {
+        return springJpaMatchFreeSubNotiRepository.findByEmailAndMatchNo(email,matchNo).stream().map(MatchFreeSubNotiEntity::getSubType).toList();
     }
 }

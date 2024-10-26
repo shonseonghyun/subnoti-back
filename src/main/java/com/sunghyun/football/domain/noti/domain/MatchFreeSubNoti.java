@@ -1,13 +1,11 @@
 package com.sunghyun.football.domain.noti.domain;
 
-import com.sunghyun.football.domain.noti.domain.enums.SendFlg;
+import com.sunghyun.football.domain.noti.domain.enums.FreeSubType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-//@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class MatchFreeSubNoti {
@@ -17,7 +15,7 @@ public class MatchFreeSubNoti {
 
     private Long matchNo;
 
-    private SendFlg sendFlg;
+//    private SendFlg sendFlg;
 
     private String matchName;
 
@@ -27,15 +25,7 @@ public class MatchFreeSubNoti {
 
     private String endTm;
 
-//    private Long userNo;
-//
-//    private String endDt;
-//
-//    private String endTm;
-//
-//    private SendFlg sendFlg;
-//
-//    private String reqDt;
-//
-//    private String reqTm;
+    private FreeSubType subType;
+
+//    private LastType
 }

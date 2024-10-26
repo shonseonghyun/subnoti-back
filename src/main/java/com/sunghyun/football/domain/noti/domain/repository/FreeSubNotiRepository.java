@@ -1,11 +1,12 @@
 package com.sunghyun.football.domain.noti.domain.repository;
 
 import com.sunghyun.football.domain.noti.domain.MatchFreeSubNoti;
+import com.sunghyun.football.domain.noti.domain.enums.FreeSubType;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface FreeSubNotiRepository {
 
     MatchFreeSubNoti save(MatchFreeSubNoti freeSubNoti);
-    Optional<MatchFreeSubNoti> getFreeSubNoti(String email,Long matchNo);
+    List<FreeSubType> getFreeSubTypes(String email, Long matchNo);
 }
