@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -18,4 +17,6 @@ public class PlabMatchInfoResDto {
     private Long id;
     private String label_title;
     private Date schedule;
+    private boolean is_manager_free;
+    private boolean is_super_sub;
 }

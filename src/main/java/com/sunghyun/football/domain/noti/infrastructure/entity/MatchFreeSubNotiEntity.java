@@ -1,19 +1,18 @@
 package com.sunghyun.football.domain.noti.infrastructure.entity;
 
-import com.sunghyun.football.domain.match.infrastructure.entity.converter.MatchStatusConverter;
 import com.sunghyun.football.domain.noti.domain.MatchFreeSubNoti;
 import com.sunghyun.football.domain.noti.domain.converter.SendFlgConverter;
 import com.sunghyun.football.domain.noti.domain.enums.SendFlg;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+@Getter
 @Entity
 @Table(name = "FreeSubNoti")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 public class MatchFreeSubNotiEntity {
 
     @Id

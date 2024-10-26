@@ -12,7 +12,7 @@ import java.util.Arrays;
 @AllArgsConstructor
 public enum SendFlg {
     NOT_SEND("N","send Noti Not Yet"),
-    ACTIVATE_SEND("A","send Noti Active Sub"),
+    MANAGER_FREE_ACTIVATE_SEND("A","send Noti Active Sub"),
     INACTIVATE_SEND("I","send Noti InActive Sub");
 
     private final String flg;

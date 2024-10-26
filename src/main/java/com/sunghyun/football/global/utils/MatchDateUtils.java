@@ -1,10 +1,22 @@
 package com.sunghyun.football.global.utils;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 public class MatchDateUtils {
+    public static String getNowDtStr(){
+        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        return dateFormat.format(new Date());
+    }
+
+    public static String getNowTmStr(){
+        DateFormat tmFormat = new SimpleDateFormat("HHmm");
+        return tmFormat.format(new Date());
+    }
+
+
     public static String getDtStr(Date date){
         SimpleDateFormat dtFormat = new SimpleDateFormat("yyyyMMdd");
         return dtFormat.format(date);
