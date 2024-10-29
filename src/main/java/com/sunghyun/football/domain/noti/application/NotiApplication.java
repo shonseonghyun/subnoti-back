@@ -1,11 +1,9 @@
 package com.sunghyun.football.domain.noti.application;
 
 import com.sunghyun.football.domain.noti.application.dto.FreeSubNotiReqDto;
-import com.sunghyun.football.domain.noti.domain.MatchFreeSubNoti;
+import com.sunghyun.football.domain.noti.domain.FreeSubNoti;
 import com.sunghyun.football.domain.noti.domain.enums.FreeSubType;
-import com.sunghyun.football.domain.noti.domain.enums.SendFlg;
 import com.sunghyun.football.domain.noti.domain.repository.FreeSubNotiRepository;
-import com.sunghyun.football.domain.noti.infrastructure.entity.MatchFreeSubNotiEntity;
 import com.sunghyun.football.global.exception.ErrorCode;
 import com.sunghyun.football.global.exception.exceptions.noti.FreeSubNotiAlreadyRequestedException;
 import com.sunghyun.football.global.feign.PlabFootBallOpenFeignClient;
@@ -48,14 +46,14 @@ public class NotiApplication {
         PlabMatchInfoResDto response= plabFootBallOpenFeignClient.getMatch(freeSubNotiReqDto.getMatchNo());
 
         //도메인 생성
-        MatchFreeSubNoti freeSubNoti = MatchFreeSubNoti.builder()
+        FreeSubNoti freeSubNoti = FreeSubNoti.builder()
                 .email(freeSubNotiReqDto.getEmail())
                 .matchNo(freeSubNotiReqDto.getMatchNo())
 //                .sendFlg(SendFlg.NOT_SEND)
                 .matchName(response.getLabel_title())
                 .startDt(MatchDateUtils.getDtStr(response.getSchedule()))
                 .startTm(MatchDateUtils.getTmStr(response.getSchedule()))
-                .endTm(MatchDateUtils.getTmAfterHours(response.getSchedule(),2))
+//                .endTm(MatchDateUtils.getTmAfterHours(response.getSchedule(),2))
                 .subType(freeSubNotiReqDto.getSubType())
                 .build();
 

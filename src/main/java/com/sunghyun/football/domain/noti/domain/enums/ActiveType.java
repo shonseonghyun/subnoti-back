@@ -9,20 +9,18 @@ import java.util.Arrays;
 
 @Getter
 @AllArgsConstructor
-public enum FreeSubType {
-    MANAGER_FREE("M","Manager Free noti"),
-    SUPER_SUB("S","SuperSub Free noti"),
-    ALL_SUB("A","All Type Free noti")
+public enum ActiveType {
+    ACTIVE("A","ACTIVATE FREE SUB"),
+    INACTIVE("I","INACTIVATE FREE SUB")
     ;
 
     private final String type;
     private final String desc;
 
-    public static FreeSubType getFreeSubType(String value){
-        return Arrays.stream(FreeSubType.values())
-                .filter(freeSubType -> freeSubType.getType().equals(value))
+    public static ActiveType getActiveType(String value){
+        return Arrays.stream(ActiveType.values())
+                .filter(activeType -> activeType.getType().equals(value))
                 .findFirst()
                 .orElseThrow(()->new MatchStateNotFoundException(ErrorCode.MATCH_STATE_NOT_FOUND));
     }
-
 }

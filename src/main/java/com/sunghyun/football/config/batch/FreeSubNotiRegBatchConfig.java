@@ -1,8 +1,13 @@
 package com.sunghyun.football.config.batch;
 
-import com.sunghyun.football.domain.noti.infrastructure.entity.MatchFreeSubNotiEntity;
+import com.sunghyun.football.domain.noti.domain.enums.ActiveType;
+import com.sunghyun.football.domain.noti.domain.enums.FreeSubType;
+import com.sunghyun.football.domain.noti.infrastructure.FreeSubNotiHistoryComparator;
+import com.sunghyun.football.domain.noti.infrastructure.entity.FreeSubNotiEntity;
+import com.sunghyun.football.domain.noti.infrastructure.entity.FreeSubNotiHistoryEntity;
 import com.sunghyun.football.global.feign.PlabFootBallOpenFeignClient;
 import com.sunghyun.football.global.feign.dto.PlabMatchInfoResDto;
+import com.sunghyun.football.global.mail.MailSendReqDto;
 import com.sunghyun.football.global.mail.MailService;
 import com.sunghyun.football.global.utils.MatchDateUtils;
 import jakarta.persistence.EntityManagerFactory;
@@ -50,7 +55,7 @@ public class FreeSubNotiRegBatchConfig {
     @JobScope
     public Step freeSubNotiRegStep(PlatformTransactionManager transactionManager,JobRepository jobRepository){
         return new StepBuilder("freeSubNotiRegStep",jobRepository)
-                .<MatchFreeSubNotiEntity,MatchFreeSubNotiEntity>chunk(chunkSize,transactionManager)
+                .<FreeSubNotiEntity, FreeSubNotiEntity>chunk(chunkSize,transactionManager)
                 .reader(freeSubNotiRegReader(null))
                 .processor(freeSubNotiRegProcessor())
                 .writer(freeSubNotiRegWriter())
@@ -60,14 +65,14 @@ public class FreeSubNotiRegBatchConfig {
 
     @Bean
     @StepScope
-    public JpaPagingItemReader<MatchFreeSubNotiEntity> freeSubNotiRegReader(@Value("#{jobParameters[nowDt]}") String nowDt){
+    public JpaPagingItemReader<FreeSubNotiEntity> freeSubNotiRegReader(@Value("#{jobParameters[nowDt]}") String nowDt){
         Map<String,Object> parameterValues = new HashMap<>();
         parameterValues.put("nowDt",nowDt);
 
-        return new JpaPagingItemReaderBuilder<MatchFreeSubNotiEntity>()
+        return new JpaPagingItemReaderBuilder<FreeSubNotiEntity>()
                 .pageSize(chunkSize)
                 .parameterValues(parameterValues)
-                .queryString("SELECT m FROM MatchFreeSubNotiEntity m " +
+                .queryString("SELECT m FROM FreeSubNotiEntity m " +
                         "where startDt>=:nowDt " +
 //                        "and sendFlg<>'I' " +
                         "order by startDt,startTm desc ")
@@ -77,49 +82,129 @@ public class FreeSubNotiRegBatchConfig {
     }
 
     @Bean
-    public ItemProcessor<MatchFreeSubNotiEntity,MatchFreeSubNotiEntity> freeSubNotiRegProcessor(){
+    public ItemProcessor<FreeSubNotiEntity, FreeSubNotiEntity> freeSubNotiRegProcessor(){
+
         return item->{
             //시간 체크
-            log.info(item.toString());
-            log.info("매치 종료 시간:{}",item.getEndTm());
-            log.info("현재 시간:{}",MatchDateUtils.getNowTmStr());
             if(item.getStartDt().compareTo(MatchDateUtils.getNowDtStr())==0){
-                if(item.getEndTm().compareTo(MatchDateUtils.getNowTmStr()) <= 0){
-                    log.info("매치 종료일자 지난 case- 조회 시 해당 부분까진 검사하지 않음");
+                if(item.getStartDt().compareTo(MatchDateUtils.getNowTmStr()) <= 0){
+                    log.info("매치 시작시간 지났으므로 제외-매치 시작 시간[{}]/현재 시간[{}]",item.getStartTm(),MatchDateUtils.getNowTmStr());
                     return item;
                 }
             }
 
             //플랩 통신
             PlabMatchInfoResDto response = plabFootBallOpenFeignClient.getMatch(item.getMatchNo());
-            boolean isManagerSubFree = response.is_manager_free();
-            boolean isSuperSubFree = response.is_super_sub();
+            boolean isManagerSubFree = Boolean.parseBoolean(response.getIs_manager_free());
+            boolean isSuperSubFree = Boolean.parseBoolean(response.getIs_super_sub());
 
-            log.info("매니저 서브 프리: {}",isManagerSubFree);
-            log.info("플래버 서브 프리: {}",isSuperSubFree);
+
+            //historyNo 기준으로 내림차순으로 정렬
+            item.getFreeSubNotiHistories().sort(new FreeSubNotiHistoryComparator());
 
             //알림 판단
-            //X인 경우 두 필드가 true로 변한게 있다면 알림 발송, 없다면 종료
-            //A인 경우 두 필드가 모두 false 변해있다면 알림 발송, 그외 경우 종료
+            //프리 서브 활성화 체킹
+            if(item.getFreeSubNotiHistories().isEmpty() || item.getFreeSubNotiHistories().get(0).getActiveType().equals(ActiveType.INACTIVE)){
+                if(item.getSubType().equals(FreeSubType.MANAGER_FREE)){
+                    if(isManagerSubFree){
+                        log.info("매니저프리 활성화");
+                        String subject = item.getMatchName() + item.getStartDt().substring(4,6)+"/"+item.getStartDt().substring(6)+item.getStartTm()+"시"+" 매니저 프리 활성화";
 
-            //첫번쨰인경우
-//            if(item.getSendFlg().equals(SendFlg.NOT_SEND)){
-//                if(isManagerSubFree){
-//                    log.info("매니저 프리 활성화");
-//                }
-//                if(isSuperSubFree){
-//                    log.info("슈퍼서브 활성화");
-//                }
-//            }
-            mailService.send();
+                        //메일 발송
+                        mailService.send(new MailSendReqDto(item.getEmail(),subject,subject));
+
+                        //발송 내역 생성
+                        FreeSubNotiHistoryEntity freeSubNotiHistory =  FreeSubNotiHistoryEntity.builder()
+                                .activeType(ActiveType.ACTIVE)
+                                .subType(FreeSubType.MANAGER_FREE)
+                                .sendDt(MatchDateUtils.getNowDtStr())
+                                .sendTm(MatchDateUtils.getNowTmStr())
+                                .build();
+
+                        //발송 내역 저장
+                        item.getFreeSubNotiHistories().add(freeSubNotiHistory);
+                    }
+                }
+
+                if(item.getSubType().equals(FreeSubType.SUPER_SUB)){
+                    if(isSuperSubFree){
+                        log.info("슈퍼서브 활성화");
+
+                        String subject = item.getMatchName() + item.getStartDt().substring(4,6)+"/"+item.getStartDt().substring(6)+item.getStartTm()+"시"+" 슈퍼서브 활성화";
+
+                        //메일 발송
+                        mailService.send(new MailSendReqDto(item.getEmail(),subject,subject));
+
+                        //발송 내역 생성
+                        FreeSubNotiHistoryEntity freeSubNotiHistory =  FreeSubNotiHistoryEntity.builder()
+                                .activeType(ActiveType.ACTIVE)
+                                .subType(FreeSubType.SUPER_SUB)
+                                .sendDt(MatchDateUtils.getNowDtStr())
+                                .sendTm(MatchDateUtils.getNowTmStr())
+                                .build();
+
+                        //발송 내역 저장
+                        item.getFreeSubNotiHistories().add(freeSubNotiHistory);
+                    }
+                }
+            }
+
+            //프리 서브 비활성화 체킹
+            else{
+                if(item.getFreeSubNotiHistories().get(0).getActiveType().equals(ActiveType.ACTIVE)){
+                    if(item.getSubType().equals(FreeSubType.MANAGER_FREE)){
+                        if(!isManagerSubFree){
+                            log.info("매니저프리 비활성화");
+                            String subject = item.getMatchName() + item.getStartDt().substring(4,6)+"/"+item.getStartDt().substring(6)+item.getStartTm()+"시"+" 매니저 프리 비활성화";
+
+                            //메일 발송
+                            mailService.send(new MailSendReqDto(item.getEmail(),subject,subject));
+
+                            //발송 내역 생성
+                            FreeSubNotiHistoryEntity freeSubNotiHistory =  FreeSubNotiHistoryEntity.builder()
+                                    .activeType(ActiveType.INACTIVE)
+                                    .subType(FreeSubType.MANAGER_FREE)
+                                    .sendDt(MatchDateUtils.getNowDtStr())
+                                    .sendTm(MatchDateUtils.getNowTmStr())
+                                    .build();
+
+                            //발송 내역 저장
+                            item.getFreeSubNotiHistories().add(freeSubNotiHistory);
+                        }
+                    }
+
+                    if(item.getSubType().equals(FreeSubType.SUPER_SUB)){
+                        if(!isSuperSubFree){
+                            log.info("슈퍼서브 비활성화");
+
+                            String subject = item.getMatchName() + item.getStartDt().substring(4,6)+"/"+item.getStartDt().substring(6)+item.getStartTm()+"시"+" 슈퍼서브 비활성화";
+
+                            //메일 발송
+                            mailService.send(new MailSendReqDto(item.getEmail(),subject,subject));
+
+                            //발송 내역 생성
+                            FreeSubNotiHistoryEntity freeSubNotiHistory =  FreeSubNotiHistoryEntity.builder()
+                                    .activeType(ActiveType.INACTIVE)
+                                    .subType(FreeSubType.SUPER_SUB)
+                                    .sendDt(MatchDateUtils.getNowDtStr())
+                                    .sendTm(MatchDateUtils.getNowTmStr())
+                                    .build();
+
+                            //발송 내역 저장
+                            item.getFreeSubNotiHistories().add(freeSubNotiHistory);
+                        }
+                    }
+                }
+            }
 
             return item;
         };
     }
 
     @Bean
-    public ItemWriter<MatchFreeSubNotiEntity> freeSubNotiRegWriter(){
-        JpaItemWriter<MatchFreeSubNotiEntity> writer = new JpaItemWriter<>();
+    public ItemWriter<FreeSubNotiEntity> freeSubNotiRegWriter(){
+        JpaItemWriter<FreeSubNotiEntity> writer = new JpaItemWriter<>();
+//        writer.setUsePersist(true);
         writer.setEntityManagerFactory(entityManagerFactory);
 
         return writer;

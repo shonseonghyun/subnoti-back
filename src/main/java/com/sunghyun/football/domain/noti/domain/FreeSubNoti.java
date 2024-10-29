@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 @Builder
-public class MatchFreeSubNoti {
+public class FreeSubNoti {
     private Long notiNo;
 
     private String email;
@@ -23,7 +23,7 @@ public class MatchFreeSubNoti {
 
     private String startTm;
 
-    private String endTm;
+//    private String endTm;
 
     private FreeSubType subType;
 

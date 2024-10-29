@@ -12,15 +12,15 @@ import org.springframework.stereotype.Service;
 public class MailService {
     private final JavaMailSender javaMailSender;
 
-    public void send(/*MailReqDto mailReqDto*/){
+    public void send(MailSendReqDto mailSendReqDto){
         log.info("발송");
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-//        simpleMailMessage.setTo(mailReqDto.getEmail());
-//        simpleMailMessage.setSubject(mailReqDto.getMailType().getSubject());
-//        simpleMailMessage.setText(mailReqDto.);
-        simpleMailMessage.setTo("sunghyun7895@naver.com");
-        simpleMailMessage.setSubject("제목");
-        simpleMailMessage.setText("내용");
+        simpleMailMessage.setTo(mailSendReqDto.getEmail());
+        simpleMailMessage.setSubject(mailSendReqDto.getSubject());
+        simpleMailMessage.setText(mailSendReqDto.getContent());
+//        simpleMailMessage.setTo("sunghyun7895@naver.com");
+//        simpleMailMessage.setSubject("제목");
+//        simpleMailMessage.setText("내용");
         javaMailSender.send(simpleMailMessage);
     }
 

@@ -1,7 +1,6 @@
 package com.sunghyun.football.domain.noti.domain.converter;
 
 import com.sunghyun.football.domain.noti.domain.enums.FreeSubType;
-import com.sunghyun.football.domain.noti.domain.enums.SendFlg;
 import jakarta.persistence.AttributeConverter;
 
 public class FreeSubTypeConverter implements AttributeConverter<FreeSubType,String> {

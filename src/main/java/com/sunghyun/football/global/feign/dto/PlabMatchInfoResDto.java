@@ -17,6 +17,6 @@ public class PlabMatchInfoResDto {
     private Long id;
     private String label_title;
     private Date schedule;
-    private boolean is_manager_free;
-    private boolean is_super_sub;
+    private String is_manager_free;
+    private String is_super_sub;
 }

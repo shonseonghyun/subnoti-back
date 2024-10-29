@@ -1,6 +1,5 @@
 package com.sunghyun.football.domain.noti.domain.enums;
 
-import com.sunghyun.football.domain.match.domain.enums.MatchStatus;
 import com.sunghyun.football.global.exception.ErrorCode;
 import com.sunghyun.football.global.exception.exceptions.match.MatchStateNotFoundException;
 import lombok.AllArgsConstructor;

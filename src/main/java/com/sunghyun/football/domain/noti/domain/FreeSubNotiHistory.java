@@ -1,5 +1,6 @@
 package com.sunghyun.football.domain.noti.domain;
 
+import com.sunghyun.football.domain.noti.domain.enums.ActiveType;
 import com.sunghyun.football.domain.noti.domain.enums.FreeSubType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,7 +11,7 @@ public class FreeSubNotiHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long historyNo;
 
-    private String ActiveType;
+    private ActiveType ActiveType;
 
     private FreeSubType subType;
 

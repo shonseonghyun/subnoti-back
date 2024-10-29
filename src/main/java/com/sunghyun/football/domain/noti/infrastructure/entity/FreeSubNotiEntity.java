@@ -1,6 +1,6 @@
 package com.sunghyun.football.domain.noti.infrastructure.entity;
 
-import com.sunghyun.football.domain.noti.domain.MatchFreeSubNoti;
+import com.sunghyun.football.domain.noti.domain.FreeSubNoti;
 import com.sunghyun.football.domain.noti.domain.converter.FreeSubTypeConverter;
 import com.sunghyun.football.domain.noti.domain.enums.FreeSubType;
 import jakarta.persistence.*;
@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @ToString
-public class MatchFreeSubNotiEntity {
+public class FreeSubNotiEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,38 +34,40 @@ public class MatchFreeSubNotiEntity {
 
     private String startTm;
 
-    private String endTm;
+//    private String endTm;
 
     @Convert(converter = FreeSubTypeConverter.class)
     private FreeSubType subType;
 
-    @OneToMany
+    @OneToMany(cascade = {CascadeType.MERGE}
+//            ,mappedBy = "matchFreeSubNotiEntity"
+    )
     @JoinColumn(name = "notiNo")
     private List<FreeSubNotiHistoryEntity> freeSubNotiHistories;
 
-    public static MatchFreeSubNotiEntity from(MatchFreeSubNoti freeSubNoti){
-        MatchFreeSubNotiEntity matchFreeSubNotiEntity = new MatchFreeSubNotiEntity();
-        matchFreeSubNotiEntity.notiNo=freeSubNoti.getNotiNo();
-        matchFreeSubNotiEntity.email=freeSubNoti.getEmail();
-        matchFreeSubNotiEntity.matchNo=freeSubNoti.getMatchNo();
-//        matchFreeSubNotiEntity.sendFlg = freeSubNoti.getSendFlg();
-        matchFreeSubNotiEntity.matchName= freeSubNoti.getMatchName();
-        matchFreeSubNotiEntity.startDt=freeSubNoti.getStartDt();
-        matchFreeSubNotiEntity.startTm=freeSubNoti.getStartTm();
-        matchFreeSubNotiEntity.endTm=freeSubNoti.getEndTm();
-        matchFreeSubNotiEntity.subType=freeSubNoti.getSubType();
-        return matchFreeSubNotiEntity;
+    public static FreeSubNotiEntity from(FreeSubNoti freeSubNoti){
+        FreeSubNotiEntity freeSubNotiEntity = new FreeSubNotiEntity();
+        freeSubNotiEntity.notiNo=freeSubNoti.getNotiNo();
+        freeSubNotiEntity.email=freeSubNoti.getEmail();
+        freeSubNotiEntity.matchNo=freeSubNoti.getMatchNo();
+//        freeSubNotiEntity.sendFlg = freeSubNoti.getSendFlg();
+        freeSubNotiEntity.matchName= freeSubNoti.getMatchName();
+        freeSubNotiEntity.startDt=freeSubNoti.getStartDt();
+        freeSubNotiEntity.startTm=freeSubNoti.getStartTm();
+//        freeSubNotiEntity.endTm=freeSubNoti.getEndTm();
+        freeSubNotiEntity.subType=freeSubNoti.getSubType();
+        return freeSubNotiEntity;
     }
 
-    public MatchFreeSubNoti toModel(){
-        return MatchFreeSubNoti.builder()
+    public FreeSubNoti toModel(){
+        return FreeSubNoti.builder()
                 .notiNo(notiNo)
                 .matchNo(matchNo)
                 .email(email)
                 .matchName(matchName)
                 .startDt(startDt)
                 .startTm(startTm)
-                .endTm(endTm)
+//                .endTm(endTm)
                 .subType(subType)
                 .build();
     }
