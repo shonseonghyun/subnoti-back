@@ -10,8 +10,8 @@ import java.util.Arrays;
 @Getter
 @AllArgsConstructor
 public enum ActiveType {
-    ACTIVE("A","ACTIVATE FREE SUB"),
-    INACTIVE("I","INACTIVATE FREE SUB")
+    ACTIVE("A","활성화"),
+    INACTIVE("I","비활성화")
     ;
 
     private final String type;

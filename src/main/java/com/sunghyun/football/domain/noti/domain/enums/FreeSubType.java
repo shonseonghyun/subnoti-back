@@ -10,8 +10,8 @@ import java.util.Arrays;
 @Getter
 @AllArgsConstructor
 public enum FreeSubType {
-    MANAGER_FREE("M","Manager Free noti"),
-    SUPER_SUB("S","SuperSub Free noti"),
+    MANAGER_FREE("M","매니저 프리"),
+    SUPER_SUB("S","슈퍼서브"),
     ALL_SUB("A","All Type Free noti")
     ;
 
