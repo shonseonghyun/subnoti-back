@@ -1,5 +1,6 @@
 package com.sunghyun.football.domain.noti.domain.enums;
 
+import com.sunghyun.football.domain.stadium.enums.EnumMapperType;
 import com.sunghyun.football.global.exception.ErrorCode;
 import com.sunghyun.football.global.exception.exceptions.match.MatchStateNotFoundException;
 import lombok.AllArgsConstructor;
@@ -9,10 +10,10 @@ import java.util.Arrays;
 
 @Getter
 @AllArgsConstructor
-public enum FreeSubType {
+public enum FreeSubType implements EnumMapperType {
     MANAGER_FREE("M","매니저 프리"),
-    SUPER_SUB("S","슈퍼서브"),
-    ALL_SUB("A","All Type Free noti")
+    SUPER_SUB("S","슈퍼 서브"),
+//    ALL_SUB("A","All Type Free noti")
     ;
 
     private final String type;
@@ -25,4 +26,8 @@ public enum FreeSubType {
                 .orElseThrow(()->new MatchStateNotFoundException(ErrorCode.MATCH_STATE_NOT_FOUND));
     }
 
+    @Override
+    public String getName() {
+        return name();
+    }
 }

@@ -28,13 +28,13 @@ public class NotiApplication {
         //이미 신청한 매치인지 확인
         List<FreeSubType> subnotiList = freeSubNotiRepository.getFreeSubTypes(freeSubNotiReqDto.getEmail(),freeSubNotiReqDto.getMatchNo());
         if(!subnotiList.isEmpty()){
-            if(freeSubNotiReqDto.getSubType().equals(FreeSubType.ALL_SUB)){
-                throw new FreeSubNotiAlreadyRequestedException(ErrorCode.FREESUB_NOTI_ALREADY_REQUEST);
-            }else{
+//            if(freeSubNotiReqDto.getSubType().equals(FreeSubType.ALL_SUB)){
+//                throw new FreeSubNotiAlreadyRequestedException(ErrorCode.FREESUB_NOTI_ALREADY_REQUEST);
+//            }else{
                 if(subnotiList.contains(freeSubNotiReqDto.getSubType())){
                     throw new FreeSubNotiAlreadyRequestedException(ErrorCode.FREESUB_NOTI_ALREADY_REQUEST);
                 }
-            }
+//            }
         }
 
 //        freeSubNotiRepository.getFreeSubNoti(freeSubNotiReqDto.getEmail(),freeSubNotiReqDto.getMatchNo(),freeSubNotiReqDto.getSubType())
