@@ -15,8 +15,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 
 @Slf4j
@@ -29,7 +33,7 @@ public class MatchApi {
     private final ViewCountService viewCountService;
     private final MatchOptimisticLockFacade matchOptimisticLockFacade;
     private final MatchNamedLockFacade matchNamedLockFacade;
-    private final EnumMapper enumMapper;
+    private final EnumMapper enumRuleMapper;
 
     @GetMapping("/matches")
     public ApiResponseDto getMatches(@ModelAttribute @Valid SearchMatchesReqDto searchMatchesReqDto){
@@ -39,21 +43,24 @@ public class MatchApi {
 
     @GetMapping("/match/rules")
     public ApiResponseDto getRules(){
-        return ApiResponseDto.toResponse(ErrorCode.SUCCESS,enumMapper.getAll());
+        return ApiResponseDto.toResponse(ErrorCode.SUCCESS,enumRuleMapper.getAll());
     }
 
     @GetMapping("/match/{matchNo}")
-    public ApiResponseDto getMatch(@PathVariable("matchNo") Long matchNo) {
-        int viewCounts = viewCountService.addViewCountHash(matchNo);
+    public ApiResponseDto getMatch(
+            @PathVariable("matchNo") Long matchNo,
+            @RequestBody(required = false) Map<String,Long> map
+    ) {
+        //body 내 아무것도 안 담겨져 올 경우 직접 EmptyMap 세팅
+        Map<String,Long> checkedMap = map == null ? Collections.EMPTY_MAP : map;
+
+        final Long memberNo = checkedMap.get("memberNo");
+        final String ipAddress = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getRemoteAddr();
+
+        int viewCounts = viewCountService.addViewCountProcess(matchNo,memberNo,ipAddress);
         SelectMatchResDto selectMatchResDto = matchNamedLockFacade.getMatch(matchNo)
                 .viewCount(viewCounts);
         return ApiResponseDto.toResponse(ErrorCode.SUCCESS,selectMatchResDto);
-    }
-
-    @GetMapping("/match/view/{matchNo}")
-    public ApiResponseDto getMatchView(@PathVariable("matchNo") Long matchNo){
-        matchApplication.clickedMatch(matchNo);
-        return ApiResponseDto.toResponse(ErrorCode.SUCCESS);
     }
 
     @PostMapping("/match")
