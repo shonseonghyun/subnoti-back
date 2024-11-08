@@ -174,4 +174,8 @@ public class Match {
     public void isClicked() {
         viewCount+=1;
     }
+
+    public void syncViewCount(Integer viewCount){
+        this.viewCount = this.viewCount + viewCount;
+    }
 }

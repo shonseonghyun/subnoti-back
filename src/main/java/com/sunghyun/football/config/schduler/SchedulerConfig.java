@@ -1,6 +1,7 @@
 package com.sunghyun.football.config.schduler;
 
 import com.sunghyun.football.config.batch.FreeSubNotiRegBatchConfig;
+import com.sunghyun.football.domain.match.application.MatchApplication;
 import com.sunghyun.football.global.utils.MatchDateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,10 +29,11 @@ public class SchedulerConfig {
     private final PlatformTransactionManager manager;
     private final JobRepository jobRepository;
     private final FreeSubNotiRegBatchConfig freeSubNotiRegBatchConfig;
+    private final MatchApplication matchApplication;
 
     @Scheduled(cron = "0/30 * * * * *" , zone = "Asia/Seoul") //30초마다
     public void freesubNotiRegScheduler() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        log.info("연체 대상 등록 스케줄러 start");
+        log.info("프리서브 노티 알림 스케줄러 start");
         JobParameters jobParameters= new JobParametersBuilder()
                 .addString("nowDt", MatchDateUtils.getNowDtStr())
                 .addLong("time",new Date().getTime()) //여러번 돌수 있게 세팅
@@ -39,6 +41,14 @@ public class SchedulerConfig {
 
         jobLauncher.run(freeSubNotiRegBatchConfig.freeSubNotiRegJob(jobRepository, manager),jobParameters);
 
-        log.info("연체 대상 등록 스케줄러 end");
+        log.info("프리서브 노티 알림 스케줄러 end");
+    }
+
+    @Scheduled(fixedRate = 1000*60*60)
+    public void syncViewCountsScheduler(){
+        log.info("조회수 동기화 스케줄러 start");
+        matchApplication.syncViewCounts();
+        log.info("조회수 동기화 스케줄러 end");
+
     }
 }

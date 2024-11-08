@@ -8,6 +8,12 @@ import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -56,10 +62,12 @@ public class ViewCountService {
 
     private void addViewUser(String viewKey,Long memberNo,String ipAddress){
         if(memberNo==null){
-            redisTemplate.opsForSet().add(viewKey,ipAddress);
+            redisTemplate.opsForSet().add(viewKey,ipAddress
+            );
         }else{
             redisTemplate.opsForSet().add(viewKey,memberNo.toString());
         }
+        redisTemplate.expire(viewKey,30000, TimeUnit.MILLISECONDS);
     }
 
     private boolean isViewed(final String viewKey,final Long memberNo, final String ipAddress){
@@ -69,4 +77,33 @@ public class ViewCountService {
             return redisTemplate.opsForSet().isMember(viewKey,memberNo.toString());
         }
     }
+
+    public Map<Long, Integer> getAllViewCounts() {
+        Set<String> keys = redisTemplate.opsForHash().keys(viewCountsKey);
+
+        if(keys==null){
+            return new HashMap<>();
+        }
+
+        return keys.stream().collect(Collectors.toMap(
+                key->Long.parseLong(key),
+                key-> Integer.parseInt((String)redisTemplate.opsForHash().get(viewCountsKey,key))
+        ));
+    }
+
+    public void resetViewCounts(){
+        Set<String> keys = redisTemplate.opsForHash().keys(viewCountsKey);
+
+        if(keys==null){
+            return ;
+        }
+
+        keys.forEach(key->{
+            redisTemplate.opsForHash().put(viewCountsKey,key,"0");
+        });
+    }
+
+//    public Long extractMatchNoFromRedis(){
+//        return null;
+//    }
 }

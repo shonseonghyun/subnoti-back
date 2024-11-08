@@ -89,17 +89,4 @@ import java.util.stream.Collectors;
         
         return selectMatchResDto;
     }
-
-    private void setViewCount(int viewCount){
-        this.viewCount=viewCount;
-    }
-
-    public SelectMatchResDto viewCount(int viewCount){
-        this.setViewCount(viewCount);
-        return this;
-    }
-
-//    public SelectMatchResDto build(){
-//        return this;
-//    }
 }

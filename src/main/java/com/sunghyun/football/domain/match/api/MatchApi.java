@@ -57,9 +57,8 @@ public class MatchApi {
         final Long memberNo = checkedMap.get("memberNo");
         final String ipAddress = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getRemoteAddr();
 
-        int viewCounts = viewCountService.addViewCountProcess(matchNo,memberNo,ipAddress);
-        SelectMatchResDto selectMatchResDto = matchNamedLockFacade.getMatch(matchNo)
-                .viewCount(viewCounts);
+        viewCountService.addViewCountProcess(matchNo,memberNo,ipAddress);
+        SelectMatchResDto selectMatchResDto = matchNamedLockFacade.getMatch(matchNo);
         return ApiResponseDto.toResponse(ErrorCode.SUCCESS,selectMatchResDto);
     }
 

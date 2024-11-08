@@ -36,6 +36,8 @@ public class MatchApplication {
     private final StadiumOpenFeignClient stadiumOpenFeignClient;
     private final MemberOpenFeignClient memberOpenFeignClient;
 
+    private final ViewCountService viewCountService;
+
 //    @PersistenceContext
 //    private EntityManager entityManager;
 
@@ -196,5 +198,25 @@ public class MatchApplication {
             result.add(SelectSimpleMatchResDto.from(match,selectedStadiumResDto));
         }
         return result;
+    }
+
+    @Transactional
+    public void syncViewCounts(){
+        //redis에 저장된 matchNo를 key로, 조회수를 value로 구성된 map 생성
+        Map<Long,Integer> viewCountsMap = viewCountService.getAllViewCounts();
+
+        viewCountsMap.forEach((matchNo, viewCount) -> {
+            if(viewCount>0){
+                Match selectedMatch = matchServiceHelper.findExistingMatch(matchNo);
+                selectedMatch.syncViewCount(viewCount);
+                matchRepository.save(selectedMatch);
+            }
+
+            else{
+                log.info("매치[{}]는 초기화된 이후 조회수가 0 이므로 패스",matchNo);
+            }
+        });
+
+        viewCountService.resetViewCounts();
     }
 }
