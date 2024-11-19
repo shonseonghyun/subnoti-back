@@ -79,13 +79,31 @@ public class FreeSubNotiRegBatchConfig {
     @Bean
     public ItemProcessor<FreeSubNotiEntity, FreeSubNotiEntity> freeSubNotiRegProcessor(){
         return item->{
-            //시간 체크
-            if(item.getStartDt().compareTo(MatchDateUtils.getNowDtStr())==0){
-                if(item.getStartDt().compareTo(MatchDateUtils.getNowTmStr()) <= 0){
-                    log.info("매치 시작시간 지났으므로 제외-매치 시작 시간[{}]/현재 시간[{}]",item.getStartTm(),MatchDateUtils.getNowTmStr());
-                    return item;
-                }
+            log.info("매치 [{}] [{}] 처리",item.getMatchName(),item.getStartDt());
+            final String nowDt = MatchDateUtils.getNowDtStr();
+
+            //시간 예외 체크
+            /*주석 이유*/
+            /*
+               DB에서 데이터 읽어들이는 시점 부터 매치 시작일이 현재일 이상인 경우만 처리하여 읽어들이므로 주석
+             */
+/*
+            //이미 종료된 매치인 경우(매치 시작 일자 < 현재 일자)
+            if(item.getStartDt().compareTo(nowDt)<0){
+                log.info("이미 종료돤 매치이므로 제외 - 매치 시작 일자[{}]/현재 일자[{}]",item.getStartDt(),nowDt);
+                return item;
             }
+*/
+            if(MatchDateUtils.hasAlreadyPassedOfMatch(item.getStartDt(),item.getStartTm())){
+                return item;
+            }
+//            if(item.getStartDt().compareTo(nowDt)==0){
+//                final String nowTm = MatchDateUtils.getNowTmStr();
+//                if(item.getStartTm().compareTo(nowTm)<=0){
+//                    log.info("매치 시작시간 지났으므로 제외-매치 시작 시간[{}]/현재 시간[{}]",item.getStartTm(),nowTm);
+//                    return item;
+//                }
+//            }
 
             //플랩 통신
             PlabMatchInfoResDto response = plabFootBallOpenFeignClient.getMatch(item.getMatchNo());

@@ -1,10 +1,13 @@
 package com.sunghyun.football.global.utils;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+@Slf4j
 public class MatchDateUtils {
     public static String getNowDtStr(){
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
@@ -35,5 +38,24 @@ public class MatchDateUtils {
         calendar.add(Calendar.HOUR_OF_DAY,hours);
 
         return tmFormat.format(calendar.getTime());
+    }
+
+    public static boolean hasAlreadyPassedOfMatch(String startDt,String startTm){
+        final String nowDt= MatchDateUtils.getNowDtStr();
+        final String nowTm = MatchDateUtils.getNowTmStr();
+
+        if(startDt.compareTo(nowDt)<0){
+            log.info("이미 종료된 매치이므로 제외 - 매치 시작 일자[{}]/현재 일자[{}]",startDt,nowDt);
+            return true;
+        }
+        else if(startDt.compareTo(nowDt)==0){
+            if(startTm.compareTo(nowTm)<=0){
+                log.info("이미 시작된 매치이므로 제외 - 매치 시작 시간[{}]/현재 시간[{}]",startTm,startTm);
+                return true;
+            }
+        }
+
+        log.info("매치 진행 전/매치 시작[{} {}]/현재[{} {}]",startDt,startTm,nowDt,nowTm);
+        return false;
     }
 }
