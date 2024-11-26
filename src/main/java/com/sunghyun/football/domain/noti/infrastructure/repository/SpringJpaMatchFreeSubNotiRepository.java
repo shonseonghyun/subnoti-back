@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface SpringJpaMatchFreeSubNotiRepository extends JpaRepository<FreeSubNotiEntity,Long> {
     List<FreeSubNotiEntity> findByEmailAndMatchNo(String email, Long matchNo);
+    List<FreeSubNotiEntity> findByMemberNo(Long matchNo);
 }

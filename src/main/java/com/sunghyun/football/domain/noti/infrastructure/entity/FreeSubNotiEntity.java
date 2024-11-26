@@ -21,12 +21,11 @@ public class FreeSubNotiEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long notiNo;
 
-    private Long matchNo;
+    private Long memberNo;
 
     private String email;
 
-//    @Convert(converter = SendFlgConverter.class)
-//    private SendFlg sendFlg;
+    private Long matchNo;
 
     private String matchName;
 
@@ -34,7 +33,6 @@ public class FreeSubNotiEntity {
 
     private String startTm;
 
-//    private String endTm;
 
     @Convert(converter = FreeSubTypeConverter.class)
     private FreeSubType subType;
@@ -48,13 +46,12 @@ public class FreeSubNotiEntity {
     public static FreeSubNotiEntity from(FreeSubNoti freeSubNoti){
         FreeSubNotiEntity freeSubNotiEntity = new FreeSubNotiEntity();
         freeSubNotiEntity.notiNo=freeSubNoti.getNotiNo();
+        freeSubNotiEntity.memberNo=freeSubNoti.getMemberNo();
         freeSubNotiEntity.email=freeSubNoti.getEmail();
         freeSubNotiEntity.matchNo=freeSubNoti.getMatchNo();
-//        freeSubNotiEntity.sendFlg = freeSubNoti.getSendFlg();
         freeSubNotiEntity.matchName= freeSubNoti.getMatchName();
         freeSubNotiEntity.startDt=freeSubNoti.getStartDt();
         freeSubNotiEntity.startTm=freeSubNoti.getStartTm();
-//        freeSubNotiEntity.endTm=freeSubNoti.getEndTm();
         freeSubNotiEntity.subType=freeSubNoti.getSubType();
         return freeSubNotiEntity;
     }
@@ -62,12 +59,12 @@ public class FreeSubNotiEntity {
     public FreeSubNoti toModel(){
         return FreeSubNoti.builder()
                 .notiNo(notiNo)
-                .matchNo(matchNo)
+                .memberNo(memberNo)
                 .email(email)
+                .matchNo(matchNo)
                 .matchName(matchName)
                 .startDt(startDt)
                 .startTm(startTm)
-//                .endTm(endTm)
                 .subType(subType)
                 .build();
     }

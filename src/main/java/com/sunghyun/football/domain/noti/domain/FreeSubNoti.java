@@ -11,6 +11,8 @@ import lombok.Getter;
 public class FreeSubNoti {
     private Long notiNo;
 
+    private Long memberNo;
+
     private String email;
 
     private Long matchNo;

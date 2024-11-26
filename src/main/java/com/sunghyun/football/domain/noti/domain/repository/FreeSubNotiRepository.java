@@ -6,7 +6,7 @@ import com.sunghyun.football.domain.noti.domain.enums.FreeSubType;
 import java.util.List;
 
 public interface FreeSubNotiRepository {
-
     FreeSubNoti save(FreeSubNoti freeSubNoti);
     List<FreeSubType> getFreeSubTypes(String email, Long matchNo);
+    List<FreeSubNoti> getFreeSubNoties(Long memberNo);
 }

@@ -22,6 +22,12 @@ public class FreeSubNotiRepositoryImpl implements FreeSubNotiRepository {
 
     @Override
     public List<FreeSubType> getFreeSubTypes(String email, Long matchNo) {
-        return springJpaMatchFreeSubNotiRepository.findByEmailAndMatchNo(email,matchNo).stream().map(FreeSubNotiEntity::getSubType).toList();
+        return springJpaMatchFreeSubNotiRepository.findByEmailAndMatchNo(email,matchNo)
+                .stream().map(FreeSubNotiEntity::getSubType).toList();
+    }
+
+    @Override
+    public List<FreeSubNoti> getFreeSubNoties(Long memberNo) {
+        return springJpaMatchFreeSubNotiRepository.findByMemberNo(memberNo).stream().map(FreeSubNotiEntity::toModel).toList();
     }
 }
