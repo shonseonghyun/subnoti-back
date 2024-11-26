@@ -65,4 +65,8 @@ public class NotiApplication {
                 .toList()
                 ;
     }
+
+    public void delFreeSubNoti(Long notiNo) {
+        freeSubNotiRepository.delFreeSubNoti(notiNo);
+    }
 }

@@ -9,4 +9,5 @@ public interface FreeSubNotiRepository {
     FreeSubNoti save(FreeSubNoti freeSubNoti);
     List<FreeSubType> getFreeSubTypes(String email, Long matchNo);
     List<FreeSubNoti> getFreeSubNoties(Long memberNo);
+    void delFreeSubNoti(Long notiNo);
 }

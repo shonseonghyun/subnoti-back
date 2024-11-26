@@ -37,4 +37,11 @@ public class NotiApi {
         List<SelectFreeSubNotiResDto> result = notiApplication.getFreeSubNoties(memberNo);
         return ApiResponseDto.toResponse(ErrorCode.SUCCESS,result);
     }
+
+    @DeleteMapping("/freeSub/{notiNo}")
+    public ApiResponseDto delFreeSubNoti(@PathVariable Long notiNo){
+        notiApplication.delFreeSubNoti(notiNo);
+        return ApiResponseDto.toResponse(ErrorCode.SUCCESS);
+    }
+
 }
