@@ -58,8 +58,8 @@ public class NotiApplication {
         freeSubNotiRepository.save(freeSubNoti);
     }
 
-    public List<SelectFreeSubNotiResDto> getFreeSubNoties(Long memberNo) {
-        return freeSubNotiRepository.getFreeSubNoties(memberNo)
+    public List<SelectFreeSubNotiResDto> getFreeSubNoties(Long memberNo,String nowDt) {
+        return freeSubNotiRepository.getFreeSubNoties(memberNo,nowDt)
                 .stream()
                 .map(SelectFreeSubNotiResDto::toDto)
                 .toList()
