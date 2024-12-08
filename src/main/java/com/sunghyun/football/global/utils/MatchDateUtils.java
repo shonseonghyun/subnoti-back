@@ -55,7 +55,7 @@ public class MatchDateUtils {
             }
         }
 
-        log.info("매치 진행 전/매치 시작[{} {}]/현재[{} {}]",startDt,startTm,nowDt,nowTm);
+//        log.info("매치 진행 전/매치 시작[{} {}]/현재[{} {}]",startDt,startTm,nowDt,nowTm);
         return false;
     }
 }

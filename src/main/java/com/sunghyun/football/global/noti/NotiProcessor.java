@@ -8,6 +8,7 @@ import com.sunghyun.football.domain.noti.infrastructure.entity.FreeSubNotiEntity
 import com.sunghyun.football.domain.noti.infrastructure.entity.FreeSubNotiHistoryEntity;
 import com.sunghyun.football.global.utils.MatchDateUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.LazyInitializationException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -23,7 +24,11 @@ public abstract class NotiProcessor {
         FreeSubType freeSubType=null;
 
         //historyNo 기준으로 내림차순으로 정렬
-        freeSubNotiEntity.getFreeSubNotiHistories().sort(new FreeSubNotiHistoryComparator());
+        try{
+            freeSubNotiEntity.getFreeSubNotiHistories().sort(new FreeSubNotiHistoryComparator());
+        }catch (LazyInitializationException e){
+                    log.error("지연로딩초기화 예외 발생 노티 번호[{}] 매치명[{}]",freeSubNotiEntity.getNotiNo(),freeSubNotiEntity.getMatchName());
+        }
 
         //활성화 발송 조건 체크
         if(isActiveTurn(freeSubNotiEntity.getFreeSubNotiHistories())){
