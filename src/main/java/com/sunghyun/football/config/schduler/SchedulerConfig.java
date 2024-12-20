@@ -34,7 +34,7 @@ public class SchedulerConfig {
 
     @Scheduled(cron = "0/30 * * * * *" , zone = "Asia/Seoul") //30초마다
     public void freesubNotiRegScheduler() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        log.info("프리서브 노티 알림 스케줄러 start");
+        log.info("FreeSub Noti Scheduler Start");
         long beforeTime = System.currentTimeMillis(); //코드 실행 전에 시간 받아오기
 
         JobParameters jobParameters= new JobParametersBuilder()
@@ -42,15 +42,34 @@ public class SchedulerConfig {
                 .addLong("time",new Date().getTime()) //여러번 돌수 있게 세팅
                 .toJobParameters();
 
-//        jobLauncher.run(freeSubNotiRegBatchConfig.freeSubNotiRegJob(jobRepository, manager),jobParameters);
         jobLauncher.run(freeSubNotiRegBatchMultiThreadConfig.freeSubNotiRegMultiThreadJob(jobRepository, manager),jobParameters);
 
 
         long afterTime = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
         long secDiffTime = (afterTime - beforeTime)/1000; //두 시간에 차 계산
-        log.info("시간차이(m) : {}",secDiffTime);
-        log.info("프리서브 노티 알림 스케줄러 end");
+        log.info("소요 시간(m) : {}초",secDiffTime);
+        log.info("FreeSub Noti Scheduler End");
     }
+
+//    @Scheduled(cron = "0/30 * * * * *" , zone = "Asia/Seoul") //30초마다
+//    public void freesubNotiRegScheduler2() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+//        log.info("Frees 노티 알림 스케줄러 start");
+//        long beforeTime = System.currentTimeMillis(); //코드 실행 전에 시간 받아오기
+//
+//        JobParameters jobParameters= new JobParametersBuilder()
+//                .addString("nowDt", MatchDateUtils.getNowDtStr())
+//                .addLong("time",new Date().getTime()) //여러번 돌수 있게 세팅
+//                .toJobParameters();
+//
+//        jobLauncher.run(freeSubNotiRegBatchConfig.freeSubNotiRegJob(jobRepository, manager),jobParameters);
+////        jobLauncher.run(freeSubNotiRegBatchMultiThreadConfig.freeSubNotiRegMultiThreadJob(jobRepository, manager),jobParameters);
+//
+//
+//        long afterTime = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
+//        long secDiffTime = (afterTime - beforeTime)/1000; //두 시간에 차 계산
+//        log.info("소요 시간(m) : {}초",secDiffTime);
+//        log.info("프리서브 노티 알림 스케줄러 end");
+//    }
 
     @Scheduled(fixedRate = 1000*60*60)
     public void syncViewCountsScheduler(){

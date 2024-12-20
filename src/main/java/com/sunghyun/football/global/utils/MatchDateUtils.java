@@ -44,18 +44,24 @@ public class MatchDateUtils {
         final String nowDt= MatchDateUtils.getNowDtStr();
         final String nowTm = MatchDateUtils.getNowTmStr();
 
+        boolean isStartOrEndFlg = false;
+
         if(startDt.compareTo(nowDt)<0){
-            log.info("이미 종료된 매치이므로 제외 - 매치 시작 일자[{}]/현재 일자[{}]",startDt,nowDt);
-            return true;
+//            log.info("이미 종료된 매치이므로 제외 - 매치 시작 일자[{}]/현재 일자[{}]",startDt,nowDt);
+            isStartOrEndFlg=true;
         }
         else if(startDt.compareTo(nowDt)==0){
             if(startTm.compareTo(nowTm)<=0){
-                log.info("이미 시작된 매치이므로 제외 - 매치 시작 시간[{}]/현재 시간[{}]",startTm,startTm);
-                return true;
+//                log.info("이미 시작된 매치이므로 제외 - 매치 시작 시간[{}]/현재 시간[{}]",startTm,nowTm);
+                isStartOrEndFlg=true;
             }
         }
 
+        if(!isStartOrEndFlg){
+            log.info("이미 시작 또는 종료된 매치이므로 제외 - 매치 시작 시간[{} {}]/현재 시간[{} {}]",startDt ,startTm,nowDt,nowTm);
+        }
+
 //        log.info("매치 진행 전/매치 시작[{} {}]/현재[{} {}]",startDt,startTm,nowDt,nowTm);
-        return false;
+        return isStartOrEndFlg;
     }
 }
