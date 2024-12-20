@@ -57,7 +57,7 @@ public class MatchDateUtils {
             }
         }
 
-        if(!isStartOrEndFlg){
+        if(isStartOrEndFlg){
             log.info("이미 시작 또는 종료된 매치이므로 제외 - 매치 시작 시간[{} {}]/현재 시간[{} {}]",startDt ,startTm,nowDt,nowTm);
         }
 

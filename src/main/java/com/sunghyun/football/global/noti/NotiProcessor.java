@@ -36,28 +36,35 @@ public abstract class NotiProcessor {
 
         //활성화 발송 조건 체크
         if(isActiveTurn(freeSubNotiEntity.getFreeSubNotiHistories())){
-            if(isManagerFreeActive(managerFreeFlg)){
-                log.info("{}({}) 매니저 프리 활성화",freeSubNotiEntity.getMatchName(),freeSubNotiEntity.getMatchNo());
-                freeSubType = FreeSubType.MANAGER_FREE;
+            if(freeSubNotiEntity.getSubType().equals(FreeSubType.MANAGER_FREE)) {
+                if(isManagerFreeActive(managerFreeFlg)){
+                    log.info("{}({}) 매니저 프리 활성화",freeSubNotiEntity.getMatchName(),freeSubNotiEntity.getMatchNo());
+                    freeSubType = FreeSubType.MANAGER_FREE;
+                }
             }
-            else if(isSuperSubActive(superSubFlg)) {
-                log.info("{}({}) 슈퍼서브 활성화",freeSubNotiEntity.getMatchName(),freeSubNotiEntity.getMatchNo());
-                freeSubType = FreeSubType.SUPER_SUB;
+            else if(freeSubNotiEntity.getSubType().equals(FreeSubType.SUPER_SUB)) {
+                if (isSuperSubActive(superSubFlg)) {
+                    log.info("{}({}) 슈퍼서브 활성화", freeSubNotiEntity.getMatchName(), freeSubNotiEntity.getMatchNo());
+                    freeSubType = FreeSubType.SUPER_SUB;
+                }
             }
-
             activeType = ActiveType.ACTIVE;
         }
 
         //비활성화 발송 조건 체크
         else{
             if(isInActiveTurn(freeSubNotiEntity.getFreeSubNotiHistories())){
-                if(!isManagerFreeActive(managerFreeFlg)){
-                    log.info("{}({}) 매니저 프리 비활성화",freeSubNotiEntity.getMatchName(),freeSubNotiEntity.getMatchNo());
-                    freeSubType = FreeSubType.MANAGER_FREE;
+                if(freeSubNotiEntity.getSubType().equals(FreeSubType.MANAGER_FREE)){
+                    if(!isManagerFreeActive(managerFreeFlg)){
+                        log.info("{}({}) 매니저 프리 비활성화",freeSubNotiEntity.getMatchName(),freeSubNotiEntity.getMatchNo());
+                        freeSubType = FreeSubType.MANAGER_FREE;
+                    }
                 }
-                else if(!isSuperSubActive(superSubFlg)) {
-                    log.info("{}({}) 슈퍼서브 비활성화",freeSubNotiEntity.getMatchName(),freeSubNotiEntity.getMatchNo());
-                    freeSubType = FreeSubType.SUPER_SUB;
+                else if(freeSubNotiEntity.getSubType().equals(FreeSubType.SUPER_SUB)) {
+                    if(!isSuperSubActive(superSubFlg)) {
+                        log.info("{}({}) 슈퍼서브 비활성화",freeSubNotiEntity.getMatchName(),freeSubNotiEntity.getMatchNo());
+                        freeSubType = FreeSubType.SUPER_SUB;
+                    }
                 }
 
                 activeType = ActiveType.INACTIVE;
