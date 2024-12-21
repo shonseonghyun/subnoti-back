@@ -16,19 +16,11 @@ import java.util.List;
 @Component
 public abstract class NotiProcessor {
 
-//    @PersistenceContext
-//    EntityManager em;
-
     protected abstract void doNoti(NotiSendReqDto notiSendReqDto);
 
     public void doNotiProcess(FreeSubNotiEntity freeSubNotiEntity, boolean managerFreeFlg, boolean superSubFlg){
         ActiveType activeType=null;
         FreeSubType freeSubType=null;
-
-//        boolean isManaged = em.contains(freeSubNotiEntity);
-//        log.info("isManaged:{}",isManaged);
-//        log.info("EntityManager: {}",em.toString());
-//        FreeSubNotiEntity freeSubNoti = em.find(FreeSubNotiEntity.class,freeSubNotiEntity.getNotiNo());
 
         //historyNo 기준으로 내림차순으로 정렬
         freeSubNotiEntity.getFreeSubNotiHistories().sort(new FreeSubNotiHistoryComparator());
@@ -38,13 +30,13 @@ public abstract class NotiProcessor {
         if(isActiveTurn(freeSubNotiEntity.getFreeSubNotiHistories())){
             if(freeSubNotiEntity.getSubType().equals(FreeSubType.MANAGER_FREE)) {
                 if(isManagerFreeActive(managerFreeFlg)){
-                    log.info("{}({}) 매니저 프리 활성화",freeSubNotiEntity.getMatchName(),freeSubNotiEntity.getMatchNo());
+                    log.info("{}({}) 매니저 서브 활성화",freeSubNotiEntity.getMatchName(),freeSubNotiEntity.getMatchNo());
                     freeSubType = FreeSubType.MANAGER_FREE;
                 }
             }
             else if(freeSubNotiEntity.getSubType().equals(FreeSubType.SUPER_SUB)) {
                 if (isSuperSubActive(superSubFlg)) {
-                    log.info("{}({}) 슈퍼서브 활성화", freeSubNotiEntity.getMatchName(), freeSubNotiEntity.getMatchNo());
+                    log.info("{}({}) 슈퍼 서브 활성화", freeSubNotiEntity.getMatchName(), freeSubNotiEntity.getMatchNo());
                     freeSubType = FreeSubType.SUPER_SUB;
                 }
             }
@@ -56,13 +48,13 @@ public abstract class NotiProcessor {
             if(isInActiveTurn(freeSubNotiEntity.getFreeSubNotiHistories())){
                 if(freeSubNotiEntity.getSubType().equals(FreeSubType.MANAGER_FREE)){
                     if(!isManagerFreeActive(managerFreeFlg)){
-                        log.info("{}({}) 매니저 프리 비활성화",freeSubNotiEntity.getMatchName(),freeSubNotiEntity.getMatchNo());
+                        log.info("{}({}) 매니저 서브 비활성화",freeSubNotiEntity.getMatchName(),freeSubNotiEntity.getMatchNo());
                         freeSubType = FreeSubType.MANAGER_FREE;
                     }
                 }
                 else if(freeSubNotiEntity.getSubType().equals(FreeSubType.SUPER_SUB)) {
                     if(!isSuperSubActive(superSubFlg)) {
-                        log.info("{}({}) 슈퍼서브 비활성화",freeSubNotiEntity.getMatchName(),freeSubNotiEntity.getMatchNo());
+                        log.info("{}({}) 슈퍼 서브 비활성화",freeSubNotiEntity.getMatchName(),freeSubNotiEntity.getMatchNo());
                         freeSubType = FreeSubType.SUPER_SUB;
                     }
                 }
