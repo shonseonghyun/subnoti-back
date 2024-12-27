@@ -1,4 +1,4 @@
-package com.sunghyun.football.config.batch;
+package com.sunghyun.football.config.batch.singleThread;
 
 import com.sunghyun.football.domain.noti.infrastructure.entity.FreeSubNotiEntity;
 import com.sunghyun.football.global.feign.PlabFootBallOpenFeignClient;

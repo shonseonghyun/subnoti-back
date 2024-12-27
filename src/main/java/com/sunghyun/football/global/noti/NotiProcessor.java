@@ -1,6 +1,6 @@
 package com.sunghyun.football.global.noti;
 
-import com.sunghyun.football.config.batch.NotiContentMaker;
+import com.sunghyun.football.config.batch.maker.NotiContentMaker;
 import com.sunghyun.football.domain.noti.domain.enums.ActiveType;
 import com.sunghyun.football.domain.noti.domain.enums.FreeSubType;
 import com.sunghyun.football.domain.noti.infrastructure.FreeSubNotiHistoryComparator;
@@ -81,6 +81,7 @@ public abstract class NotiProcessor {
                                 .subType(freeSubType)
                                 .sendDt(MatchDateUtils.getNowDtStr())
                                 .sendTm(MatchDateUtils.getNowTmStr())
+//                                .freeSubNotiEntity(freeSubNotiEntity)
                                 .build()
             );
         }

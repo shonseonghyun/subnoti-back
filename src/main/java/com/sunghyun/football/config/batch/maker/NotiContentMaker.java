@@ -1,4 +1,4 @@
-package com.sunghyun.football.config.batch;
+package com.sunghyun.football.config.batch.maker;
 
 import com.sunghyun.football.domain.noti.domain.enums.ActiveType;
 import com.sunghyun.football.domain.noti.domain.enums.FreeSubType;

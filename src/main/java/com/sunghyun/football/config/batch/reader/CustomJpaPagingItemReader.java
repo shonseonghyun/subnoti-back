@@ -1,4 +1,4 @@
-package com.sunghyun.football.config.batch;
+package com.sunghyun.football.config.batch.reader;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -122,15 +122,9 @@ public class CustomJpaPagingItemReader<T> extends AbstractPagingItemReader<T> {
     @Override
     @SuppressWarnings("unchecked")
     protected void doReadPage() {
-        EntityTransaction tx = null;
-
         if (transacted) {
-            tx = entityManager.getTransaction();
-            tx.begin();
-
-            entityManager.flush();
             entityManager.clear();
-        } // end if
+        }//end if
 
         Query query = createQuery().setFirstResult(getPage() * getPageSize()).setMaxResults(getPageSize());
 
@@ -152,14 +146,12 @@ public class CustomJpaPagingItemReader<T> extends AbstractPagingItemReader<T> {
             for (T entity : queryResult) {
                 entityManager.detach(entity);
                 results.add(entity);
-            } // end if
-
-        }
-        else {
+            }//end if
+        } else {
             results.addAll(query.getResultList());
-            tx.commit();
-        } // end if
+        }//end if
     }
+
 
     @Override
     protected void doClose() throws Exception {
