@@ -1,5 +1,6 @@
-package com.sunghyun.football.config.batch;
+package com.sunghyun.football.config.batch.multiThread;
 
+import com.sunghyun.football.config.batch.reader.CustomJpaPagingItemReader;
 import com.sunghyun.football.domain.noti.infrastructure.entity.FreeSubNotiEntity;
 import com.sunghyun.football.global.feign.PlabFootBallOpenFeignClient;
 import com.sunghyun.football.global.feign.dto.PlabMatchInfoResDto;
@@ -111,6 +112,14 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
                 "m.startTm desc," +
                 "m.notiNo desc"
         );
+//        reader.setQueryString("SELECT h FROM FreeSubNotiHistoryEntity h " +
+//                "RIGHT JOIN FETCH h.freeSubNotiEntity m "+
+//                "where m.startDt>=:nowDt " +
+//                "order by " +
+//                "m.startDt desc," +
+//                "m.startTm desc," +
+//                "m.notiNo desc"
+//        );
         reader.setPageSize(chunkSize);
         reader.setEntityManagerFactory(entityManagerFactory);
         reader.setName("customPagingReader");
