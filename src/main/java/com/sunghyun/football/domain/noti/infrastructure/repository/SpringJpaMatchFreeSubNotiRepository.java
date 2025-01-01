@@ -11,4 +11,10 @@ public interface SpringJpaMatchFreeSubNotiRepository extends JpaRepository<FreeS
 
     @Query("SELECT m FROM FreeSubNotiEntity m where m.memberNo = :memberNo and m.startDt >= :nowDt")
     List<FreeSubNotiEntity> findByMemberNoAndStartDtAfterToday(Long memberNo,String nowDt);
+
+    @Query(value = "SELECT min(m.noti_No) FROM free_sub_noti_req m where m.start_Dt >= :startDt",nativeQuery = true)
+    Long findMinNotiNoByStartDt(String startDt);
+
+    @Query(value = "SELECT max(m.noti_No) FROM free_sub_noti_req m where m.start_Dt >= :startDt",nativeQuery = true)
+    Long findMaxNotiNoByStartDt(String startDt);
 }

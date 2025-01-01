@@ -40,4 +40,14 @@ public class FreeSubNotiRepositoryImpl implements FreeSubNotiRepository {
     public void delFreeSubNoti(Long notiNo) {
         springJpaMatchFreeSubNotiRepository.deleteById(notiNo);
     }
+
+    @Override
+    public long getMaxNotiNo(String startDt) {
+        return springJpaMatchFreeSubNotiRepository.findMaxNotiNoByStartDt(startDt);
+    }
+
+    @Override
+    public long getMinNotiNo(String startDt) {
+        return springJpaMatchFreeSubNotiRepository.findMinNotiNoByStartDt(startDt);
+    }
 }

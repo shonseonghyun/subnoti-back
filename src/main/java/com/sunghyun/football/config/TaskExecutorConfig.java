@@ -22,6 +22,7 @@ public class TaskExecutorConfig {
         executor.setThreadNamePrefix(THREAD_NAME_PREFIX);
         executor.setWaitForTasksToCompleteOnShutdown(Boolean.TRUE);
         executor.initialize();
+        executor.setAllowCoreThreadTimeOut(true);
 
         return executor;
     }

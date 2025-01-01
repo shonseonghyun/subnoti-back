@@ -1,6 +1,6 @@
 package com.sunghyun.football.config.schduler;
 
-import com.sunghyun.football.config.batch.FreeSubNotiRegBatchMultiThreadConfig;
+import com.sunghyun.football.config.batch.partitioning.NewFreeSubNotiBatchPartitionConfig;
 import com.sunghyun.football.domain.match.application.MatchApplication;
 import com.sunghyun.football.global.utils.MatchDateUtils;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +28,8 @@ public class SchedulerConfig {
     private final JobLauncher jobLauncher;
     private final PlatformTransactionManager manager;
     private final JobRepository jobRepository;
-//    private final FreeSubNotiRegBatchConfig freeSubNotiRegBatchConfig;
-    private final FreeSubNotiRegBatchMultiThreadConfig freeSubNotiRegBatchMultiThreadConfig;
+    private final NewFreeSubNotiBatchPartitionConfig newFreeSubNotiBatchPartitionConfig;
+//    private final FreeSubNotiBatchPartitionConfig freeSubNotiBatchPartitionConfig;
     private final MatchApplication matchApplication;
 
     @Scheduled(cron = "0/30 * * * * *" , zone = "Asia/Seoul") //30초마다
@@ -38,12 +38,11 @@ public class SchedulerConfig {
         long beforeTime = System.currentTimeMillis(); //코드 실행 전에 시간 받아오기
 
         JobParameters jobParameters= new JobParametersBuilder()
-                .addString("nowDt", MatchDateUtils.getNowDtStr())
+                .addString("startDt", MatchDateUtils.getNowDtStr())
                 .addLong("time",new Date().getTime()) //여러번 돌수 있게 세팅
                 .toJobParameters();
 
-        jobLauncher.run(freeSubNotiRegBatchMultiThreadConfig.freeSubNotiRegMultiThreadJob(jobRepository, manager),jobParameters);
-
+        jobLauncher.run(newFreeSubNotiBatchPartitionConfig.newFreeSubNotiBatchPartitionJob(jobRepository, manager),jobParameters);
 
         long afterTime = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
         long secDiffTime = (afterTime - beforeTime)/1000; //두 시간에 차 계산

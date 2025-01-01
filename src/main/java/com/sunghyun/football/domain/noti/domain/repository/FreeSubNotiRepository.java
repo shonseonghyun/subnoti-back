@@ -10,4 +10,6 @@ public interface FreeSubNotiRepository {
     List<FreeSubType> getFreeSubTypes(String email, Long matchNo);
     List<FreeSubNoti> getFreeSubNoties(Long memberNo,String nowDt);
     void delFreeSubNoti(Long notiNo);
+    long getMaxNotiNo(String startDt);
+    long getMinNotiNo(String startDt);
 }
