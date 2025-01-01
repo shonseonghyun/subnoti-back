@@ -8,6 +8,9 @@ import org.springframework.batch.item.ExecutionContext;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -18,6 +21,7 @@ public class NewNotiNoRangePartitioner implements Partitioner {
 
     @Override
     public Map<String, ExecutionContext> partition(int gridSize) {
+//        ThreadPoolExecutor threadPoolExecutor= new ThreadPoolExecutor(10, 50, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
         long min = freeSubNotiRepository.getMinNotiNo(startDt);
         long max = freeSubNotiRepository.getMaxNotiNo(startDt);
         //하나의 파티션에서 처리할 row 수 = 나머지 존재하지 않는 경우 몫, 존재하는 경우 몫+1
