@@ -97,21 +97,21 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
 
         CustomJpaPagingItemReader<FreeSubNotiEntity> reader = new CustomJpaPagingItemReader<>();
         reader.setParameterValues(parameterValues);
-//        reader.setQueryString("SELECT m FROM FreeSubNotiEntity m " +
-//                "where startDt>=:nowDt " +
-//                "order by " +
-//                "startDt desc," +
-//                "startTm desc," +
-//                "notiNo desc"
-//        );
         reader.setQueryString("SELECT m FROM FreeSubNotiEntity m " +
-                "LEFT JOIN FETCH m.freeSubNotiHistories h "+
-                "where m.startDt>=:nowDt " +
+                "where startDt>=:nowDt " +
                 "order by " +
-                "m.startDt desc," +
-                "m.startTm desc," +
-                "m.notiNo desc"
+                "startDt desc," +
+                "startTm desc," +
+                "notiNo desc"
         );
+//        reader.setQueryString("SELECT m FROM FreeSubNotiEntity m " +
+//                "LEFT JOIN FETCH m.freeSubNotiHistories h "+
+//                "where m.startDt>=:nowDt " +
+//                "order by " +
+//                "m.startDt desc," +
+//                "m.startTm desc," +
+//                "m.notiNo desc"
+//        );
 //        reader.setQueryString("SELECT h FROM FreeSubNotiHistoryEntity h " +
 //                "RIGHT JOIN FETCH h.freeSubNotiEntity m "+
 //                "where m.startDt>=:nowDt " +
