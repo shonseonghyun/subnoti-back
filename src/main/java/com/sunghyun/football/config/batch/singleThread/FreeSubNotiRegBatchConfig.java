@@ -34,7 +34,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class FreeSubNotiRegBatchConfig {
     private final EntityManagerFactory entityManagerFactory;
-    private final int chunkSize = 2;
+    private final int chunkSize = 5;
     private final PlabFootBallOpenFeignClient plabFootBallOpenFeignClient;
     private final NotiProcessor notiProcessor;
 
@@ -87,49 +87,25 @@ public class FreeSubNotiRegBatchConfig {
     @Bean
     public ItemProcessor<FreeSubNotiEntity, FreeSubNotiEntity> freeSubNotiRegProcessor(){
         return item->{
-            log.info("매치 [{}] [{}] 처리",item.getMatchName(),item.getMatchNo());
-            final String nowDt = MatchDateUtils.getNowDtStr();
+            try{
+                if(MatchDateUtils.hasAlreadyPassedOfMatch(item.getStartDt(),item.getStartTm())){
+                    log.info("매치 [{}] [{}] 처리 패스",item.getMatchName(),item.getMatchNo());
+                    return item;
+                }
 
-            //시간 예외 체크
-            /*주석 이유*/
-            /*
-               DB에서 데이터 읽어들이는 시점 부터 매치 시작일이 현재일 이상인 경우만 처리하여 읽어들이므로 주석
-             */
-/*
-            //이미 종료된 매치인 경우(매치 시작 일자 < 현재 일자)
-            if(item.getStartDt().compareTo(nowDt)<0){
-                log.info("이미 종료돤 매치이므로 제외 - 매치 시작 일자[{}]/현재 일자[{}]",item.getStartDt(),nowDt);
-                return item;
-            }
-*/
-            if(MatchDateUtils.hasAlreadyPassedOfMatch(item.getStartDt(),item.getStartTm())){
-                return item;
-            }
-//            if(item.getStartDt().compareTo(nowDt)==0){
-//                final String nowTm = MatchDateUtils.getNowTmStr();
-//                if(item.getStartTm().compareTo(nowTm)<=0){
-//                    log.info("매치 시작시간 지났으므로 제외-매치 시작 시간[{}]/현재 시간[{}]",item.getStartTm(),nowTm);
-//                    return item;
-//                }
-//            }
-
-            //플랩 통신
-            boolean isManagerSubFree=false;
-            boolean isSuperSubFree=false;
-
-//            try{
+                //플랩 통신
                 PlabMatchInfoResDto response = plabFootBallOpenFeignClient.getMatch(item.getMatchNo());
-                isManagerSubFree = Boolean.parseBoolean(response.getIs_manager_free());
-                isSuperSubFree = Boolean.parseBoolean(response.getIs_super_sub());
-//            }catch (FeignException e){
-//                log.error("FeignException 발생");
-//                log.error(e.getMessage());
-//            }
+                boolean isManagerSubFree = Boolean.parseBoolean(response.getIs_manager_free());
+                boolean isSuperSubFree = Boolean.parseBoolean(response.getIs_super_sub());
 
-            log.info("******** notiProcessor.doNotiProcess******");
-            notiProcessor.doNotiProcess(item,isManagerSubFree,isSuperSubFree);
+                notiProcessor.doNotiProcess(item,isManagerSubFree,isSuperSubFree);
 
-            return item;
+                return item;
+
+            }catch (Exception e){
+                log.error("Error processing item with notiNo [{}]: {}", item.getNotiNo(), e.getMessage());
+                return null;
+            }
         };
     }
 
