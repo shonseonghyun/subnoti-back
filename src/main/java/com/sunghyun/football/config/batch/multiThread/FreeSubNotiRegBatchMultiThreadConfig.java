@@ -37,7 +37,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class FreeSubNotiRegBatchMultiThreadConfig {
     private final EntityManagerFactory entityManagerFactory;
-    private final int chunkSize=2;
+    private final int chunkSize=5;
     private final PlabFootBallOpenFeignClient plabFootBallOpenFeignClient;
     private final NotiProcessor notiProcessor;
     private final TaskExecutor taskExecutor;
@@ -131,34 +131,25 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
     @Bean
     public ItemProcessor<FreeSubNotiEntity, FreeSubNotiEntity> freeSubNotiRegMultiThreadProcessor(){
         return item->{
-//            log.info("매치 [{}] [{}] 처리 시작",item.getMatchName(),item.getMatchNo());
+            try{
+                if(MatchDateUtils.hasAlreadyPassedOfMatch(item.getStartDt(),item.getStartTm())){
+                    log.info("매치 [{}] [{}] 처리 패스",item.getMatchName(),item.getMatchNo());
+                    return item;
+                }
 
-            //시간 예외 체크
-            /*주석 이유*/
-            /*
-               DB에서 데이터 읽어들이는 시점 부터 매치 시작일이 현재일 이상인 경우만 처리하여 읽어들이므로 주석
-             */
-/*
-            //이미 종료된 매치인 경우(매치 시작 일자 < 현재 일자)
-            if(item.getStartDt().compareTo(nowDt)<0){
-                log.info("이미 종료돤 매치이므로 제외 - 매치 시작 일자[{}]/현재 일자[{}]",item.getStartDt(),nowDt);
+                //플랩 통신
+                PlabMatchInfoResDto response = plabFootBallOpenFeignClient.getMatch(item.getMatchNo());
+                boolean isManagerSubFree = Boolean.parseBoolean(response.getIs_manager_free());
+                boolean isSuperSubFree = Boolean.parseBoolean(response.getIs_super_sub());
+
+                notiProcessor.doNotiProcess(item,isManagerSubFree,isSuperSubFree);
+
                 return item;
+
+            }catch (Exception e){
+                log.error("Error processing item with notiNo [{}]: {}", item.getNotiNo(), e.getMessage());
+                return null;
             }
-*/
-            if(MatchDateUtils.hasAlreadyPassedOfMatch(item.getStartDt(),item.getStartTm())){
-                log.info("매치 [{}] [{}] 처리 패스",item.getMatchName(),item.getMatchNo());
-                return item;
-            }
-
-            //플랩 통신
-            PlabMatchInfoResDto response = plabFootBallOpenFeignClient.getMatch(item.getMatchNo());
-            boolean isManagerSubFree = Boolean.parseBoolean(response.getIs_manager_free());
-            boolean isSuperSubFree = Boolean.parseBoolean(response.getIs_super_sub());
-
-            notiProcessor.doNotiProcess(item,isManagerSubFree,isSuperSubFree);
-
-//            log.info("매치 [{}] [{}] 처리 완료",item.getMatchName(),item.getMatchNo());
-            return item;
         };
     }
 
