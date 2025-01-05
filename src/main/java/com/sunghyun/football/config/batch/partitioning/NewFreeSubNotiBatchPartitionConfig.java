@@ -36,7 +36,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class NewFreeSubNotiBatchPartitionConfig {
     private final EntityManagerFactory entityManagerFactory;
-    private final int chunkSize=10;
+    private final int chunkSize=5;
     private final PlabFootBallOpenFeignClient plabFootBallOpenFeignClient;
     private final NotiProcessor notiProcessor;
     private final TaskExecutor taskExecutor;
@@ -92,7 +92,7 @@ public class NewFreeSubNotiBatchPartitionConfig {
                 .reader(reader(null,null))
                 .processor(processor())
                 .writer(writer())
-                .taskExecutor(taskExecutor)
+//                .taskExecutor(taskExecutor)
                 .listener(partitionListener())
                 .listener(readListener())
                 .listener(processListener())
