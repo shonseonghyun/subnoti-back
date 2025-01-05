@@ -7,9 +7,9 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Configuration
 public class TaskExecutorConfig {
-    private static int CORE_POOL_SIZE= 10;
-    private static int MAX_POOL_SIZE = 10;
-//    private static int QUEUE_CAPACITY = 100;
+    private static int CORE_POOL_SIZE= 4;
+    private static int MAX_POOL_SIZE = 8;
+    private static int QUEUE_CAPACITY = 10;
     private static String THREAD_NAME_PREFIX = "multi-thread-";
 
     @Bean
@@ -18,11 +18,11 @@ public class TaskExecutorConfig {
 
         executor.setCorePoolSize(CORE_POOL_SIZE);
         executor.setMaxPoolSize(MAX_POOL_SIZE);
-//        executor.setQueueCapacity(QUEUE_CAPACITY);
+        executor.setQueueCapacity(QUEUE_CAPACITY);
         executor.setThreadNamePrefix(THREAD_NAME_PREFIX);
         executor.setWaitForTasksToCompleteOnShutdown(Boolean.TRUE);
         executor.initialize();
-//        executor.setAllowCoreThreadTimeOut(true);
+        executor.setAllowCoreThreadTimeOut(true);
 
         return executor;
     }
