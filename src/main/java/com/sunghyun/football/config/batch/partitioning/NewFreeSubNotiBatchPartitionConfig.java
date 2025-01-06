@@ -7,6 +7,7 @@ import com.sunghyun.football.global.feign.dto.PlabMatchInfoResDto;
 import com.sunghyun.football.global.noti.NotiProcessor;
 import com.sunghyun.football.global.utils.MatchDateUtils;
 import feign.FeignException;
+import feign.RetryableException;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -97,8 +98,11 @@ public class NewFreeSubNotiBatchPartitionConfig {
                 .listener(readListener())
                 .listener(processListener())
                 .faultTolerant()
-                .skip(FeignException.class)
-                .skipLimit(100)
+                .retry(RetryableException.class) //readTimeOut 발생 시 해당 Exception 발생
+                .retryLimit(2)
+                .skip(FeignException.class) //readTimeOut retry 모두 실패 또는 404 에러 발생 시 스킵
+                .skipLimit(Integer.MAX_VALUE)
+                .processorNonTransactional()
                 .build()
                 ;
     }
@@ -127,7 +131,7 @@ public class NewFreeSubNotiBatchPartitionConfig {
 
         reader.setQueryString("SELECT m FROM FreeSubNotiEntity m " +
                                 "WHERE m.notiNo BETWEEN :minNotiNo AND :maxNotiNo " +
-                                "order by notiNo    "
+                                "order by notiNo "
                 );
 
         reader.setPageSize(chunkSize);
@@ -152,13 +156,17 @@ public class NewFreeSubNotiBatchPartitionConfig {
                 boolean isSuperSubFree = Boolean.parseBoolean(response.getIs_super_sub());
 
                 notiProcessor.doNotiProcess(item,isManagerSubFree,isSuperSubFree);
-
-                return item;
-
-            }catch (Exception e){
-                log.error("Error processing item with notiNo [{}]: {}", item.getNotiNo(), e.getMessage());
-                return null;
+//                return item;
+            }catch (RetryableException e){
+                log.info("RetryableException occurred while processing item: notiNo[{}]",item.getNotiNo());
+                log.info("{}",e.getMessage());
+                log.info("노티번호[{}] 재처리 요청",item.getNotiNo());
+                throw e;
+            }catch (FeignException e){
+                log.info("존재하지 않는 매치번호[{}]이므로 처리 패스",item.getMatchNo());
+                throw e;
             }
+            return item;
         };
     }
 
@@ -174,8 +182,7 @@ public class NewFreeSubNotiBatchPartitionConfig {
         return new ItemReadListener<FreeSubNotiEntity>() {
             @Override
             public void afterRead(FreeSubNotiEntity item) {
-                String threadName = Thread.currentThread().getName();
-                log.info("[{}]Read Item: 노티 요청 번호[{}] 매치명[{}]", threadName, item.getNotiNo(),item.getMatchName());
+                log.info("Read Item: 노티 요청 번호[{}] 매치명[{}]", item.getNotiNo(),item.getMatchName());
             }
         };
     }
@@ -184,14 +191,12 @@ public class NewFreeSubNotiBatchPartitionConfig {
         return new ItemProcessListener<FreeSubNotiEntity,FreeSubNotiEntity>() {
             @Override
             public void beforeProcess(FreeSubNotiEntity item) {
-                String threadName = Thread.currentThread().getName();
-                log.info("[{}]Start Process Item: 노티 요청 번호[{}] 매치명[{}]", threadName, item.getNotiNo(),item.getMatchName());
+                log.info("Start Process Item: 노티 요청 번호[{}] 매치명[{}]", item.getNotiNo(),item.getMatchName());
             }
 
             @Override
             public void afterProcess(FreeSubNotiEntity item, FreeSubNotiEntity result) {
-                String threadName = Thread.currentThread().getName();
-                log.info("[{}]End Process Item: 노티 요청 번호[{}] 매치명[{}]", threadName, item.getNotiNo(),item.getMatchName());
+                log.info("End Process Item: 노티 요청 번호[{}] 매치명[{}]", item.getNotiNo(),item.getMatchName());
             }
         };
     }
