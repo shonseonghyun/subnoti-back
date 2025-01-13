@@ -6,7 +6,9 @@ import com.sunghyun.football.domain.noti.domain.enums.FreeSubType;
 import com.sunghyun.football.domain.noti.infrastructure.FreeSubNotiHistoryComparator;
 import com.sunghyun.football.domain.noti.infrastructure.entity.FreeSubNotiEntity;
 import com.sunghyun.football.domain.noti.infrastructure.entity.FreeSubNotiHistoryEntity;
+import com.sunghyun.football.global.noti.mail.MailService;
 import com.sunghyun.football.global.utils.MatchDateUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -14,9 +16,9 @@ import java.util.List;
 
 @Slf4j
 @Component
-public abstract class NotiProcessor {
-
-    protected abstract void doNoti(NotiSendReqDto notiSendReqDto);
+@RequiredArgsConstructor
+public class NotiProcessor {
+    private final MailService mailService;
 
     public void doNotiProcess(FreeSubNotiEntity freeSubNotiEntity, boolean managerFreeFlg, boolean superSubFlg){
         ActiveType activeType=null;
@@ -66,7 +68,7 @@ public abstract class NotiProcessor {
         //위 조건에 따라 설정된 플래그가 모두 세팅된 경우에만 플래그의 값에 따라 a)노티 발송 및 b)히스토리 엔티티 생성
         if(activeType!=null && freeSubType!=null){
             //a)노티 발송
-            this.doNoti(
+            mailService.send(
                     NotiSendReqDto.builder()
                             .email(freeSubNotiEntity.getEmail())
                             .subject(NotiContentMaker.FreeSub.getSubject(freeSubNotiEntity,freeSubType,activeType))

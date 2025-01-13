@@ -6,15 +6,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MailNotiProcessor extends NotiProcessor {
+public class MailService{
     private final JavaMailSender javaMailSender;
 
-    public void doNoti(NotiSendReqDto notiSendReqDto){
+    @Async
+    public void send(NotiSendReqDto notiSendReqDto){
         log.info("[{}] 메일 발송",notiSendReqDto.getSubject());
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setTo(notiSendReqDto.getEmail());
@@ -22,5 +24,4 @@ public class MailNotiProcessor extends NotiProcessor {
         simpleMailMessage.setText(notiSendReqDto.getContent());
         javaMailSender.send(simpleMailMessage);
     }
-
 }
