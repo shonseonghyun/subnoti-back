@@ -22,14 +22,17 @@ public class MemberJoinReqDto {
     private String pwd;
 
     @NotNull
-    private String name;
+    private String pwdConfirm;
 
     @NotNull
+    private String name;
+
+//    @NotNull
     private String birthDt;
 
     @NotNull
     private Gender gender;
 
-    @NotNull
+//    @NotNull
     private String tel;
 }

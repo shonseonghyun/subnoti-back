@@ -18,11 +18,12 @@ import java.util.Map;
 public class AuthApi {
     private final JwtProvider jwtProvider;
 
-    @PostMapping("/refresh")
+    @PostMapping("/reissue")
     public ApiResponseDto issueNewAccessToken(@RequestBody Map<String,String> map){
         final String refreshToken = map.get("refreshToken");
 
         String newAccessToken = jwtProvider.generateNewAccessTokenWithRefreshToken(refreshToken);
+//        String newAccessToken = jwtProvider.generateNewAccessTokenWithRefreshToken(refreshToken);
 
         return ApiResponseDto.toResponse(ErrorCode.SUCCESS,new TokenResDto(newAccessToken,refreshToken));
     }

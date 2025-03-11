@@ -6,6 +6,7 @@ plugins {
 	id "org.asciidoctor.jvm.convert" version "3.3.2"  // (1)
 }
 
+
 group = 'com.sunghyun'
 version = '0.0.1-SNAPSHOT'
 
@@ -115,4 +116,9 @@ dependencyManagement {
 
 build {
 	dependsOn copyDocument
+}
+
+jar {
+//	enable = false //SNAPSHOT-plain.jar 생성 방지
+	enabled= false //SNAPSHOT-plain.jar 생성 방지
 }

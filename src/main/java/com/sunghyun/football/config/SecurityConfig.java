@@ -103,6 +103,7 @@ public class SecurityConfig{
                 .authorizeHttpRequests(authorizeRequest-> authorizeRequest
 //                                .requestMatchers("/**").permitAll()
                                 .requestMatchers(HttpMethod.DELETE,"/api/v1/member/**").hasAuthority(Role.USER.name())
+                                .requestMatchers("/api/v1/noti/**").hasAuthority(Role.USER.name())
                                 .requestMatchers("/api/v1/manager/**").hasAnyAuthority(Role.MANAGER.name())
                                 .requestMatchers("/api/v1/admin/**").hasAnyAuthority(Role.ADMIN.name())
                                 .anyRequest().permitAll()
