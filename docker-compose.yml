@@ -1,0 +1,28 @@
+services:
+#  db:
+#    image: mysql
+#    container_name: mysql-server
+#    restart: always
+#    environment:
+#      MYSQL_ROOT_PASSWORD: 1234
+#    ports:
+#      - "3306:3306"
+#    volumes:
+#      - /home/mysql/data:/var/lib/mysql
+#      - /home/mysql/conf.d:/etc/mysql/conf.d/
+#      - /home/mysql/initdb.d:/docker-entrypoint-initdb.d
+  spring-boot-app:
+    container_name: back-server
+    image: ${BACK_SERVER_IMAGE_NAME}:${BUILD_NUMBER}
+    environment:
+      SPRING_PROFILE: prod
+      SPRING_PORT: ${SPRING_PORT}
+      DATABASE_USERNAME : ${DATABASE_USERNAME}
+      DATABASE_PASSWORD : ${DATABASE_PASSWORD}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - ${SPRING_PORT}:${SPRING_PORT}
+
+
