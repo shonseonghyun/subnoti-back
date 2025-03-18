@@ -13,7 +13,7 @@ services:
 #      - /home/mysql/initdb.d:/docker-entrypoint-initdb.d
   spring-boot-app:
     container_name: back-server
-    image: ${BACK_SERVER_IMAGE_NAME}:${BUILD_NUMBER}
+    image: ${BACK_SERVER_IMAGE_NAME}:${BUILD_NUMBER}-2
     environment:
       SPRING_PROFILE: prod
       SPRING_PORT: ${SPRING_PORT}
