@@ -11,6 +11,8 @@ services:
       - /home/mysql/data:/var/lib/mysql
       - /home/mysql/conf.d:/etc/mysql/conf.d/
       - /home/mysql/initdb.d:/docker-entrypoint-initdb.d
+#    healthcheck:
+#      test: [ "CMD-SHELL", "pg_isready -h mysql_db -p 3306" ]
     networks:
       - our_network
 
@@ -28,6 +30,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - ${SPRING_PORT}:${SPRING_PORT}
+    depends_on:
+      - mysql_db
     networks:
       - our_network
 
