@@ -11,8 +11,8 @@ services:
       - /home/mysql/data:/var/lib/mysql
       - /home/mysql/conf.d:/etc/mysql/conf.d/
       - /home/mysql/initdb.d:/docker-entrypoint-initdb.d
-#    healthcheck:
-#      test: [ "CMD-SHELL", "pg_isready -h mysql_db -p 3306" ]
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -h mysql_db -p 3306" ]
     networks:
       - our_network
 
@@ -31,7 +31,8 @@ services:
     ports:
       - ${SPRING_PORT}:${SPRING_PORT}
     depends_on:
-      - mysql_db
+      mysql_db : # mysql_db에 의존성 존재
+        condition: service_healthy # mysql_db 헬스체크 성공 시 해당 서비스 실행
     networks:
       - our_network
 
