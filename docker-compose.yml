@@ -12,7 +12,7 @@ services:
       - /home/mysql/conf.d:/etc/mysql/conf.d/
       - /home/mysql/initdb.d:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-p' , ${DATABASE_PASSWORD}]
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-p${DATABASE_PASSWORD}']
     networks:
       - our_network
 
