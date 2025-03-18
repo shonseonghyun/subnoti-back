@@ -2,7 +2,7 @@ services:
   db:
     image: mysql:latest
     container_name: mysql-server
-    restart: always
+#    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
     ports:
