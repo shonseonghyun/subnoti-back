@@ -11,8 +11,8 @@ services:
       - /home/mysql/data:/var/lib/mysql
       - /home/mysql/conf.d:/etc/mysql/conf.d/
       - /home/mysql/initdb.d:/docker-entrypoint-initdb.d
-#    networks:
-#      - our_network
+    networks:
+      - our_network
 
   spring-boot-app:
     container_name: back-server
@@ -28,11 +28,11 @@ services:
       dockerfile: Dockerfile
     ports:
       - ${SPRING_PORT}:${SPRING_PORT}
-#    networks:
-#      - our_network
+    networks:
+      - our_network
 
-#networks: # 네트워크 지정
-#  our_network:
+networks: # 네트워크 지정
+  our_network:
 
 
 
