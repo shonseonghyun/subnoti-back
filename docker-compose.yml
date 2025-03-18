@@ -32,7 +32,7 @@ services:
       - our_network
 
   networks: # 네트워크 지정
-    our_network
+    our_network:
 
 
 
