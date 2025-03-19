@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -25,6 +26,9 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Slf4j
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+
+    @Value("${IP_ADDRESS:'localhost'}")
+    String domain;
 
     private final ObjectMapper om;
     private final JwtProvider jwtProvider;
@@ -53,8 +57,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         //토큰 쿠키
         Cookie cookieForAccessToken  = new Cookie("accessToken",accessToken);
         Cookie cookieForRefreshToken  = new Cookie("refreshToken",refreshToken);
-        cookieForAccessToken.setDomain("localhost");
-        cookieForRefreshToken.setDomain("localhost");
+        cookieForAccessToken.setDomain(domain);
+        cookieForRefreshToken.setDomain(domain);
         cookieForAccessToken.setPath("/");
         cookieForRefreshToken.setPath("/");
         response.addCookie(cookieForAccessToken);
