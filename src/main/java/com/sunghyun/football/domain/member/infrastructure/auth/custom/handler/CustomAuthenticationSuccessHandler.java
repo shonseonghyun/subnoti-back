@@ -27,7 +27,7 @@ import java.io.IOException;
 @Slf4j
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    @Value("${IP_ADDRESS:'localhost'}")
+    @Value("${IP_ADDRESS:localhost}")
     String domain;
 
     private final ObjectMapper om;
@@ -57,6 +57,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         //토큰 쿠키
         Cookie cookieForAccessToken  = new Cookie("accessToken",accessToken);
         Cookie cookieForRefreshToken  = new Cookie("refreshToken",refreshToken);
+        log.error("domain={}",domain);
         cookieForAccessToken.setDomain(domain);
         cookieForRefreshToken.setDomain(domain);
         cookieForAccessToken.setPath("/");
