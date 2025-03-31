@@ -37,6 +37,19 @@ public class FreeSubNotiRepositoryImpl implements FreeSubNotiRepository {
     }
 
     @Override
+    public List<FreeSubNoti> getFreeSubNotiesByDate(Long memberNo, String selectedDt) {
+        return springJpaMatchFreeSubNotiRepository.findByMemberNoAndStartDt(memberNo,selectedDt)
+                .stream()
+                .map(FreeSubNotiEntity::toModel)
+                .toList();
+    }
+
+    @Override
+    public List<String> getNotiRegDtsByDt(Long memberNo, String startDt, String endDt) {
+        return springJpaMatchFreeSubNotiRepository.findDatesByMemberNoAndDates(memberNo,startDt,endDt);
+    }
+
+    @Override
     public void delFreeSubNoti(Long notiNo) {
         springJpaMatchFreeSubNotiRepository.deleteById(notiNo);
     }

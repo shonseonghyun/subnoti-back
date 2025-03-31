@@ -11,4 +11,10 @@ public interface SpringJpaMatchFreeSubNotiRepository extends JpaRepository<FreeS
 
     @Query("SELECT m FROM FreeSubNotiEntity m where m.memberNo = :memberNo and m.startDt >= :nowDt")
     List<FreeSubNotiEntity> findByMemberNoAndStartDtAfterToday(Long memberNo,String nowDt);
+
+    @Query("SELECT distinct(m.startDt) FROM FreeSubNotiEntity m where m.memberNo = :memberNo and m.startDt between :startDt and :endDt")
+    List<String> findDatesByMemberNoAndDates(Long memberNo,String startDt,String endDt);
+
+    @Query("SELECT m FROM FreeSubNotiEntity m where m.memberNo = :memberNo and m.startDt = :startDt")
+    List<FreeSubNotiEntity> findByMemberNoAndStartDt(Long memberNo,String startDt);
 }

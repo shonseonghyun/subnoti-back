@@ -69,4 +69,15 @@ public class NotiApplication {
     public void delFreeSubNoti(Long notiNo) {
         freeSubNotiRepository.delFreeSubNoti(notiNo);
     }
+
+    public List<String> getNotiRegDtsByDt(final Long memberNo,final String startDt,final String endDt){
+        return freeSubNotiRepository.getNotiRegDtsByDt(memberNo,startDt,endDt);
+    }
+
+    public List<SelectFreeSubNotiResDto> getFreeSubNotiesByDate(final Long memberNo, final String selectedDate){
+        return freeSubNotiRepository.getFreeSubNotiesByDate(memberNo,selectedDate)
+                .stream()
+                .map(SelectFreeSubNotiResDto::toDto)
+                .toList();
+    }
 }

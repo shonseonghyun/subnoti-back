@@ -17,13 +17,13 @@ import java.util.List;
 @RequestMapping("/api/v1/noti")
 @RequiredArgsConstructor
 public class NotiApi {
-    private final EnumMapper enumSubTypesMapper;
+//    private final EnumMapper enumSubTypesMapper;
     private final NotiApplication notiApplication;
 
-    @GetMapping("/freeSub/types")
-    public ApiResponseDto getSubTypes(){
-        return ApiResponseDto.toResponse(ErrorCode.SUCCESS,enumSubTypesMapper.getAll());
-    }
+//    @GetMapping("/freeSub/types")
+//    public ApiResponseDto getSubTypes(){
+//        return ApiResponseDto.toResponse(ErrorCode.SUCCESS,enumSubTypesMapper.getAll());
+//    }
 
     @PostMapping("/freeSub")
     public ApiResponseDto regFreeSubNoti(@Valid @RequestBody final FreeSubNotiRegReqDto freeSubNotiRegReqDto){
@@ -46,4 +46,15 @@ public class NotiApi {
         return ApiResponseDto.toResponse(ErrorCode.SUCCESS);
     }
 
+    @RequestMapping("/freeSub/member/{memberNo}/dates")
+    public ApiResponseDto getNotiRegDtsByDt(@PathVariable final Long memberNo,@RequestParam String startDt,@RequestParam String endDt){
+        List<String> regDates = notiApplication.getNotiRegDtsByDt(memberNo,startDt,endDt);
+        return ApiResponseDto.toResponse(ErrorCode.SUCCESS,regDates);
+    }
+
+    @RequestMapping("/freeSub/member/{memberNo}/date/{selectedDt}")
+    public ApiResponseDto getFreeSubNotiesByDate(@PathVariable final Long memberNo,@PathVariable final String selectedDt){
+        List<SelectFreeSubNotiResDto> result = notiApplication.getFreeSubNotiesByDate(memberNo,selectedDt);
+        return ApiResponseDto.toResponse(ErrorCode.SUCCESS,result);
+    }
 }
