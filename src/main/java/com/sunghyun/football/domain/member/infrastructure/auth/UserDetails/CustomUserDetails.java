@@ -34,6 +34,8 @@ public class CustomUserDetails implements UserDetails {
         return memberNo;
     }
 
+    public String getName(){return name;}
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;

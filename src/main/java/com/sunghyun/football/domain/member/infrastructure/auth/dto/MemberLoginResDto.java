@@ -9,11 +9,13 @@ import lombok.NoArgsConstructor;
 public class MemberLoginResDto {
     private Long memberNo;
     private String email;
+    private String name;
 
     public static MemberLoginResDto from(CustomUserDetails customUserDetails){
         MemberLoginResDto memberLoginResDto = new MemberLoginResDto();
         memberLoginResDto.email=customUserDetails.getUsername();
         memberLoginResDto.memberNo=customUserDetails.getMemberNo();
+        memberLoginResDto.name = customUserDetails.getName();
         return memberLoginResDto;
     }
 }
