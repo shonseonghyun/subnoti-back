@@ -8,8 +8,6 @@ import com.sunghyun.football.domain.member.domain.enums.MemberLevelType;
 import com.sunghyun.football.domain.member.domain.enums.Role;
 import com.sunghyun.football.domain.member.domain.repository.MemberRepository;
 import com.sunghyun.football.domain.member.domain.service.MemberDuplicationChecker;
-import com.sunghyun.football.global.exception.ErrorCode;
-import com.sunghyun.football.global.exception.exceptions.member.JoinException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,18 +27,12 @@ public class JoinService {
     @Transactional(readOnly = true)
     public boolean checkEmailDuplication(String email){
         Optional<Member> selectedMember = memberRepository.findByEmail(email);
-
-        if(selectedMember.isPresent()){
-            return true;
-        }
-        return false;
+        return selectedMember.isPresent();
     }
 
     @Transactional
     public MemberJoinResDto join(MemberJoinReqDto memberJoinReqDto) {
-        if(memberDuplicationChecker.checkDuplicatiedFields(memberJoinReqDto)){
-            throw new JoinException(ErrorCode.DUPLICATED_REGISTER);
-        }
+        memberDuplicationChecker.checkDuplicatiedFields(memberJoinReqDto);
 
         //여기다 도메인 생성을 두자니 난잡한데...
         //그렇다고 도메인생성을 도메인에게 위임하고 MemberJoinReqDto를 파라미터로 넘기자니 패키지 양방향 의존관계되서 안된다..
