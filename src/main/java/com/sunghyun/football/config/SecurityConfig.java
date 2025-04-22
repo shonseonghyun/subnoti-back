@@ -102,7 +102,8 @@ public class SecurityConfig{
                 .headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .authorizeHttpRequests(authorizeRequest-> authorizeRequest
 //                                .requestMatchers("/**").permitAll()
-                                .requestMatchers(HttpMethod.DELETE,"/api/v1/member/**").hasAuthority(Role.USER.name())
+                                .requestMatchers("/api/v1/member/email/**").permitAll()
+                                .requestMatchers("/api/v1/member/**").hasAuthority(Role.USER.name())
                                 .requestMatchers("/api/v1/noti/**").hasAuthority(Role.USER.name())
                                 .requestMatchers("/api/v1/manager/**").hasAnyAuthority(Role.MANAGER.name())
                                 .requestMatchers("/api/v1/admin/**").hasAnyAuthority(Role.ADMIN.name())

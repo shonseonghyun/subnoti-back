@@ -31,8 +31,8 @@ public class MemberApi {
     }
 
     @PutMapping("/{memberNo}")
-    public ApiResponseDto update(@RequestBody MemberUpdReqDto memberUpdReqDto){
-        memberApplication.updateMember(memberUpdReqDto);
+    public ApiResponseDto update(@PathVariable("memberNo") final Long memberNo,@RequestBody @Valid final MemberUpdReqDto memberUpdReqDto){
+        memberApplication.updateMember(memberNo,memberUpdReqDto);
         return ApiResponseDto.toResponse(ErrorCode.SUCCESS);
     }
 

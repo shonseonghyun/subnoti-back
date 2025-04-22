@@ -2,11 +2,9 @@ package com.sunghyun.football.domain.noti.api;
 
 import com.sunghyun.football.domain.noti.application.NotiApplication;
 import com.sunghyun.football.domain.noti.application.dto.FreeSubNotiRegReqDto;
-import com.sunghyun.football.domain.noti.application.dto.SelectFreeSubNotiResDto;
-import com.sunghyun.football.domain.stadium.enums.EnumMapper;
+import com.sunghyun.football.domain.noti.application.dto.FreeSubNotiSelectResDto;
 import com.sunghyun.football.global.exception.ErrorCode;
 import com.sunghyun.football.global.response.ApiResponseDto;
-import com.sunghyun.football.global.utils.MatchDateUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -31,15 +29,6 @@ public class NotiApi {
         return ApiResponseDto.toResponse(ErrorCode.SUCCESS);
     }
 
-    @GetMapping("/freeSub/member/{memberNo}")
-    public ApiResponseDto getFreeSubNoties(@Valid @PathVariable final Long memberNo){
-//      public ApiResponseDto getFreeSubNoties(@Valid @RequestBody FreeSubNotiSelectReqDto freeSubNotiSelectReqDto){
-//        List<SelectFreeSubNotiResDto> result = notiApplication.getFreeSubNoties(freeSubNotiSelectReqDto.getMemberNo());
-        final String nowDt = MatchDateUtils.getNowDtStr();
-        List<SelectFreeSubNotiResDto> result = notiApplication.getFreeSubNoties(memberNo,nowDt);
-        return ApiResponseDto.toResponse(ErrorCode.SUCCESS,result);
-    }
-
     @DeleteMapping("/freeSub/{notiNo}")
     public ApiResponseDto delFreeSubNoti(@PathVariable final Long notiNo){
         notiApplication.delFreeSubNoti(notiNo);
@@ -53,8 +42,13 @@ public class NotiApi {
     }
 
     @RequestMapping("/freeSub/member/{memberNo}/date/{selectedDt}")
-    public ApiResponseDto getFreeSubNotiesByDate(@PathVariable final Long memberNo,@PathVariable final String selectedDt){
-        List<SelectFreeSubNotiResDto> result = notiApplication.getFreeSubNotiesByDate(memberNo,selectedDt);
+    public ApiResponseDto getFreeSubNotiesByDate(
+                                                @PathVariable final Long memberNo,
+                                                @PathVariable final String selectedDt,
+                                                @RequestParam(defaultValue = "2") Integer pageSize,
+                                                @RequestParam(required = false) Long notiNo
+    ){
+        FreeSubNotiSelectResDto result = notiApplication.getFreeSubNotiesByDate(memberNo,selectedDt,notiNo,pageSize);
         return ApiResponseDto.toResponse(ErrorCode.SUCCESS,result);
     }
 }

@@ -1,12 +1,12 @@
 package com.sunghyun.football.domain.member.domain;
 
 
-import com.sunghyun.football.domain.member.domain.dto.MemberUpdReqDto;
 import com.sunghyun.football.domain.member.domain.enums.Gender;
 import com.sunghyun.football.domain.member.domain.enums.MemberLevelType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -18,32 +18,36 @@ public class Member {
 
     private String email;
 
+//    @Merge
     private String pwd;
 
+//    @Merge
     private String name;
 
+//    @Merge
     private String birthDt;
 
+//    @Merge
     private Gender gender;
 
+//    @Merge
     private String tel;
 
     private MemberLevelType level;
 
     private List<MemberRole> role;
 
-    public void updateMember(MemberUpdReqDto memberUpdReqDto){
-        if(!(memberUpdReqDto.getMemberLevelType()==null)){
-            changeMemberLevel(memberUpdReqDto.getMemberLevelType());
+    public void updateMember(final String name, final Gender gender, final String tel){
+        if (StringUtils.hasText(name)) {
+            changeName(name);
         }
-        if(!(memberUpdReqDto.getName().isEmpty())){
-            changeName(memberUpdReqDto.getName());
+
+        if (gender != null) {
+            changeGender(gender);
         }
-        if(!(memberUpdReqDto.getPwd().isEmpty())){
-            changePwd(memberUpdReqDto.getPwd());
-        }
-        if(!(memberUpdReqDto.getGender()==null)){
-            changeGender(memberUpdReqDto.getGender());
+
+        if (StringUtils.hasText(tel)) {
+            changeTel(tel);
         }
     }
 
@@ -55,11 +59,11 @@ public class Member {
         this.gender= gender;
     }
 
-    private void changePwd(String pwd){
+    public void changePwd(String pwd){
         this.pwd= pwd;
     }
 
-    private void changeMemberLevel(MemberLevelType level){
-        this.level= level;
+    private void changeTel(String tel){
+        this.tel= tel;
     }
 }

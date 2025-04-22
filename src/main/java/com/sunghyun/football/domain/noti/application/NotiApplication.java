@@ -1,7 +1,8 @@
 package com.sunghyun.football.domain.noti.application;
 
 import com.sunghyun.football.domain.noti.application.dto.FreeSubNotiRegReqDto;
-import com.sunghyun.football.domain.noti.application.dto.SelectFreeSubNotiResDto;
+import com.sunghyun.football.domain.noti.application.dto.FreeSubNotiListDto;
+import com.sunghyun.football.domain.noti.application.dto.FreeSubNotiSelectResDto;
 import com.sunghyun.football.domain.noti.domain.FreeSubNoti;
 import com.sunghyun.football.domain.noti.domain.repository.FreeSubNotiRepository;
 import com.sunghyun.football.global.exception.ErrorCode;
@@ -58,14 +59,6 @@ public class NotiApplication {
         freeSubNotiRepository.save(freeSubNoti);
     }
 
-    public List<SelectFreeSubNotiResDto> getFreeSubNoties(Long memberNo,String nowDt) {
-        return freeSubNotiRepository.getFreeSubNoties(memberNo,nowDt)
-                .stream()
-                .map(SelectFreeSubNotiResDto::toDto)
-                .toList()
-                ;
-    }
-
     public void delFreeSubNoti(Long notiNo) {
         freeSubNotiRepository.delFreeSubNoti(notiNo);
     }
@@ -74,10 +67,13 @@ public class NotiApplication {
         return freeSubNotiRepository.getNotiRegDtsByDt(memberNo,startDt,endDt);
     }
 
-    public List<SelectFreeSubNotiResDto> getFreeSubNotiesByDate(final Long memberNo, final String selectedDate){
-        return freeSubNotiRepository.getFreeSubNotiesByDate(memberNo,selectedDate)
+    public FreeSubNotiSelectResDto getFreeSubNotiesByDate(final Long memberNo, final String selectedDate, final Long notiNo, final int pageSize){
+        List<FreeSubNotiListDto> list=  freeSubNotiRepository.getFreeSubNotiesByDate(memberNo,selectedDate,notiNo,pageSize)
                 .stream()
-                .map(SelectFreeSubNotiResDto::toDto)
+                .map(FreeSubNotiListDto::toDto)
                 .toList();
+        Long nextNotiNo = list.stream().mapToLong(FreeSubNotiListDto::getNotiNo).min().orElse(0);
+
+        return new FreeSubNotiSelectResDto(nextNotiNo,list);
     }
 }
