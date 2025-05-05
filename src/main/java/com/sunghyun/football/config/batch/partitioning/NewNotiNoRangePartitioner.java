@@ -6,11 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.item.ExecutionContext;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,8 +20,16 @@ public class NewNotiNoRangePartitioner implements Partitioner {
     @Override
     public Map<String, ExecutionContext> partition(int gridSize) {
 //        ThreadPoolExecutor threadPoolExecutor= new ThreadPoolExecutor(10, 50, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
-        long min = freeSubNotiRepository.getMinNotiNo(startDt);
-        long max = freeSubNotiRepository.getMaxNotiNo(startDt);
+        long min = freeSubNotiRepository.getMinNotiNo(startDt)
+                .orElse(0L);
+        long max = freeSubNotiRepository.getMaxNotiNo(startDt)
+                .orElse(0L);
+
+        if (min == 0L || max == 0L) {
+            log.info("partitioner 조회 대상이 존재하지 않습니다.");
+            return Collections.emptyMap(); // 이러면 해당 Step은 실행되지 않음
+        }
+
         //하나의 파티션에서 처리할 row 수 = 나머지 존재하지 않는 경우 몫, 존재하는 경우 몫+1
         long targetSize =  (max-min+1)%gridSize==0 ? (max-min+1)/gridSize : (max-min+1)/gridSize+1;
 

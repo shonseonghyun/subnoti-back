@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -42,12 +43,12 @@ public class FreeSubNotiRepositoryImpl implements FreeSubNotiRepository {
     }
 
     @Override
-    public long getMaxNotiNo(String startDt) {
+    public Optional<Long> getMaxNotiNo(String startDt) {
         return springJpaMatchFreeSubNotiRepository.findMaxNotiNoByStartDt(startDt);
     }
 
     @Override
-    public long getMinNotiNo(String startDt) {
+    public Optional<Long> getMinNotiNo(String startDt) {
         return springJpaMatchFreeSubNotiRepository.findMinNotiNoByStartDt(startDt);
     }
 }
