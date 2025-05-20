@@ -39,6 +39,7 @@ public class FreeSubNotiEntity {
 
     @OneToMany(cascade = {CascadeType.MERGE}
 //            ,mappedBy = "matchFreeSubNotiEntity"
+            ,fetch = FetchType.EAGER
     )
     @JoinColumn(name = "notiNo")
     private List<FreeSubNotiHistoryEntity> freeSubNotiHistories;
