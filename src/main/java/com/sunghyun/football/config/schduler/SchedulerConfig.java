@@ -1,6 +1,6 @@
 package com.sunghyun.football.config.schduler;
 
-import com.sunghyun.football.config.batch.FreeSubNotiRegBatchMultiThreadConfig;
+import com.sunghyun.football.config.batch.multiThread.FreeSubNotiRegBatchMultiThreadConfig;
 import com.sunghyun.football.domain.match.application.MatchApplication;
 import com.sunghyun.football.global.utils.MatchDateUtils;
 import lombok.RequiredArgsConstructor;
