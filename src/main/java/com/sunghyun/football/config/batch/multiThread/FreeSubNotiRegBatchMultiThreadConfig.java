@@ -1,6 +1,5 @@
 package com.sunghyun.football.config.batch.multiThread;
 
-import com.sunghyun.football.config.batch.reader.CustomJpaPagingItemReader;
 import com.sunghyun.football.domain.noti.infrastructure.entity.FreeSubNotiEntity;
 import com.sunghyun.football.global.feign.PlabFootBallOpenFeignClient;
 import com.sunghyun.football.global.feign.dto.PlabMatchInfoResDto;
@@ -10,10 +9,7 @@ import feign.FeignException;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.ItemProcessListener;
-import org.springframework.batch.core.ItemReadListener;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
+import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
@@ -23,6 +19,7 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.AbstractPagingItemReader;
 import org.springframework.batch.item.database.JpaItemWriter;
+import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,7 +34,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class FreeSubNotiRegBatchMultiThreadConfig {
     private final EntityManagerFactory entityManagerFactory;
-    private final int chunkSize=2;
+    private final int chunkSize=4;
     private final PlabFootBallOpenFeignClient plabFootBallOpenFeignClient;
     private final NotiProcessor notiProcessor;
     private final TaskExecutor taskExecutor;
@@ -60,12 +57,13 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
                 .processor(freeSubNotiRegMultiThreadProcessor())
                 .writer(freeSubNotiRegMultiThreadWriter())
                 .taskExecutor(taskExecutor)
-//                .throttleLimit(4)
                 .listener(readListener())
                 .listener(processListener())
                 .faultTolerant()
                 .skip(FeignException.class)
                 .skipLimit(100)
+                .noRollback(FeignException.class)
+                .listener(skipListener()) //SkipListener은 반드시 faultTolerant 뒤에 위치해야 함
                 .build()
                 ;
     }
@@ -73,59 +71,29 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
     @Bean
     @StepScope
     public AbstractPagingItemReader<FreeSubNotiEntity> freeSubNotiRegMultiThreadReader(@Value("#{jobParameters[nowDt]}") String nowDt){
-//        Map<String,Object> parameterValues = new HashMap<>();
-//        parameterValues.put("nowDt",nowDt);
-//
-//        JpaPagingItemReader reader= new JpaPagingItemReaderBuilder<FreeSubNotiEntity>()
-//                .parameterValues(parameterValues)
-//                .queryString("SELECT m FROM FreeSubNotiEntity m " +
-//                                "where startDt>=:nowDt " +
-//                                "order by " +
-//                                "startDt desc," +
-//                                "startTm desc," +
-//                                "notiNo desc"
-//                )
-//                .entityManagerFactory(entityManagerFactory)
-//                .name("JpaPagingItemReader")
-//                .pageSize(chunkSize)
-//                .saveState(false)
-//                .build();
-//
-//        return reader;
         Map<String,Object> parameterValues = new HashMap<>();
-        parameterValues.put("nowDt",nowDt);
+        parameterValues.put("nowDt", nowDt);
 
-        CustomJpaPagingItemReader<FreeSubNotiEntity> reader = new CustomJpaPagingItemReader<>();
-        reader.setParameterValues(parameterValues);
-//        reader.setQueryString("SELECT m FROM FreeSubNotiEntity m " +
-//                "where startDt>=:nowDt " +
-//                "order by " +
-//                "startDt desc," +
-//                "startTm desc," +
-//                "notiNo desc"
-//        );
-        reader.setQueryString("SELECT m FROM FreeSubNotiEntity m " +
-                "LEFT JOIN FETCH m.freeSubNotiHistories h "+
-                "where m.startDt>=:nowDt " +
-                "order by " +
-                "m.startDt desc," +
-                "m.startTm desc," +
-                "m.notiNo desc"
-        );
-//        reader.setQueryString("SELECT h FROM FreeSubNotiHistoryEntity h " +
-//                "RIGHT JOIN FETCH h.freeSubNotiEntity m "+
-//                "where m.startDt>=:nowDt " +
-//                "order by " +
-//                "m.startDt desc," +
-//                "m.startTm desc," +
-//                "m.notiNo desc"
-//        );
-        reader.setPageSize(chunkSize);
-        reader.setEntityManagerFactory(entityManagerFactory);
-        reader.setName("customPagingReader");
-        reader.setSaveState(false);
-
-        return reader;
+        return new JpaPagingItemReaderBuilder<FreeSubNotiEntity>()
+                .parameterValues(parameterValues)
+                .queryString("SELECT m FROM FreeSubNotiEntity m " +
+                    "LEFT JOIN FETCH m.freeSubNotiHistories h "+
+                    "where m.startDt>=:nowDt " +
+                    "order by " +
+                    "m.startDt desc," +
+                    "m.startTm desc," +
+                    "m.notiNo desc"
+                )
+//                .queryString(
+//                        "SELECT m FROM FreeSubNotiEntity m " +
+//                                "WHERE m.startDt>=:nowDt " +
+//                                "ORDER BY m.startDt DESC, m.startTm DESC, m.notiNo DESC"
+//                )
+                .entityManagerFactory(entityManagerFactory)
+                .name("JpaPagingItemReader")
+                .pageSize(chunkSize)
+                .saveState(false)
+                .build();
     }
 
     @Bean
@@ -146,12 +114,13 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
             }
 */
             if(MatchDateUtils.hasAlreadyPassedOfMatch(item.getStartDt(),item.getStartTm())){
-                log.info("매치 [{}] [{}] 처리 패스",item.getMatchName(),item.getMatchNo());
+                log.info("노티 요청번호 [{}] 매치명[{}] 처리 패스",item.getNotiNo(),item.getMatchName());
                 return item;
             }
 
             //플랩 통신
             PlabMatchInfoResDto response = plabFootBallOpenFeignClient.getMatch(item.getMatchNo());
+
             boolean isManagerSubFree = Boolean.parseBoolean(response.getIs_manager_free());
             boolean isSuperSubFree = Boolean.parseBoolean(response.getIs_super_sub());
 
@@ -193,8 +162,32 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
                 String threadName = Thread.currentThread().getName();
                 log.info("[{}]End Process Item: 노티 요청 번호[{}] 매치명[{}]", threadName, item.getNotiNo(),item.getMatchName());
             }
+
+//            @Override
+//            public void onProcessError(FreeSubNotiEntity item, Exception e) {
+//                log.warn("[{}]Skip Item: 노티 요청 번호[{}] 매치명[{}]: [{}]", Thread.currentThread().getName(), item.getNotiNo(),item.getMatchName(),e.getMessage());
+//            }
         };
+    }
 
+    @Bean
+    public SkipListener<FreeSubNotiEntity, FreeSubNotiEntity> skipListener() {
+        return new SkipListener<>() {
+//            @Override
+//            public void onSkipInRead(Throwable t) {
+//                // 읽기 단계에서 skip 되었을 때
+//            }
 
+//            @Override
+//            public void onSkipInWrite(FreeSubNotiEntity item, Throwable t) {
+//                // 쓰기 단계에서 skip 되었을 때
+//            }
+
+            @Override
+            public void onSkipInProcess(FreeSubNotiEntity item, Throwable t) {
+                // 처리 단계(process)에서 skip 되었을 때
+                log.warn("[{}]Skip Item 노티 요청 번호[{}] 매치명[{}]: [{}]", Thread.currentThread().getName(), item.getNotiNo(),item.getMatchName(),t.getMessage());
+            }
+        };
     }
 }
