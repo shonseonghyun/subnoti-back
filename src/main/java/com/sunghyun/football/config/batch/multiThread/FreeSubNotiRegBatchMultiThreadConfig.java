@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,7 +62,8 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
                 .listener(processListener())
                 .faultTolerant()
                 .skip(FeignException.class)
-                .skipLimit(100)
+                .skip(SocketTimeoutException.class)
+                .skipLimit(Integer.MAX_VALUE)
                 .noRollback(FeignException.class)
                 .listener(skipListener()) //SkipListener은 반드시 faultTolerant 뒤에 위치해야 함
                 .build()
