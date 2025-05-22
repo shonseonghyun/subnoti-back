@@ -15,6 +15,8 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.AbstractPagingItemReader;
@@ -60,11 +62,14 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
                 .taskExecutor(taskExecutor)
                 .listener(readListener())
                 .listener(processListener())
+                .listener(writerListener())
                 .faultTolerant()
                 .skip(FeignException.class)
                 .skip(SocketTimeoutException.class)
                 .skipLimit(Integer.MAX_VALUE)
-                .noRollback(FeignException.class)
+                .processorNonTransactional()
+                .noRollback(FeignException.class) // FeignException이 터져도 “Chunk 트랜잭션을 아예 롤백하지 않고” 바로 다음 아이템으로 넘어가기 때문에, 불필요한 롤백·재시도 사이클이 사라집니다(롤백 & 재시도 오버헤드 제거, Cursor 재조정 비용 감소, 트랜잭션 관리 콜백 비용 절감)
+                .noRollback(SocketTimeoutException.class) // FeignException이 터져도 “Chunk 트랜잭션을 아예 롤백하지 않고” 바로 다음 아이템으로 넘어가기 때문에, 불필요한 롤백·재시도 사이클이 사라집니다(롤백 & 재시도 오버헤드 제거, Cursor 재조정 비용 감소, 트랜잭션 관리 콜백 비용 절감)
                 .listener(skipListener()) //SkipListener은 반드시 faultTolerant 뒤에 위치해야 함
                 .build()
                 ;
@@ -137,7 +142,6 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
     public ItemWriter<FreeSubNotiEntity> freeSubNotiRegMultiThreadWriter(){
         JpaItemWriter<FreeSubNotiEntity> writer = new JpaItemWriter<>();
         writer.setEntityManagerFactory(entityManagerFactory);
-
         return writer;
     }
 
@@ -169,6 +173,17 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
 //            public void onProcessError(FreeSubNotiEntity item, Exception e) {
 //                log.warn("[{}]Skip Item: 노티 요청 번호[{}] 매치명[{}]: [{}]", Thread.currentThread().getName(), item.getNotiNo(),item.getMatchName(),e.getMessage());
 //            }
+        };
+    }
+
+    public ItemWriteListener<FreeSubNotiEntity> writerListener(){
+        return new ItemWriteListener<FreeSubNotiEntity>() {
+            @Override
+            public void beforeWrite(Chunk<? extends FreeSubNotiEntity> items) {
+                for(FreeSubNotiEntity item:items){
+                    log.info("[{}]Write Item: 노티 요청 번호[{}] 매치명[{}]", Thread.currentThread().getName(), item.getNotiNo(),item.getMatchName());
+                }
+            }
         };
     }
 
