@@ -83,19 +83,19 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
 
         return new JpaPagingItemReaderBuilder<FreeSubNotiEntity>()
                 .parameterValues(parameterValues)
-                .queryString("SELECT m FROM FreeSubNotiEntity m " +
-                    "LEFT JOIN FETCH m.freeSubNotiHistories h "+
-                    "where m.startDt>=:nowDt " +
-                    "order by " +
-                    "m.startDt desc," +
-                    "m.startTm desc," +
-                    "m.notiNo desc"
-                )
-//                .queryString(
-//                        "SELECT m FROM FreeSubNotiEntity m " +
-//                                "WHERE m.startDt>=:nowDt " +
-//                                "ORDER BY m.startDt DESC, m.startTm DESC, m.notiNo DESC"
+//                .queryString("SELECT m FROM FreeSubNotiEntity m " +
+//                    "LEFT JOIN FETCH m.freeSubNotiHistories h "+
+//                    "where m.startDt>=:nowDt " +
+//                    "order by " +
+//                    "m.startDt desc," +
+//                    "m.startTm desc," +
+//                    "m.notiNo desc"
 //                )
+                .queryString(
+                        "SELECT m FROM FreeSubNotiEntity m " +
+                                "WHERE m.startDt>=:nowDt " +
+                                "ORDER BY m.startDt DESC, m.startTm DESC, m.notiNo DESC"
+                )
                 .entityManagerFactory(entityManagerFactory)
                 .name("JpaPagingItemReader")
                 .pageSize(chunkSize)
