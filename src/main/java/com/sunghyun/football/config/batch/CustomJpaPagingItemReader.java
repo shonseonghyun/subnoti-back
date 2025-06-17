@@ -1,23 +1,19 @@
 package com.sunghyun.football.config.batch;
 
-import jakarta.persistence.*;
+import com.sunghyun.football.global.utils.EntityDtoConverter;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Query;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Hibernate;
 import org.springframework.batch.item.database.AbstractPagingItemReader;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.orm.JpaQueryProvider;
-import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,15 +50,6 @@ public class CustomJpaPagingItemReader<E,D> extends AbstractPagingItemReader<D> 
             return queryProvider.createQuery();
         }
     }
-
-//    private Query createAssociationQuery() {
-//        if (queryProvider == null) {
-//            return entityManager.createQuery(associationQueryString);
-//        }
-//        else {
-//            return queryProvider.createQuery();
-//        }
-//    }
 
     public void setDtoClass(Class<D> dtoClass) {
         this.dtoClass=dtoClass;
@@ -145,86 +132,16 @@ public class CustomJpaPagingItemReader<E,D> extends AbstractPagingItemReader<D> 
         }
 
         List<E> queryResult = query.getResultList();
-        List<D> queryResultDto = new ArrayList<D>(queryResult.size());
+        List<D> queryResultDto = EntityDtoConverter.convertListFromEntityToDto(queryResult,dtoClass);
 
-        for(E entity:queryResult){
-            try{
-                //DTO 인스턴스 생성
-                D dto = dtoClass.getDeclaredConstructor().newInstance();
-
-                //클래스 이름
-                String entityName = entity.getClass().toString().substring(6);
-
-                //클래스 객체
-                Class<?> entityClass = Class.forName(entityName);
-
-                // 조회 대상 엔티티의 @OneToMany를 달고 있는 프로퍼티 찾아서
-                //  1.연관관계 프록시 강제 초기화 수행
-                // 2.DTO로 변환
-                for(Field field:entity.getClass().getDeclaredFields()){
-                    //@OneToMany 어노테이션
-                    Annotation annotation = field.getAnnotation(OneToMany.class);
-
-                    //@OneToMany 어노테이션 존재하지 않으면 continue
-                    if(annotation==null) continue;
-
-                    //존재하면 아래 실행
-                    //해당 프로퍼티명
-                    String fieldName = field.getName();
-                    field.setAccessible(true);
-
-                    //프로퍼티 첫 문자를 대문자 치환
-                    String firstCharacter = fieldName.substring(0,1).toUpperCase();
-
-                    //메소드명 만들기 ex) getFreeSubNotiHistoryEntity
-                    String methodName = "get"+firstCharacter+fieldName.substring(1);
-
-                    //메소드 추출
-                    Method getAssociationEntityMethod= entityClass.getMethod(methodName);
-                    List<Object> associationEntityList = (List<Object>) getAssociationEntityMethod.invoke(entity);
-
-                    //프록시 강제 초기화
-                    Hibernate.initialize(associationEntityList);
-
-                    //DTO에 @OneToMany 달린 필드명과 동일한 필드 찾기
-                    Field dtoField = dtoClass.getDeclaredField(fieldName);
-                    dtoField.setAccessible(true);
-                    ParameterizedType pt = (ParameterizedType) dtoField.getGenericType();
-                    Class<?> childDtoType = (Class<?>) pt.getActualTypeArguments()[0];
-
-                    List<Object> childDtos = new ArrayList<>(associationEntityList.size());
-                    for(Object childEntity: associationEntityList){
-                        Object childDto = childDtoType.getDeclaredConstructor().newInstance();
-                        BeanUtils.copyProperties(childEntity,childDto);
-                        childDtos.add(childDto);
-                    }
-
-                    dtoField.set(dto,childDtos);
-                }
-
-                //Entity와 Dto 사이에서 값을 복사(컬렉션 제외)
-                BeanUtils.copyProperties(entity,dto);
-
-                // add
-                queryResultDto.add(dto);
-            }catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassNotFoundException | InstantiationException | NoSuchFieldException e){
-                log.error("에러 발생");
-                e.printStackTrace();
-            }
-        }
-
-
-        //if/else문의 result add 하는 부분을 하나로 통합
         results.addAll(queryResultDto);
 
         if (!transacted) {
             for (E entity : queryResult) {
                 entityManager.detach(entity);
-//                results.add(entity);
             } // end if
         }
         else {
-//            results.addAll(queryResult);
             tx.commit();
         } // end if
     }
