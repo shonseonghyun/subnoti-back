@@ -1,5 +1,9 @@
 package com.sunghyun.football.config.batch.multiThread;
 
+import com.sunghyun.football.config.batch.CustomJpaPagingItemReader;
+import com.sunghyun.football.config.batch.CustomJpaPagingItemReaderBuilder;
+import com.sunghyun.football.domain.noti.domain.FreeSubNoti;
+import com.sunghyun.football.domain.noti.domain.repository.FreeSubNotiRepository;
 import com.sunghyun.football.domain.noti.infrastructure.entity.FreeSubNotiEntity;
 import com.sunghyun.football.global.feign.PlabFootBallOpenFeignClient;
 import com.sunghyun.football.global.feign.dto.PlabMatchInfoResDto;
@@ -15,12 +19,10 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
-
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.AbstractPagingItemReader;
-import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +31,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,7 +44,7 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
     private final PlabFootBallOpenFeignClient plabFootBallOpenFeignClient;
     private final NotiProcessor notiProcessor;
     private final TaskExecutor taskExecutor;
-
+    private final FreeSubNotiRepository freeSubNotiRepository;
 
     @Bean
     public Job freeSubNotiRegMultiThreadJob(JobRepository jobRepository, PlatformTransactionManager transactionManager){
@@ -55,8 +58,8 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
     @JobScope
     public Step freeSubNotiRegMultiThreadStep(PlatformTransactionManager transactionManager,JobRepository jobRepository){
         return new StepBuilder("freeSubNotiRegMultiThreadStep",jobRepository)
-                .<FreeSubNotiEntity, FreeSubNotiEntity>chunk(chunkSize,transactionManager)
-                .reader(freeSubNotiRegMultiThreadReader(null))
+                .<FreeSubNoti, FreeSubNoti>chunk(chunkSize,transactionManager)
+                .reader(freeSubNotiRegMultiThreadCustomReader(null))
                 .processor(freeSubNotiRegMultiThreadProcessor())
                 .writer(freeSubNotiRegMultiThreadWriter())
                 .taskExecutor(taskExecutor)
@@ -104,7 +107,30 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
     }
 
     @Bean
-    public ItemProcessor<FreeSubNotiEntity, FreeSubNotiEntity> freeSubNotiRegMultiThreadProcessor(){
+    @StepScope
+    public CustomJpaPagingItemReader<FreeSubNotiEntity,FreeSubNoti> freeSubNotiRegMultiThreadCustomReader(@Value("#{jobParameters[nowDt]}") String nowDt){
+        Map<String,Object> parameterValues = new HashMap<>();
+        parameterValues.put("nowDt",nowDt);
+
+        return new CustomJpaPagingItemReaderBuilder<FreeSubNotiEntity, FreeSubNoti>()
+                .pageSize(chunkSize)
+                .parameterValues(parameterValues)
+                .queryString("SELECT m FROM FreeSubNotiEntity m " +
+                        "where startDt>=:nowDt " +
+                        "order by " +
+                        "startDt desc," +
+                        "startTm desc," +
+                        "notiNo desc"
+                )
+                .entityManagerFactory(entityManagerFactory)
+                .name("freeSubNotiRegMultiThreadCustomReader")
+                .dtoClass(FreeSubNoti.class)
+                .build();
+    }
+
+
+    @Bean
+    public ItemProcessor<FreeSubNoti, FreeSubNoti> freeSubNotiRegMultiThreadProcessor(){
         return item->{
 //            log.info("매치 [{}] [{}] 처리 시작",item.getMatchName(),item.getMatchNo());
 
@@ -122,7 +148,7 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
 */
             if(MatchDateUtils.hasAlreadyPassedOfMatch(item.getStartDt(),item.getStartTm())){
                 log.info("노티 요청번호 [{}] 매치명[{}] 처리 패스",item.getNotiNo(),item.getMatchName());
-                return item;
+                return null;
             }
 
             //플랩 통신
@@ -139,48 +165,48 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
     }
 
     @Bean
-    public ItemWriter<FreeSubNotiEntity> freeSubNotiRegMultiThreadWriter(){
-        JpaItemWriter<FreeSubNotiEntity> writer = new JpaItemWriter<>();
-        writer.setEntityManagerFactory(entityManagerFactory);
-        return writer;
+    public ItemWriter<FreeSubNoti> freeSubNotiRegMultiThreadWriter(){
+        return chunk ->{
+            freeSubNotiRepository.saveAll(new ArrayList<>(chunk.getItems()));
+        };
     }
 
-    public ItemReadListener<FreeSubNotiEntity> readListener() {
-        return new ItemReadListener<FreeSubNotiEntity>() {
+    public ItemReadListener<FreeSubNoti > readListener() {
+        return new ItemReadListener<FreeSubNoti >() {
             @Override
-            public void afterRead(FreeSubNotiEntity item) {
+            public void afterRead(FreeSubNoti  item) {
                 String threadName = Thread.currentThread().getName();
                 log.info("[{}]Read Item: 노티 요청 번호[{}] 매치명[{}]", threadName, item.getNotiNo(),item.getMatchName());
             }
         };
     }
 
-    public ItemProcessListener<FreeSubNotiEntity,FreeSubNotiEntity> processListener() {
-        return new ItemProcessListener<FreeSubNotiEntity,FreeSubNotiEntity>() {
+    public ItemProcessListener<FreeSubNoti ,FreeSubNoti > processListener() {
+        return new ItemProcessListener<FreeSubNoti ,FreeSubNoti >() {
             @Override
-            public void beforeProcess(FreeSubNotiEntity item) {
+            public void beforeProcess(FreeSubNoti  item) {
                 String threadName = Thread.currentThread().getName();
                 log.info("[{}]Start Process Item: 노티 요청 번호[{}] 매치명[{}]", threadName, item.getNotiNo(),item.getMatchName());
             }
 
             @Override
-            public void afterProcess(FreeSubNotiEntity item, FreeSubNotiEntity result) {
+            public void afterProcess(FreeSubNoti  item, FreeSubNoti  result) {
                 String threadName = Thread.currentThread().getName();
                 log.info("[{}]End Process Item: 노티 요청 번호[{}] 매치명[{}]", threadName, item.getNotiNo(),item.getMatchName());
             }
 
 //            @Override
-//            public void onProcessError(FreeSubNotiEntity item, Exception e) {
+//            public void onProcessError(FreeSubNoti  item, Exception e) {
 //                log.warn("[{}]Skip Item: 노티 요청 번호[{}] 매치명[{}]: [{}]", Thread.currentThread().getName(), item.getNotiNo(),item.getMatchName(),e.getMessage());
 //            }
         };
     }
 
-    public ItemWriteListener<FreeSubNotiEntity> writerListener(){
-        return new ItemWriteListener<FreeSubNotiEntity>() {
+    public ItemWriteListener<FreeSubNoti > writerListener(){
+        return new ItemWriteListener<FreeSubNoti >() {
             @Override
-            public void beforeWrite(Chunk<? extends FreeSubNotiEntity> items) {
-                for(FreeSubNotiEntity item:items){
+            public void beforeWrite(Chunk<? extends FreeSubNoti > items) {
+                for(FreeSubNoti  item:items){
                     log.info("[{}]Write Item: 노티 요청 번호[{}] 매치명[{}]", Thread.currentThread().getName(), item.getNotiNo(),item.getMatchName());
                 }
             }
@@ -188,7 +214,7 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
     }
 
     @Bean
-    public SkipListener<FreeSubNotiEntity, FreeSubNotiEntity> skipListener() {
+    public SkipListener<FreeSubNoti , FreeSubNoti > skipListener() {
         return new SkipListener<>() {
 //            @Override
 //            public void onSkipInRead(Throwable t) {
@@ -196,12 +222,12 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
 //            }
 
 //            @Override
-//            public void onSkipInWrite(FreeSubNotiEntity item, Throwable t) {
+//            public void onSkipInWrite(FreeSubNoti  item, Throwable t) {
 //                // 쓰기 단계에서 skip 되었을 때
 //            }
 
             @Override
-            public void onSkipInProcess(FreeSubNotiEntity item, Throwable t) {
+            public void onSkipInProcess(FreeSubNoti  item, Throwable t) {
                 // 처리 단계(process)에서 skip 되었을 때
                 log.warn("[{}]Skip Item 노티 요청 번호[{}] 매치명[{}]: [{}]", Thread.currentThread().getName(), item.getNotiNo(),item.getMatchName(),t.getMessage());
             }

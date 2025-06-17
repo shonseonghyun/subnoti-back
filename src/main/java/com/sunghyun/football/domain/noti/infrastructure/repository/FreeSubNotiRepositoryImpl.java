@@ -26,6 +26,15 @@ public class FreeSubNotiRepositoryImpl implements FreeSubNotiRepository {
     }
 
     @Override
+    public void saveAll(List<FreeSubNoti> list) {
+        springJpaMatchFreeSubNotiRepository.saveAll(
+                list.stream()
+                        .map(FreeSubNotiEntity::from)
+                        .toList()
+        );
+    }
+
+    @Override
     public List<FreeSubType> getFreeSubTypes(String email, Long matchNo) {
         return springJpaMatchFreeSubNotiRepository.findByEmailAndMatchNo(email,matchNo)
                 .stream()

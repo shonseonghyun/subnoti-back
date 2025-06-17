@@ -39,7 +39,7 @@ public class FreeSubNotiEntity {
 
     @OneToMany(cascade = {CascadeType.MERGE}
 //            ,mappedBy = "matchFreeSubNotiEntity"
-            ,fetch = FetchType.EAGER
+            ,fetch = FetchType.LAZY
     )
     @JoinColumn(name = "notiNo")
     private List<FreeSubNotiHistoryEntity> freeSubNotiHistories;
@@ -54,6 +54,7 @@ public class FreeSubNotiEntity {
         freeSubNotiEntity.startDt=freeSubNoti.getStartDt();
         freeSubNotiEntity.startTm=freeSubNoti.getStartTm();
         freeSubNotiEntity.subType=freeSubNoti.getSubType();
+        freeSubNotiEntity.freeSubNotiHistories=freeSubNoti.getFreeSubNotiHistories().stream().map(FreeSubNotiHistoryEntity::from).toList();
         return freeSubNotiEntity;
     }
 
@@ -67,6 +68,7 @@ public class FreeSubNotiEntity {
                 .startDt(startDt)
                 .startTm(startTm)
                 .subType(subType)
+                .freeSubNotiHistories(freeSubNotiHistories.stream().map(FreeSubNotiHistoryEntity::toModel).toList())
                 .build();
     }
 }

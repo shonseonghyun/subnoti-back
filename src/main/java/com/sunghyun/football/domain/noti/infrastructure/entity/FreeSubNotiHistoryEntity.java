@@ -1,5 +1,6 @@
 package com.sunghyun.football.domain.noti.infrastructure.entity;
 
+import com.sunghyun.football.domain.noti.domain.FreeSubNotiHistory;
 import com.sunghyun.football.domain.noti.domain.converter.ActiveTypeConverter;
 import com.sunghyun.football.domain.noti.domain.converter.FreeSubTypeConverter;
 import com.sunghyun.football.domain.noti.domain.enums.ActiveType;
@@ -16,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
-public class FreeSubNotiHistoryEntity implements Comparable<FreeSubNotiHistoryEntity>{
+public class FreeSubNotiHistoryEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,14 +37,24 @@ public class FreeSubNotiHistoryEntity implements Comparable<FreeSubNotiHistoryEn
 
     private String sendTm;
 
-    @Override
-    public int compareTo(FreeSubNotiHistoryEntity o) {
-        if(o.getHistoryNo()<historyNo){
-            return -1;
-        }
-        else if(o.getHistoryNo()>historyNo){
-            return 1;
-        }
-        return 0;
+    public static FreeSubNotiHistoryEntity from(FreeSubNotiHistory freeSubNotiHistory){
+        FreeSubNotiHistoryEntity freeSubNotiHistoryEntity = new FreeSubNotiHistoryEntity();
+        freeSubNotiHistoryEntity.historyNo = freeSubNotiHistory.getHistoryNo();
+        freeSubNotiHistoryEntity.activeType=freeSubNotiHistory.getActiveType();
+        freeSubNotiHistoryEntity.subType=freeSubNotiHistory.getSubType();
+        freeSubNotiHistoryEntity.sendDt=freeSubNotiHistory.getSendDt();
+        freeSubNotiHistoryEntity.sendTm=freeSubNotiHistory.getSendTm();
+        return freeSubNotiHistoryEntity;
+    }
+
+    public FreeSubNotiHistory toModel() {
+        return FreeSubNotiHistory.builder()
+                .historyNo(historyNo)
+                .activeType(activeType)
+                .subType(subType)
+                .sendDt(sendDt)
+                .sendTm(sendTm)
+                .build()
+                ;
     }
 }
