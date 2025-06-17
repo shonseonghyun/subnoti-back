@@ -6,7 +6,9 @@ import com.sunghyun.football.domain.noti.domain.enums.FreeSubType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @Entity
@@ -54,7 +56,9 @@ public class FreeSubNotiEntity {
         freeSubNotiEntity.startDt=freeSubNoti.getStartDt();
         freeSubNotiEntity.startTm=freeSubNoti.getStartTm();
         freeSubNotiEntity.subType=freeSubNoti.getSubType();
-        freeSubNotiEntity.freeSubNotiHistories=freeSubNoti.getFreeSubNotiHistories().stream().map(FreeSubNotiHistoryEntity::from).toList();
+        freeSubNotiEntity.freeSubNotiHistories= freeSubNoti.getFreeSubNotiHistories() ==null
+                ? Collections.EMPTY_LIST
+                : freeSubNoti.getFreeSubNotiHistories().stream().map(FreeSubNotiHistoryEntity::from).toList();
         return freeSubNotiEntity;
     }
 
@@ -68,7 +72,7 @@ public class FreeSubNotiEntity {
                 .startDt(startDt)
                 .startTm(startTm)
                 .subType(subType)
-                .freeSubNotiHistories(freeSubNotiHistories.stream().map(FreeSubNotiHistoryEntity::toModel).toList())
+                .freeSubNotiHistories(freeSubNotiHistories == null ? Collections.EMPTY_LIST : freeSubNotiHistories.stream().map(FreeSubNotiHistoryEntity::toModel).toList())
                 .build();
     }
 }
