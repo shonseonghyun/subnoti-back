@@ -1,7 +1,7 @@
-package com.sunghyun.football.global.noti.mail;
+package com.sunghyun.football.global.noti.notification.mail;
 
-import com.sunghyun.football.global.noti.NotiSendReqDto;
-import com.sunghyun.football.global.noti.NotificationService;
+import com.sunghyun.football.global.noti.dto.NotiSendReqDto;
+import com.sunghyun.football.global.noti.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;

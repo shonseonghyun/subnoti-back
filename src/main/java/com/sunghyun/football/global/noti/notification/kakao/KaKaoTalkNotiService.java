@@ -1,7 +1,7 @@
-package com.sunghyun.football.global.noti.kakao;
+package com.sunghyun.football.global.noti.notification.kakao;
 
-import com.sunghyun.football.global.noti.NotiSendReqDto;
-import com.sunghyun.football.global.noti.NotificationService;
+import com.sunghyun.football.global.noti.dto.NotiSendReqDto;
+import com.sunghyun.football.global.noti.notification.NotificationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;

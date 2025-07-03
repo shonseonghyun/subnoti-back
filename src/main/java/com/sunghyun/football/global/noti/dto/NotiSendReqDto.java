@@ -1,4 +1,4 @@
-package com.sunghyun.football.global.noti;
+package com.sunghyun.football.global.noti.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

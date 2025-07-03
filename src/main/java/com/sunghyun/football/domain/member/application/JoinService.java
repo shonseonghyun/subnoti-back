@@ -8,7 +8,7 @@ import com.sunghyun.football.domain.member.domain.enums.MemberLevelType;
 import com.sunghyun.football.domain.member.domain.enums.Role;
 import com.sunghyun.football.domain.member.domain.repository.MemberRepository;
 import com.sunghyun.football.domain.member.domain.service.MemberDuplicationChecker;
-import com.sunghyun.football.global.noti.NotificationFacade;
+import com.sunghyun.football.global.noti.notification.NotificationFacade;
 import com.sunghyun.football.global.noti.message.build.dto.JoinMessageDto;
 import com.sunghyun.football.global.noti.type.NotiType;
 import lombok.RequiredArgsConstructor;

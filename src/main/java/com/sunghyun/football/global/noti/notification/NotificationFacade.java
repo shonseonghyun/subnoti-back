@@ -1,5 +1,6 @@
-package com.sunghyun.football.global.noti;
+package com.sunghyun.football.global.noti.notification;
 
+import com.sunghyun.football.global.noti.dto.NotiSendReqDto;
 import com.sunghyun.football.global.noti.message.build.MessageBuilderFactory;
 import com.sunghyun.football.global.noti.type.NotiType;
 import lombok.RequiredArgsConstructor;

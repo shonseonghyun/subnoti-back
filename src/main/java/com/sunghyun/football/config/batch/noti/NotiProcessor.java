@@ -5,7 +5,7 @@ import com.sunghyun.football.domain.noti.domain.FreeSubNotiHistory;
 import com.sunghyun.football.domain.noti.domain.enums.ActiveType;
 import com.sunghyun.football.domain.noti.domain.enums.FreeSubType;
 import com.sunghyun.football.domain.noti.infrastructure.FreeSubNotiHistoryComparator;
-import com.sunghyun.football.global.noti.NotificationFacade;
+import com.sunghyun.football.global.noti.notification.NotificationFacade;
 import com.sunghyun.football.global.noti.message.build.dto.FreeSubNotiMessageDto;
 import com.sunghyun.football.global.noti.type.NotiType;
 import com.sunghyun.football.global.utils.MatchDateUtils;
