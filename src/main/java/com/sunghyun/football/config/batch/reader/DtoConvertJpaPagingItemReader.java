@@ -1,4 +1,4 @@
-package com.sunghyun.football.config.batch;
+package com.sunghyun.football.config.batch.reader;
 
 import com.sunghyun.football.global.utils.EntityDtoConverter;
 import jakarta.persistence.EntityManager;
@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Slf4j
-public class CustomJpaPagingItemReader<E,D> extends AbstractPagingItemReader<D> {
+public class DtoConvertJpaPagingItemReader<E,D> extends AbstractPagingItemReader<D> {
 
     private EntityManagerFactory entityManagerFactory;
 
@@ -38,7 +38,7 @@ public class CustomJpaPagingItemReader<E,D> extends AbstractPagingItemReader<D> 
 
     public Class<D> dtoClass;
 
-    public CustomJpaPagingItemReader() {
+    public DtoConvertJpaPagingItemReader() {
         setName(ClassUtils.getShortName(JpaPagingItemReader.class));
     }
 
@@ -135,6 +135,10 @@ public class CustomJpaPagingItemReader<E,D> extends AbstractPagingItemReader<D> 
         List<D> queryResultDto = EntityDtoConverter.convertListFromEntityToDto(queryResult,dtoClass);
 
         results.addAll(queryResultDto);
+
+        /* 또 다른 문제 발생 */
+        //만약 1개가 변환실패로 4개만 변환하여 results에 addALl한 경우 다음 페이지 읽을지 말지 조건 중 읽지 말고 그대로 종료되는 조건에 걸림
+        //조건: 페이지 사이보다 작게 읽은 경우(4개만 읽어서 더 이상 읽을게 없다고 판단)
 
         if (!transacted) {
             for (E entity : queryResult) {

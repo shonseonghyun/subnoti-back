@@ -1,5 +1,6 @@
-package com.sunghyun.football.config.batch;
+package com.sunghyun.football.config.batch.reader.builder;
 
+import com.sunghyun.football.config.batch.reader.DtoConvertJpaPagingItemReader;
 import jakarta.persistence.EntityManagerFactory;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.orm.JpaQueryProvider;
@@ -7,7 +8,7 @@ import org.springframework.util.Assert;
 
 import java.util.Map;
 
-public class CustomJpaPagingItemReaderBuilder<D,T> {
+public class DtoConvertJpaPagingItemReaderBuilder<D,T> {
 
     private int pageSize = 10;
 
@@ -39,7 +40,7 @@ public class CustomJpaPagingItemReaderBuilder<D,T> {
      * @param saveState defaults to true
      * @return The current instance of the builder.
      */
-    public CustomJpaPagingItemReaderBuilder<D,T> saveState(boolean saveState) {
+    public DtoConvertJpaPagingItemReaderBuilder<D,T> saveState(boolean saveState) {
         this.saveState = saveState;
 
         return this;
@@ -53,7 +54,7 @@ public class CustomJpaPagingItemReaderBuilder<D,T> {
      * @return The current instance of the builder.
      * @see org.springframework.batch.item.ItemStreamSupport#setName(String)
      */
-    public CustomJpaPagingItemReaderBuilder<D,T> name(String name) {
+    public DtoConvertJpaPagingItemReaderBuilder<D,T> name(String name) {
         this.name = name;
 
         return this;
@@ -65,7 +66,7 @@ public class CustomJpaPagingItemReaderBuilder<D,T> {
      * @return The current instance of the builder.
      * @see org.springframework.batch.item.support.AbstractItemCountingItemStreamItemReader#setMaxItemCount(int)
      */
-    public CustomJpaPagingItemReaderBuilder<D,T> maxItemCount(int maxItemCount) {
+    public DtoConvertJpaPagingItemReaderBuilder<D,T> maxItemCount(int maxItemCount) {
         this.maxItemCount = maxItemCount;
 
         return this;
@@ -77,7 +78,7 @@ public class CustomJpaPagingItemReaderBuilder<D,T> {
      * @return this instance for method chaining
      * @see org.springframework.batch.item.support.AbstractItemCountingItemStreamItemReader#setCurrentItemCount(int)
      */
-    public CustomJpaPagingItemReaderBuilder<D,T> currentItemCount(int currentItemCount) {
+    public DtoConvertJpaPagingItemReaderBuilder<D,T> currentItemCount(int currentItemCount) {
         this.currentItemCount = currentItemCount;
 
         return this;
@@ -90,7 +91,7 @@ public class CustomJpaPagingItemReaderBuilder<D,T> {
      * @return this instance for method chaining
      * @see JpaPagingItemReader#setPageSize(int)
      */
-    public CustomJpaPagingItemReaderBuilder<D,T> pageSize(int pageSize) {
+    public DtoConvertJpaPagingItemReaderBuilder<D,T> pageSize(int pageSize) {
         this.pageSize = pageSize;
 
         return this;
@@ -103,7 +104,7 @@ public class CustomJpaPagingItemReaderBuilder<D,T> {
      * @return this instance for method chaining
      * @see JpaPagingItemReader#setParameterValues(Map)
      */
-    public CustomJpaPagingItemReaderBuilder<D,T> parameterValues(Map<String, Object> parameterValues) {
+    public DtoConvertJpaPagingItemReaderBuilder<D,T> parameterValues(Map<String, Object> parameterValues) {
         this.parameterValues = parameterValues;
 
         return this;
@@ -116,7 +117,7 @@ public class CustomJpaPagingItemReaderBuilder<D,T> {
      * @return this instance for method chaining
      * @see JpaPagingItemReader#setQueryProvider(JpaQueryProvider)
      */
-    public CustomJpaPagingItemReaderBuilder<D,T> queryProvider(JpaQueryProvider queryProvider) {
+    public DtoConvertJpaPagingItemReaderBuilder<D,T> queryProvider(JpaQueryProvider queryProvider) {
         this.queryProvider = queryProvider;
 
         return this;
@@ -129,7 +130,7 @@ public class CustomJpaPagingItemReaderBuilder<D,T> {
      * @return this instance for method chaining
      * @see JpaPagingItemReader#setQueryString(String)
      */
-    public CustomJpaPagingItemReaderBuilder<D,T> queryString(String queryString) {
+    public DtoConvertJpaPagingItemReaderBuilder<D,T> queryString(String queryString) {
         this.queryString = queryString;
 
         return this;
@@ -144,7 +145,7 @@ public class CustomJpaPagingItemReaderBuilder<D,T> {
      * @return this instance for method chaining
      * @see JpaPagingItemReader#setTransacted(boolean)
      */
-    public CustomJpaPagingItemReaderBuilder<D,T> transacted(boolean transacted) {
+    public DtoConvertJpaPagingItemReaderBuilder<D,T> transacted(boolean transacted) {
         this.transacted = transacted;
 
         return this;
@@ -157,13 +158,13 @@ public class CustomJpaPagingItemReaderBuilder<D,T> {
      * {@link jakarta.persistence.EntityManager}
      * @return this instance for method chaining
      */
-    public CustomJpaPagingItemReaderBuilder<D,T> entityManagerFactory(EntityManagerFactory entityManagerFactory) {
+    public DtoConvertJpaPagingItemReaderBuilder<D,T> entityManagerFactory(EntityManagerFactory entityManagerFactory) {
         this.entityManagerFactory = entityManagerFactory;
 
         return this;
     }
 
-    public CustomJpaPagingItemReaderBuilder<D,T> dtoClass(Class<T> dtoClass) {
+    public DtoConvertJpaPagingItemReaderBuilder<D,T> dtoClass(Class<T> dtoClass) {
         this.dtoClass = dtoClass;
 
         return this;
@@ -173,7 +174,7 @@ public class CustomJpaPagingItemReaderBuilder<D,T> {
      * Returns a fully constructed {@link JpaPagingItemReader}.
      * @return a new {@link JpaPagingItemReader}
      */
-    public CustomJpaPagingItemReader<D,T> build() {
+    public DtoConvertJpaPagingItemReader<D,T> build() {
         Assert.isTrue(this.pageSize > 0, "pageSize must be greater than zero");
         Assert.notNull(this.entityManagerFactory, "An EntityManagerFactory is required");
 
@@ -185,7 +186,7 @@ public class CustomJpaPagingItemReaderBuilder<D,T> {
             Assert.hasLength(this.queryString, "Query string is required when queryProvider is null");
         }
 
-        CustomJpaPagingItemReader<D,T> reader = new CustomJpaPagingItemReader<>();
+        DtoConvertJpaPagingItemReader<D,T> reader = new DtoConvertJpaPagingItemReader<>();
 
         reader.setQueryString(this.queryString);
         reader.setPageSize(this.pageSize);

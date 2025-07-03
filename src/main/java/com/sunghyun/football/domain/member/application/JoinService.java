@@ -8,6 +8,9 @@ import com.sunghyun.football.domain.member.domain.enums.MemberLevelType;
 import com.sunghyun.football.domain.member.domain.enums.Role;
 import com.sunghyun.football.domain.member.domain.repository.MemberRepository;
 import com.sunghyun.football.domain.member.domain.service.MemberDuplicationChecker;
+import com.sunghyun.football.global.noti.NotificationFacade;
+import com.sunghyun.football.global.noti.message.build.dto.JoinMessageDto;
+import com.sunghyun.football.global.noti.type.NotiType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,10 +22,10 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class JoinService {
-
     private final MemberRepository memberRepository;
     private final MemberDuplicationChecker memberDuplicationChecker;
     private final PasswordEncoder passwordEncoder;
+    private final NotificationFacade notificationFacade;
 
     @Transactional(readOnly = true)
     public boolean checkEmailDuplication(String email){
@@ -49,6 +52,12 @@ public class JoinService {
                 ;
 
         Member savedMember = memberRepository.save(member);
+
+        notificationFacade.notify(
+                NotiType.NOTI_FREE_SUB,
+                member.getEmail(),
+                new JoinMessageDto(member.getName())
+        );
 
         return MemberJoinResDto.from(savedMember);
     }

@@ -1,13 +1,17 @@
-package com.sunghyun.football.config.batch.multiThread;
+package com.sunghyun.football.config.batch.config.thread.multiThread;
 
-import com.sunghyun.football.config.batch.CustomJpaPagingItemReader;
-import com.sunghyun.football.config.batch.CustomJpaPagingItemReaderBuilder;
+import com.sunghyun.football.config.batch.listener.process.AbstractProcessListener;
+import com.sunghyun.football.config.batch.listener.read.AbstractReadListener;
+import com.sunghyun.football.config.batch.listener.skip.CommonSkipListener;
+import com.sunghyun.football.config.batch.listener.write.AbstractWriteListener;
+import com.sunghyun.football.config.batch.reader.DtoConvertJpaPagingItemReader;
+import com.sunghyun.football.config.batch.reader.builder.DtoConvertJpaPagingItemReaderBuilder;
 import com.sunghyun.football.domain.noti.domain.FreeSubNoti;
 import com.sunghyun.football.domain.noti.domain.repository.FreeSubNotiRepository;
 import com.sunghyun.football.domain.noti.infrastructure.entity.FreeSubNotiEntity;
 import com.sunghyun.football.global.feign.PlabFootBallOpenFeignClient;
 import com.sunghyun.football.global.feign.dto.PlabMatchInfoResDto;
-import com.sunghyun.football.global.noti.NotiProcessor;
+import com.sunghyun.football.config.batch.noti.NotiProcessor;
 import com.sunghyun.football.global.utils.MatchDateUtils;
 import feign.FeignException;
 import jakarta.persistence.EntityManagerFactory;
@@ -19,11 +23,8 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.database.AbstractPagingItemReader;
-import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,11 +41,18 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class FreeSubNotiRegBatchMultiThreadConfig {
     private final EntityManagerFactory entityManagerFactory;
-    private final int chunkSize=4;
+    private final int chunkSize=5;
     private final PlabFootBallOpenFeignClient plabFootBallOpenFeignClient;
     private final NotiProcessor notiProcessor;
     private final TaskExecutor taskExecutor;
     private final FreeSubNotiRepository freeSubNotiRepository;
+
+    /* listener */
+    private final AbstractReadListener<FreeSubNoti> freeSubNotiReadListener;
+    private final AbstractProcessListener<FreeSubNoti,FreeSubNoti> freeSubNotiProcessListener;
+    private final AbstractWriteListener<FreeSubNoti> freeSubNotiWriteListener;
+    private final CommonSkipListener<FreeSubNoti,FreeSubNoti> skipListener;
+
 
     @Bean
     public Job freeSubNotiRegMultiThreadJob(JobRepository jobRepository, PlatformTransactionManager transactionManager){
@@ -63,9 +71,9 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
                 .processor(freeSubNotiRegMultiThreadProcessor())
                 .writer(freeSubNotiRegMultiThreadWriter())
                 .taskExecutor(taskExecutor)
-                .listener(readListener())
-                .listener(processListener())
-                .listener(writerListener())
+                .listener(freeSubNotiReadListener)
+                .listener(freeSubNotiProcessListener)
+                .listener(freeSubNotiWriteListener)
                 .faultTolerant()
                 .skip(FeignException.class)
                 .skip(SocketTimeoutException.class)
@@ -73,46 +81,18 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
                 .processorNonTransactional()
                 .noRollback(FeignException.class) // FeignException이 터져도 “Chunk 트랜잭션을 아예 롤백하지 않고” 바로 다음 아이템으로 넘어가기 때문에, 불필요한 롤백·재시도 사이클이 사라집니다(롤백 & 재시도 오버헤드 제거, Cursor 재조정 비용 감소, 트랜잭션 관리 콜백 비용 절감)
                 .noRollback(SocketTimeoutException.class) // FeignException이 터져도 “Chunk 트랜잭션을 아예 롤백하지 않고” 바로 다음 아이템으로 넘어가기 때문에, 불필요한 롤백·재시도 사이클이 사라집니다(롤백 & 재시도 오버헤드 제거, Cursor 재조정 비용 감소, 트랜잭션 관리 콜백 비용 절감)
-                .listener(skipListener()) //SkipListener은 반드시 faultTolerant 뒤에 위치해야 함
+                .listener(skipListener) //SkipListener은 반드시 faultTolerant 뒤에 위치해야 함
                 .build()
                 ;
     }
 
     @Bean
     @StepScope
-    public AbstractPagingItemReader<FreeSubNotiEntity> freeSubNotiRegMultiThreadReader(@Value("#{jobParameters[nowDt]}") String nowDt){
-        Map<String,Object> parameterValues = new HashMap<>();
-        parameterValues.put("nowDt", nowDt);
-
-        return new JpaPagingItemReaderBuilder<FreeSubNotiEntity>()
-                .parameterValues(parameterValues)
-//                .queryString("SELECT m FROM FreeSubNotiEntity m " +
-//                    "LEFT JOIN FETCH m.freeSubNotiHistories h "+
-//                    "where m.startDt>=:nowDt " +
-//                    "order by " +
-//                    "m.startDt desc," +
-//                    "m.startTm desc," +
-//                    "m.notiNo desc"
-//                )
-                .queryString(
-                        "SELECT m FROM FreeSubNotiEntity m " +
-                                "WHERE m.startDt>=:nowDt " +
-                                "ORDER BY m.startDt DESC, m.startTm DESC, m.notiNo DESC"
-                )
-                .entityManagerFactory(entityManagerFactory)
-                .name("JpaPagingItemReader")
-                .pageSize(chunkSize)
-                .saveState(false)
-                .build();
-    }
-
-    @Bean
-    @StepScope
-    public CustomJpaPagingItemReader<FreeSubNotiEntity,FreeSubNoti> freeSubNotiRegMultiThreadCustomReader(@Value("#{jobParameters[nowDt]}") String nowDt){
+    public DtoConvertJpaPagingItemReader<FreeSubNotiEntity,FreeSubNoti> freeSubNotiRegMultiThreadCustomReader(@Value("#{jobParameters[nowDt]}") String nowDt){
         Map<String,Object> parameterValues = new HashMap<>();
         parameterValues.put("nowDt",nowDt);
 
-        return new CustomJpaPagingItemReaderBuilder<FreeSubNotiEntity, FreeSubNoti>()
+        return new DtoConvertJpaPagingItemReaderBuilder<FreeSubNotiEntity, FreeSubNoti>()
                 .pageSize(chunkSize)
                 .parameterValues(parameterValues)
                 .queryString("SELECT m FROM FreeSubNotiEntity m " +
@@ -127,7 +107,6 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
                 .dtoClass(FreeSubNoti.class)
                 .build();
     }
-
 
     @Bean
     public ItemProcessor<FreeSubNoti, FreeSubNoti> freeSubNotiRegMultiThreadProcessor(){
@@ -148,7 +127,7 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
 */
             if(MatchDateUtils.hasAlreadyPassedOfMatch(item.getStartDt(),item.getStartTm())){
                 log.info("노티 요청번호 [{}] 매치명[{}] 처리 패스",item.getNotiNo(),item.getMatchName());
-                return null;
+                return null; // null 리턴된 항목은 이후 Writer 단계로 절대 전달되지 않는다.
             }
 
             //플랩 통신
@@ -168,69 +147,6 @@ public class FreeSubNotiRegBatchMultiThreadConfig {
     public ItemWriter<FreeSubNoti> freeSubNotiRegMultiThreadWriter(){
         return chunk ->{
             freeSubNotiRepository.saveAll(new ArrayList<>(chunk.getItems()));
-        };
-    }
-
-    public ItemReadListener<FreeSubNoti > readListener() {
-        return new ItemReadListener<FreeSubNoti >() {
-            @Override
-            public void afterRead(FreeSubNoti  item) {
-                String threadName = Thread.currentThread().getName();
-                log.info("[{}]Read Item: 노티 요청 번호[{}] 매치명[{}]", threadName, item.getNotiNo(),item.getMatchName());
-            }
-        };
-    }
-
-    public ItemProcessListener<FreeSubNoti ,FreeSubNoti > processListener() {
-        return new ItemProcessListener<FreeSubNoti ,FreeSubNoti >() {
-            @Override
-            public void beforeProcess(FreeSubNoti  item) {
-                String threadName = Thread.currentThread().getName();
-                log.info("[{}]Start Process Item: 노티 요청 번호[{}] 매치명[{}]", threadName, item.getNotiNo(),item.getMatchName());
-            }
-
-            @Override
-            public void afterProcess(FreeSubNoti  item, FreeSubNoti  result) {
-                String threadName = Thread.currentThread().getName();
-                log.info("[{}]End Process Item: 노티 요청 번호[{}] 매치명[{}]", threadName, item.getNotiNo(),item.getMatchName());
-            }
-
-//            @Override
-//            public void onProcessError(FreeSubNoti  item, Exception e) {
-//                log.warn("[{}]Skip Item: 노티 요청 번호[{}] 매치명[{}]: [{}]", Thread.currentThread().getName(), item.getNotiNo(),item.getMatchName(),e.getMessage());
-//            }
-        };
-    }
-
-    public ItemWriteListener<FreeSubNoti > writerListener(){
-        return new ItemWriteListener<FreeSubNoti >() {
-            @Override
-            public void beforeWrite(Chunk<? extends FreeSubNoti > items) {
-                for(FreeSubNoti  item:items){
-                    log.info("[{}]Write Item: 노티 요청 번호[{}] 매치명[{}]", Thread.currentThread().getName(), item.getNotiNo(),item.getMatchName());
-                }
-            }
-        };
-    }
-
-    @Bean
-    public SkipListener<FreeSubNoti , FreeSubNoti > skipListener() {
-        return new SkipListener<>() {
-//            @Override
-//            public void onSkipInRead(Throwable t) {
-//                // 읽기 단계에서 skip 되었을 때
-//            }
-
-//            @Override
-//            public void onSkipInWrite(FreeSubNoti  item, Throwable t) {
-//                // 쓰기 단계에서 skip 되었을 때
-//            }
-
-            @Override
-            public void onSkipInProcess(FreeSubNoti  item, Throwable t) {
-                // 처리 단계(process)에서 skip 되었을 때
-                log.warn("[{}]Skip Item 노티 요청 번호[{}] 매치명[{}]: [{}]", Thread.currentThread().getName(), item.getNotiNo(),item.getMatchName(),t.getMessage());
-            }
         };
     }
 }

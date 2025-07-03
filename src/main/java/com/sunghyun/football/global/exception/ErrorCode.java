@@ -43,7 +43,8 @@ public enum ErrorCode {
     JWT_EXPIRED(HttpStatus.BAD_REQUEST,"J01" ,"토큰의 유효기간이 만료되었습니다." ),
     JWT_NOT_FOUND(HttpStatus.BAD_REQUEST,"J02" ,"존재하지 않거나 유효기간 만료된 리프레쉬 토큰입니다." ),
     FREESUB_NOTI_ALREADY_REQUEST(HttpStatus.BAD_REQUEST, "F01","이미 알림 신청된 매치입니다." ),
-    MATCH_ALREADY_DONE(HttpStatus.BAD_REQUEST,"M12","이미 종료된 매치입니다.");
+    MATCH_ALREADY_DONE(HttpStatus.BAD_REQUEST,"M12","이미 종료된 매치입니다."),
+    DTO_CONVERT_FAIL(HttpStatus.OK,"D03","DTO 변환 실패하였습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

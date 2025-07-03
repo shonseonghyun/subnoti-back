@@ -1,12 +1,13 @@
-package com.sunghyun.football.global.noti;
+package com.sunghyun.football.config.batch.noti;
 
-import com.sunghyun.football.config.batch.maker.NotiContentMaker;
 import com.sunghyun.football.domain.noti.domain.FreeSubNoti;
 import com.sunghyun.football.domain.noti.domain.FreeSubNotiHistory;
 import com.sunghyun.football.domain.noti.domain.enums.ActiveType;
 import com.sunghyun.football.domain.noti.domain.enums.FreeSubType;
 import com.sunghyun.football.domain.noti.infrastructure.FreeSubNotiHistoryComparator;
-import com.sunghyun.football.global.noti.mail.MailService;
+import com.sunghyun.football.global.noti.NotificationFacade;
+import com.sunghyun.football.global.noti.message.build.dto.FreeSubNotiMessageDto;
+import com.sunghyun.football.global.noti.type.NotiType;
 import com.sunghyun.football.global.utils.MatchDateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,11 +19,11 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class NotiProcessor {
-    private final MailService mailService;
+    private final NotificationFacade notificationFacade;
 
-    public void doNotiProcess(FreeSubNoti freeSubNoti, boolean managerFreeFlg, boolean superSubFlg){
-        ActiveType activeType=null;
-        FreeSubType freeSubType=null;
+    public void doNotiProcess(FreeSubNoti freeSubNoti, boolean managerFreeFlg, boolean superSubFlg) {
+        ActiveType activeType = null;
+        FreeSubType freeSubType = null;
 
         //historyNo 기준으로 내림차순으로 정렬
         log.info("historyNo 기준으로 내림차순으로 정렬");
@@ -31,14 +32,13 @@ public class NotiProcessor {
 
         //활성화 발송 조건 체크
         if(isActiveTurn(freeSubNoti.getFreeSubNotiHistories())){
-            if(freeSubNoti.getSubType().equals(FreeSubType.MANAGER_FREE)) {
-                if(isManagerFreeActive(managerFreeFlg)){
-                    log.info("{}({}) 매니저 서브 활성화",freeSubNoti.getMatchName(),freeSubNoti.getMatchNo());
+            if(freeSubNoti.getSubType().equals(FreeSubType.MANAGER_FREE)){
+                if(isManagerFreeActive(managerFreeFlg)) {
+                    log.info("{}({}) 매니저 서브 활성화", freeSubNoti.getMatchName(), freeSubNoti.getMatchNo());
                     freeSubType = FreeSubType.MANAGER_FREE;
                 }
-            }
-            else if(freeSubNoti.getSubType().equals(FreeSubType.SUPER_SUB)) {
-                if (isSuperSubActive(superSubFlg)) {
+            }else if(freeSubNoti.getSubType().equals(FreeSubType.SUPER_SUB)){
+                if(isSuperSubActive(superSubFlg)){
                     log.info("{}({}) 슈퍼 서브 활성화", freeSubNoti.getMatchName(), freeSubNoti.getMatchNo());
                     freeSubType = FreeSubType.SUPER_SUB;
                 }
@@ -47,17 +47,16 @@ public class NotiProcessor {
         }
 
         //비활성화 발송 조건 체크
-        else{
+        else {
             if(isInActiveTurn(freeSubNoti.getFreeSubNotiHistories())){
                 if(freeSubNoti.getSubType().equals(FreeSubType.MANAGER_FREE)){
                     if(!isManagerFreeActive(managerFreeFlg)){
-                        log.info("{}({}) 매니저 서브 비활성화",freeSubNoti.getMatchName(),freeSubNoti.getMatchNo());
+                        log.info("{}({}) 매니저 서브 비활성화", freeSubNoti.getMatchName(), freeSubNoti.getMatchNo());
                         freeSubType = FreeSubType.MANAGER_FREE;
                     }
-                }
-                else if(freeSubNoti.getSubType().equals(FreeSubType.SUPER_SUB)) {
-                    if(!isSuperSubActive(superSubFlg)) {
-                        log.info("{}({}) 슈퍼 서브 비활성화",freeSubNoti.getMatchName(),freeSubNoti.getMatchNo());
+                }else if(freeSubNoti.getSubType().equals(FreeSubType.SUPER_SUB)){
+                    if(!isSuperSubActive(superSubFlg)){
+                        log.info("{}({}) 슈퍼 서브 비활성화", freeSubNoti.getMatchName(), freeSubNoti.getMatchNo());
                         freeSubType = FreeSubType.SUPER_SUB;
                     }
                 }
@@ -67,24 +66,23 @@ public class NotiProcessor {
         }
 
         //위 조건에 따라 설정된 플래그가 모두 세팅된 경우에만 플래그의 값에 따라 a)노티 발송 및 b)히스토리 엔티티 생성
-        if(activeType!=null && freeSubType!=null){
+        if(activeType != null && freeSubType != null){
             //a)노티 발송
-            mailService.send(
-                    NotiSendReqDto.builder()
-                            .email(freeSubNoti.getEmail())
-                            .subject(NotiContentMaker.FreeSub.getSubject(freeSubNoti,freeSubType,activeType))
-                            .content(NotiContentMaker.FreeSub.getContent(freeSubNoti,freeSubType,activeType))
-                            .build()
+            notificationFacade.notify(
+                    NotiType.NOTI_FREE_SUB,
+                    freeSubNoti.getEmail(),
+                    new FreeSubNotiMessageDto(freeSubNoti.getMatchNo(), freeSubNoti.getMatchName(), freeSubNoti.getStartDt(), freeSubNoti.getStartTm(), freeSubType, activeType)
             );
+
 
             //b) 히스토리 엔티티 생성 및 추가
             freeSubNoti.getFreeSubNotiHistories().add(
                     FreeSubNotiHistory.builder()
-                                .activeType(activeType)
-                                .subType(freeSubType)
-                                .sendDt(MatchDateUtils.getNowDtStr())
-                                .sendTm(MatchDateUtils.getNowTmStr())
-                                .build()
+                            .activeType(activeType)
+                            .subType(freeSubType)
+                            .sendDt(MatchDateUtils.getNowDtStr())
+                            .sendTm(MatchDateUtils.getNowTmStr())
+                            .build()
             );
         }
     }
