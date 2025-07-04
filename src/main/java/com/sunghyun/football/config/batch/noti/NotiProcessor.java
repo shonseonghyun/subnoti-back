@@ -5,12 +5,13 @@ import com.sunghyun.football.domain.noti.domain.FreeSubNotiHistory;
 import com.sunghyun.football.domain.noti.domain.enums.ActiveType;
 import com.sunghyun.football.domain.noti.domain.enums.FreeSubType;
 import com.sunghyun.football.domain.noti.infrastructure.FreeSubNotiHistoryComparator;
-import com.sunghyun.football.global.noti.notification.NotificationFacade;
+import com.sunghyun.football.global.event.event.NotificationSentEvent;
 import com.sunghyun.football.global.noti.message.build.dto.FreeSubNotiMessageDto;
 import com.sunghyun.football.global.noti.type.NotiType;
 import com.sunghyun.football.global.utils.MatchDateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class NotiProcessor {
-    private final NotificationFacade notificationFacade;
+    private final ApplicationEventPublisher eventPublisher;
 
     public void doNotiProcess(FreeSubNoti freeSubNoti, boolean managerFreeFlg, boolean superSubFlg) {
         ActiveType activeType = null;
@@ -68,12 +69,13 @@ public class NotiProcessor {
         //위 조건에 따라 설정된 플래그가 모두 세팅된 경우에만 플래그의 값에 따라 a)노티 발송 및 b)히스토리 엔티티 생성
         if(activeType != null && freeSubType != null){
             //a)노티 발송
-            notificationFacade.notify(
-                    NotiType.NOTI_FREE_SUB,
-                    freeSubNoti.getEmail(),
-                    new FreeSubNotiMessageDto(freeSubNoti.getMatchNo(), freeSubNoti.getMatchName(), freeSubNoti.getStartDt(), freeSubNoti.getStartTm(), freeSubType, activeType)
+            eventPublisher.publishEvent(
+                    NotificationSentEvent.builder()
+                        .notiType(NotiType.NOTI_FREE_SUB)
+                        .email(freeSubNoti.getEmail())
+                        .messageDto(new FreeSubNotiMessageDto(freeSubNoti.getMatchNo(), freeSubNoti.getMatchName(), freeSubNoti.getStartDt(), freeSubNoti.getStartTm(), freeSubType, activeType))
+                        .build()
             );
-
 
             //b) 히스토리 엔티티 생성 및 추가
             freeSubNoti.getFreeSubNotiHistories().add(
