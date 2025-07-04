@@ -1,9 +1,7 @@
 package com.sunghyun.football.domain.member.infrastructure.entity;
 
-import com.sunghyun.football.domain.match.infrastructure.entity.converter.MemberLevelTypeConverter;
 import com.sunghyun.football.domain.member.domain.Member;
 import com.sunghyun.football.domain.member.domain.enums.Gender;
-import com.sunghyun.football.domain.member.domain.enums.MemberLevelType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,8 +34,8 @@ public class MemberEntity {
 
     private String tel;
 
-    @Convert(converter = MemberLevelTypeConverter.class)
-    private MemberLevelType level;
+//    @Convert(converter = MemberLevelTypeConverter.class)
+//    private MemberLevelType level;
 
     @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.REMOVE} /*,orphanRemoval = true */ ) //remove나 orphan 둘중 하나만 있어도 부모 시 자식도 함께 삭제된다..
     @JoinColumn(name = "member_no")
@@ -47,12 +45,12 @@ public class MemberEntity {
         MemberEntity memberEntity = new MemberEntity();
         memberEntity.memberNo = member.getMemberNo();
         memberEntity.email = member.getEmail();
-        memberEntity.pwd = member.getPwd();;
+        memberEntity.pwd = member.getPwd();
         memberEntity.name = member.getName();
         memberEntity.birthDt = member.getBirthDt();
         memberEntity.gender = member.getGender();
         memberEntity.tel = member.getTel();
-        memberEntity.level = member.getLevel();
+//        memberEntity.level = member.getLevel();
         memberEntity.role = member.getRole().stream().map(MemberRoleEntity::from).collect(Collectors.toList());
         return memberEntity;
     }
@@ -66,7 +64,7 @@ public class MemberEntity {
                 .name(name)
                 .tel(tel)
                 .gender(gender)
-                .level(level)
+//                .level(level)
                 .role(role.stream().map(MemberRoleEntity::toModel).collect(Collectors.toList()))
                 .build()
                 ;

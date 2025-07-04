@@ -1,6 +1,6 @@
 package com.sunghyun.football.domain.member.domain.enums;
 
-import com.sunghyun.football.domain.stadium.enums.EnumMapperType;
+import com.sunghyun.football.domain.enumMapper.enums.EnumMapperType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

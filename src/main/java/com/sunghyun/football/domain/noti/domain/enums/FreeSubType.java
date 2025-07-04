@@ -1,6 +1,6 @@
 package com.sunghyun.football.domain.noti.domain.enums;
 
-import com.sunghyun.football.domain.stadium.enums.EnumMapperType;
+import com.sunghyun.football.domain.enumMapper.enums.EnumMapperType;
 import com.sunghyun.football.global.exception.ErrorCode;
 import com.sunghyun.football.global.exception.exceptions.match.MatchStateNotFoundException;
 import lombok.AllArgsConstructor;

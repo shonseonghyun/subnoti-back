@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+/src/main/java/com/sunghyun/football/domain/match/**
+/src/main/java/com/sunghyun/football/domain/stadium/**

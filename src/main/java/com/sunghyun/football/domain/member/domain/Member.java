@@ -2,7 +2,6 @@ package com.sunghyun.football.domain.member.domain;
 
 
 import com.sunghyun.football.domain.member.domain.enums.Gender;
-import com.sunghyun.football.domain.member.domain.enums.MemberLevelType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,7 +32,7 @@ public class Member {
 //    @Merge
     private String tel;
 
-    private MemberLevelType level;
+//    private MemberLevelType level;
 
     private List<MemberRole> role;
 

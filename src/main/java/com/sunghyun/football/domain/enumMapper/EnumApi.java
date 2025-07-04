@@ -1,6 +1,6 @@
 package com.sunghyun.football.domain.enumMapper;
 
-import com.sunghyun.football.domain.stadium.enums.EnumMapper;
+import com.sunghyun.football.domain.enumMapper.enums.EnumMapper;
 import com.sunghyun.football.global.exception.ErrorCode;
 import com.sunghyun.football.global.response.ApiResponseDto;
 import lombok.RequiredArgsConstructor;

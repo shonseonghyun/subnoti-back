@@ -1,4 +1,4 @@
-package com.sunghyun.football.domain.stadium.enums;
+package com.sunghyun.football.domain.enumMapper.enums;
 
 public interface EnumMapperType {
     String getName();

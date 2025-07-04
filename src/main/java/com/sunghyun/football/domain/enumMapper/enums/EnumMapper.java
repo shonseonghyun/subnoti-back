@@ -1,4 +1,4 @@
-package com.sunghyun.football.domain.stadium.enums;
+package com.sunghyun.football.domain.enumMapper.enums;
 
 import lombok.Getter;
 
