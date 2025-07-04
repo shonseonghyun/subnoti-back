@@ -102,6 +102,7 @@ public class SecurityConfig{
                 .headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .authorizeHttpRequests(authorizeRequest-> authorizeRequest
 //                                .requestMatchers("/**").permitAll()
+                                .requestMatchers(HttpMethod.POST,"/api/v1/member").permitAll()
                                 .requestMatchers("/api/v1/member/email/**").permitAll()
                                 .requestMatchers("/api/v1/member/**").hasAuthority(Role.USER.name())
                                 .requestMatchers("/api/v1/noti/**").hasAuthority(Role.USER.name())
