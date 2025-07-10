@@ -4,7 +4,6 @@ import com.sunghyun.football.domain.member.application.dto.MemberJoinReqDto;
 import com.sunghyun.football.domain.member.application.dto.MemberJoinResDto;
 import com.sunghyun.football.domain.member.domain.Member;
 import com.sunghyun.football.domain.member.domain.MemberRole;
-import com.sunghyun.football.domain.member.domain.enums.MemberLevelType;
 import com.sunghyun.football.domain.member.domain.enums.Role;
 import com.sunghyun.football.domain.member.domain.repository.MemberRepository;
 import com.sunghyun.football.domain.member.domain.service.MemberDuplicationChecker;
@@ -48,7 +47,7 @@ public class JoinService {
                 .tel(memberJoinReqDto.getTel())
                 .birthDt(memberJoinReqDto.getBirthDt())
                 .gender(memberJoinReqDto.getGender())
-                .level(MemberLevelType.ROOKIE)
+//                .level(MemberLevelType.ROOKIE)
                 .role(List.of(new MemberRole(Role.USER)))
                 .build()
                 ;

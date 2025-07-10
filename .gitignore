@@ -38,3 +38,4 @@ out/
 
 /src/main/java/com/sunghyun/football/domain/match/**
 /src/main/java/com/sunghyun/football/domain/stadium/**
+/src/main/java/com/sunghyun/football/global/file/**

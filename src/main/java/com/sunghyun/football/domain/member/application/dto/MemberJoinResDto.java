@@ -2,7 +2,6 @@ package com.sunghyun.football.domain.member.application.dto;
 
 import com.sunghyun.football.domain.member.domain.Member;
 import com.sunghyun.football.domain.member.domain.enums.Gender;
-import com.sunghyun.football.domain.member.domain.enums.MemberLevelType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,7 +26,7 @@ public class MemberJoinResDto {
 
     private String tel;
 
-    private MemberLevelType level;
+//    private MemberLevelType level;
 
     public static MemberJoinResDto from(Member member){
         MemberJoinResDto memberJoinResDto = new MemberJoinResDto();
@@ -38,7 +37,7 @@ public class MemberJoinResDto {
         memberJoinResDto.pwd=member.getPwd();
         memberJoinResDto.birthDt=member.getBirthDt();
         memberJoinResDto.gender = member.getGender();
-        memberJoinResDto.level= member.getLevel();
+//        memberJoinResDto.level= member.getLevel();
 
         return memberJoinResDto;
     }
