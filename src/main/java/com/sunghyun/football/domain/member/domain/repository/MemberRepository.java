@@ -12,4 +12,7 @@ public interface MemberRepository {
     Member save(Member member);
     void delete(Member member);
     void flush();
+    void deleteAll();
+
+//    Optional<MemberEntity> findEntityByMemberNo(Long memberNo); //여기다가 두자니 도메인 계층이 인프스트럭쳐 계층에 의졶므로 DDD 원칙 위반이다.
 }

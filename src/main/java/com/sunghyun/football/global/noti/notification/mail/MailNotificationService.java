@@ -19,7 +19,7 @@ public class MailNotificationService implements NotificationService {
 
     @Async
     @Override
-    public void notify(NotiSendReqDto notiSendReqDto) {
+    public void notify(final NotiSendReqDto notiSendReqDto) {
         log.info("[{}] 메일 알림 발송",notiSendReqDto.getSubject());
 
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();

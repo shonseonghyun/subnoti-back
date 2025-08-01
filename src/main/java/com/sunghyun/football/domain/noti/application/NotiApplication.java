@@ -1,20 +1,20 @@
 package com.sunghyun.football.domain.noti.application;
 
-import com.sunghyun.football.domain.noti.application.dto.FreeSubNotiRegReqDto;
 import com.sunghyun.football.domain.noti.application.dto.FreeSubNotiListDto;
+import com.sunghyun.football.domain.noti.application.dto.FreeSubNotiRegReqDto;
 import com.sunghyun.football.domain.noti.application.dto.FreeSubNotiSelectResDto;
 import com.sunghyun.football.domain.noti.domain.FreeSubNoti;
 import com.sunghyun.football.domain.noti.domain.repository.FreeSubNotiRepository;
 import com.sunghyun.football.global.exception.ErrorCode;
 import com.sunghyun.football.global.exception.exceptions.noti.FreeSubNotiAlreadyRequestedException;
 import com.sunghyun.football.global.exception.exceptions.noti.MatchAlreadyDoneException;
-import com.sunghyun.football.global.feign.MemberOpenFeignClient;
 import com.sunghyun.football.global.feign.PlabFootBallOpenFeignClient;
 import com.sunghyun.football.global.feign.dto.PlabMatchInfoResDto;
 import com.sunghyun.football.global.utils.MatchDateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,9 +25,8 @@ import java.util.List;
 public class NotiApplication {
     private final FreeSubNotiRepository freeSubNotiRepository;
     private final PlabFootBallOpenFeignClient plabFootBallOpenFeignClient;
-    private final MemberOpenFeignClient memberOpenFeignClient;
 
-    //등록
+    @Transactional
     public void regFreeSubNoti(FreeSubNotiRegReqDto freeSubNotiRegReqDto){
         //이미 신청한 매치인지 확인
         freeSubNotiRepository.getFreeSubTypes(freeSubNotiRegReqDto.getEmail(), freeSubNotiRegReqDto.getMatchNo()).stream()
@@ -63,10 +62,12 @@ public class NotiApplication {
         freeSubNotiRepository.delFreeSubNoti(notiNo);
     }
 
+    @Transactional(readOnly = true)
     public List<String> getNotiRegDtsByDt(final Long memberNo,final String startDt,final String endDt){
         return freeSubNotiRepository.getNotiRegDtsByDt(memberNo,startDt,endDt);
     }
 
+    @Transactional(readOnly = true)
     public FreeSubNotiSelectResDto getFreeSubNotiesByDate(final Long memberNo, final String selectedDate, final Long notiNo, final int pageSize){
         List<FreeSubNotiListDto> list=  freeSubNotiRepository.getFreeSubNotiesByDate(memberNo,selectedDate,notiNo,pageSize)
                 .stream()

@@ -25,7 +25,6 @@ public class JoinService {
     private final MemberRepository memberRepository;
     private final MemberDuplicationChecker memberDuplicationChecker;
     private final PasswordEncoder passwordEncoder;
-
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional(readOnly = true)
