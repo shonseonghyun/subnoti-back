@@ -2,6 +2,7 @@ package com.sunghyun.football.global.exception;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sunghyun.football.global.exception.exception.AppException;
 import com.sunghyun.football.global.response.ApiResponseDto;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
@@ -32,9 +33,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({AppException.class})
-    public ApiResponseDto handleAppException(final AppException e){
+    public ResponseEntity<ApiResponseDto> handleAppException(final AppException e){
         log.warn("[AppException] {}", e.getErrorCode().getMessage());
-        return ApiResponseDto.toResponse(e.getErrorCode());
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(ApiResponseDto.toResponse(e.getErrorCode()));
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
