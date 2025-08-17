@@ -44,7 +44,19 @@ public enum ErrorCode {
     JWT_NOT_FOUND(HttpStatus.BAD_REQUEST,"J02" ,"존재하지 않거나 유효기간 만료된 리프레쉬 토큰입니다." ),
     FREESUB_NOTI_ALREADY_REQUEST(HttpStatus.BAD_REQUEST, "F01","이미 알림 신청된 매치입니다." ),
     MATCH_ALREADY_DONE(HttpStatus.BAD_REQUEST,"M12","이미 종료된 매치입니다."),
-    DTO_CONVERT_FAIL(HttpStatus.OK,"D03","DTO 변환 실패하였습니다.");
+    DTO_CONVERT_FAIL(HttpStatus.OK,"D03","DTO 변환 실패하였습니다."),
+    INVALID_AMOUNT(HttpStatus.BAD_REQUEST, "I01","올바르지 않은 금액입니다" ),
+    UNAVAILABLE_PAYMENT_METHOD(HttpStatus.BAD_REQUEST, "U01","사용불가한 결제수단입니다." ),
+    UNSUPPORTED_PAYMENT_METHOD(HttpStatus.BAD_REQUEST, "U02","존재하지 않는 결제수단입니다." ),
+    SUBSCRIPTION_ALREADY_EXIST_THIS_MONTH(HttpStatus.BAD_REQUEST,"S05" ,"이미 해당 월 요금제가 가입되어있습니다. 환불 후 진행바랍니다." ),
+    NO_SUBSCRIPTION_REMAINING(HttpStatus.BAD_REQUEST,"N01" ,"남은 구독권 횟수가 없습니다" ),
+    SUBSCRIPTION_NOT_FOUND(HttpStatus.BAD_REQUEST,"S06" ,"구독권을 찾을 수 없습니다. 구독권 등록 여부를 확인해주세요." ),
+    SUBSCRIPTION_EXPIRED(HttpStatus.BAD_REQUEST,"S07","만료된 구독권입니다."  ),
+    SUBSCRIPTION_ALREADY_USE(HttpStatus.BAD_REQUEST,"S08","이미 사용된 구독권입니다."),
+    PAY_NOT_FOUND(HttpStatus.BAD_REQUEST,"P02" ,"결제 이력이 존재하지 않습니다. 재확인바랍니다." ),
+    SUBSCRIPTION_ALREADY_CANCELED(HttpStatus.BAD_REQUEST,"S09" ,"구독취소는 달에 1회만 가능합니다." )
+    ;
+
 
     private final HttpStatus httpStatus;
     private final String code;

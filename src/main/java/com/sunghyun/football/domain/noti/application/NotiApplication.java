@@ -1,5 +1,6 @@
 package com.sunghyun.football.domain.noti.application;
 
+import com.sunghyun.football.domain.noti.application.port.out.SubscriptionServicePortForNoti;
 import com.sunghyun.football.domain.noti.application.dto.FreeSubNotiListDto;
 import com.sunghyun.football.domain.noti.application.dto.FreeSubNotiRegReqDto;
 import com.sunghyun.football.domain.noti.application.dto.FreeSubNotiSelectResDto;
@@ -25,6 +26,7 @@ import java.util.List;
 public class NotiApplication {
     private final FreeSubNotiRepository freeSubNotiRepository;
     private final PlabFootBallOpenFeignClient plabFootBallOpenFeignClient;
+    private final SubscriptionServicePortForNoti subscriptionServicePort;
 
     @Transactional
     public void regFreeSubNoti(FreeSubNotiRegReqDto freeSubNotiRegReqDto){
@@ -56,6 +58,9 @@ public class NotiApplication {
 
         //DB저장
         freeSubNotiRepository.save(freeSubNoti);
+
+        //구독권 사용
+        subscriptionServicePort.use(freeSubNoti.getMemberNo(), MatchDateUtils.getNowDtStr());
     }
 
     public void delFreeSubNoti(Long notiNo) {

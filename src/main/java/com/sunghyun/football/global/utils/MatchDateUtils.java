@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -15,7 +17,7 @@ public class MatchDateUtils {
     }
 
     public static String getNowTmStr(){
-        DateFormat tmFormat = new SimpleDateFormat("HHmm");
+        DateFormat tmFormat = new SimpleDateFormat("HHmmss");
         return tmFormat.format(new Date());
     }
 
@@ -26,7 +28,7 @@ public class MatchDateUtils {
     }
 
     public static String getTmStr(Date date){
-        SimpleDateFormat tmFormat = new SimpleDateFormat("HHmm");
+        SimpleDateFormat tmFormat = new SimpleDateFormat("HHmmSS");
         return tmFormat.format(date);
     }
 
@@ -63,5 +65,11 @@ public class MatchDateUtils {
 
 //        log.info("매치 진행 전/매치 시작[{} {}]/현재[{} {}]",startDt,startTm,nowDt,nowTm);
         return isStartOrEndFlg;
+    }
+
+    public static String plusOneMonth(String yyyyMMdd) {
+        LocalDate date = LocalDate.parse(yyyyMMdd, DateTimeFormatter.ofPattern("yyyyMMdd"));
+        LocalDate afterOneMonth = date.plusMonths(1);
+        return afterOneMonth.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     }
 }

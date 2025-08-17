@@ -105,7 +105,7 @@ public class SecurityConfig{
                                 .requestMatchers(HttpMethod.POST,"/api/v1/member").permitAll()
                                 .requestMatchers("/api/v1/member/email/**").permitAll()
                                 .requestMatchers("/api/v1/member/**").hasAuthority(Role.USER.name())
-                                .requestMatchers("/api/v1/noti/**").hasAuthority(Role.USER.name())
+//                                .requestMatchers("/api/v1/noti/**").hasAuthority(Role.USER.name())
                                 .requestMatchers("/api/v1/manager/**").hasAnyAuthority(Role.MANAGER.name())
                                 .requestMatchers("/api/v1/admin/**").hasAnyAuthority(Role.ADMIN.name())
                                 .anyRequest().permitAll()
