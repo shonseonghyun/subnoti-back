@@ -2,9 +2,9 @@ package com.sunghyun.football.domain.subscription.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sunghyun.football.domain.subscription.application.service.SubscriptionService;
-import com.sunghyun.football.global.exception.ErrorCode;
+import com.sunghyun.football.global.exception.ErrorType;
 import com.sunghyun.football.global.exception.GlobalExceptionHandler;
-import com.sunghyun.football.global.exception.exceptions.subscription.SubscriptionNotFoundException;
+import com.sunghyun.football.global.exception.subscription.exception.SubscriptionNotFoundException;
 import com.sunghyun.football.global.utils.MatchDateUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,7 +58,7 @@ class SubscriptionApiTest {
         final String today= MatchDateUtils.getNowDtStr();
         final String url = "/api/v1/subscription/"+memberNo+"/"+subscriptionNo;
 
-        doThrow(new SubscriptionNotFoundException(ErrorCode.SUBSCRIPTION_NOT_FOUND))
+        doThrow(new SubscriptionNotFoundException(ErrorType.SUBSCRIPTION_NOT_FOUND))
                 .when(subscriptionService).cancel(memberNo,subscriptionNo,today);
 
         //when
@@ -70,8 +70,8 @@ class SubscriptionApiTest {
         //then
         resultActions
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value(ErrorCode.SUBSCRIPTION_NOT_FOUND.getCode()))
-                .andExpect(jsonPath("$.msg").value(ErrorCode.SUBSCRIPTION_NOT_FOUND.getMessage()))
+                .andExpect(jsonPath("$.code").value(ErrorType.SUBSCRIPTION_NOT_FOUND.getCode()))
+                .andExpect(jsonPath("$.msg").value(ErrorType.SUBSCRIPTION_NOT_FOUND.getMessage()))
         ;
         verify(subscriptionService).cancel(memberNo, subscriptionNo,today);
     }
@@ -94,8 +94,8 @@ class SubscriptionApiTest {
         //then
         resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(ErrorCode.SUCCESS.getCode()))
-                .andExpect(jsonPath("$.msg").value(ErrorCode.SUCCESS.getMessage()))
+                .andExpect(jsonPath("$.code").value(ErrorType.SUCCESS.getCode()))
+                .andExpect(jsonPath("$.msg").value(ErrorType.SUCCESS.getMessage()))
         ;
         verify(subscriptionService).cancel(memberNo, subscriptionNo,today);
     }

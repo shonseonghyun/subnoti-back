@@ -8,7 +8,7 @@ import com.sunghyun.football.domain.pay.domain.model.PaymentMethod;
 import com.sunghyun.football.domain.pay.domain.repository.PayRepository;
 import com.sunghyun.football.domain.subscription.domain.model.Subscription;
 import com.sunghyun.football.domain.subscription.domain.repository.SubscriptionRepository;
-import com.sunghyun.football.global.exception.ErrorCode;
+import com.sunghyun.football.global.exception.ErrorType;
 import com.sunghyun.football.global.utils.MatchDateUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -75,8 +75,8 @@ public class SubscriptionIntegrationTest {
         //then
         resultActions
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value(ErrorCode.SUBSCRIPTION_NOT_FOUND.getCode()))
-                .andExpect(jsonPath("$.msg").value(ErrorCode.SUBSCRIPTION_NOT_FOUND.getMessage()))
+                .andExpect(jsonPath("$.code").value(ErrorType.SUBSCRIPTION_NOT_FOUND.getCode()))
+                .andExpect(jsonPath("$.msg").value(ErrorType.SUBSCRIPTION_NOT_FOUND.getMessage()))
                 ;
     }
 
@@ -120,8 +120,8 @@ public class SubscriptionIntegrationTest {
         //2. 응답 검증
         resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(ErrorCode.SUCCESS.getCode()))
-                .andExpect(jsonPath("$.msg").value(ErrorCode.SUCCESS.getMessage()))
+                .andExpect(jsonPath("$.code").value(ErrorType.SUCCESS.getCode()))
+                .andExpect(jsonPath("$.msg").value(ErrorType.SUCCESS.getMessage()))
         ;
     }
 

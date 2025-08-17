@@ -6,7 +6,7 @@ import com.sunghyun.football.domain.pay.domain.service.PaymentProcessor;
 import com.sunghyun.football.domain.pay.infrastructure.payment.processor.CreditCardPaymentProcessor;
 import com.sunghyun.football.domain.pay.infrastructure.payment.processor.KakaoPaymentProcessor;
 import com.sunghyun.football.domain.pay.infrastructure.payment.processor.NaverPaymentProcessor;
-import com.sunghyun.football.global.exception.exceptions.pay.UnsupportedPaymentMethodException;
+import com.sunghyun.football.global.exception.pay.exception.UnsupportedPaymentMethodException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

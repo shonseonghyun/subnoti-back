@@ -4,6 +4,7 @@ import com.sunghyun.football.config.batch.listener.process.AbstractProcessListen
 import com.sunghyun.football.config.batch.listener.read.AbstractReadListener;
 import com.sunghyun.football.config.batch.listener.skip.CommonSkipListener;
 import com.sunghyun.football.config.batch.listener.write.AbstractWriteListener;
+import com.sunghyun.football.config.batch.noti.NotiProcessor;
 import com.sunghyun.football.config.batch.reader.DtoConvertJpaPagingItemReader;
 import com.sunghyun.football.config.batch.reader.builder.DtoConvertJpaPagingItemReaderBuilder;
 import com.sunghyun.football.domain.noti.domain.FreeSubNoti;
@@ -11,13 +12,13 @@ import com.sunghyun.football.domain.noti.domain.repository.FreeSubNotiRepository
 import com.sunghyun.football.domain.noti.infrastructure.entity.FreeSubNotiEntity;
 import com.sunghyun.football.global.feign.PlabFootBallOpenFeignClient;
 import com.sunghyun.football.global.feign.dto.PlabMatchInfoResDto;
-import com.sunghyun.football.config.batch.noti.NotiProcessor;
 import com.sunghyun.football.global.utils.MatchDateUtils;
 import feign.FeignException;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.*;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;

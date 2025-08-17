@@ -3,10 +3,10 @@ package com.sunghyun.football.domain.subscription.domain.service;
 import com.sunghyun.football.domain.subscription.domain.model.Subscription;
 import com.sunghyun.football.domain.subscription.domain.model.SubscriptionStatus;
 import com.sunghyun.football.domain.subscription.domain.repository.SubscriptionRepository;
-import com.sunghyun.football.global.exception.ErrorCode;
-import com.sunghyun.football.global.exception.exceptions.subscription.SubscriptionAlreadyCancelException;
-import com.sunghyun.football.global.exception.exceptions.subscription.SubscriptionAlreadyUsedException;
-import com.sunghyun.football.global.exception.exceptions.subscription.SubscriptionNotFoundException;
+import com.sunghyun.football.global.exception.ErrorType;
+import com.sunghyun.football.global.exception.subscription.exception.SubscriptionAlreadyCancelException;
+import com.sunghyun.football.global.exception.subscription.exception.SubscriptionAlreadyUsedException;
+import com.sunghyun.football.global.exception.subscription.exception.SubscriptionNotFoundException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ class SubscriptionDeletionServiceTest {
 
         when(subscriptionRepository.findValidSubscriptionBySubscriptionNoAndMemberNoAndToday(
                 memberNo, subscriptionNo, today))
-                .thenThrow(new SubscriptionNotFoundException(ErrorCode.SUBSCRIPTION_NOT_FOUND));
+                .thenThrow(new SubscriptionNotFoundException(ErrorType.SUBSCRIPTION_NOT_FOUND));
 
         //when,then
         Assertions.assertThatThrownBy(()->target.getIfDeletable(memberNo,subscriptionNo,today))

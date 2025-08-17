@@ -1,7 +1,7 @@
 //package com.sunghyun.football.domain.member.domain.enums;
 //
 //import com.sunghyun.football.domain.enumMapper.enums.EnumMapperType;
-//import com.sunghyun.football.global.exception.ErrorCode;
+//import com.sunghyun.football.global.exception.ErrorType;
 //import com.sunghyun.football.global.exception.exceptions.member.MemberLevelNotFoundException;
 //import lombok.AllArgsConstructor;
 //import lombok.Getter;
@@ -26,7 +26,7 @@
 //        return Arrays.stream(MemberLevelType.values())
 //                .filter(memberLevel -> memberLevel.getLevelNum().equals(averageLevelNum))
 //                .findFirst()
-//                .orElseThrow(()->new MemberLevelNotFoundException(ErrorCode.MEMBER_LEVEL_NOT_FOUND));
+//                .orElseThrow(()->new MemberLevelNotFoundException(ErrorType.MEMBER_LEVEL_NOT_FOUND));
 //    }
 //
 //    public static boolean isAvailableApply(MemberLevelType standard, MemberLevelType targetLevel) {

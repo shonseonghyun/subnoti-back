@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sunghyun.football.domain.pay.application.PayService;
 import com.sunghyun.football.domain.pay.application.dto.PayReqDto;
 import com.sunghyun.football.domain.pay.domain.model.PaymentMethod;
-import com.sunghyun.football.global.exception.ErrorCode;
+import com.sunghyun.football.global.exception.ErrorType;
 import com.sunghyun.football.global.exception.GlobalExceptionHandler;
-import com.sunghyun.football.global.exception.exceptions.pay.UnavailablePaymentMethodException;
+import com.sunghyun.football.global.exception.pay.exception.UnavailablePaymentMethodException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -64,7 +64,7 @@ class PayApiTest {
     void pay_결제_실패_예외_응답() throws Exception {
         //given
         final String url = "/api/v1/pay";
-        doThrow(new UnavailablePaymentMethodException(ErrorCode.UNAVAILABLE_PAYMENT_METHOD))
+        doThrow(new UnavailablePaymentMethodException(ErrorType.UNAVAILABLE_PAYMENT_METHOD))
                 .when(payService).pay(any(),anyInt(),any());
 
         //when
@@ -77,8 +77,8 @@ class PayApiTest {
         //then
         resultActions
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value(ErrorCode.UNAVAILABLE_PAYMENT_METHOD.getCode()))
-                .andExpect(jsonPath("$.msg").value(ErrorCode.UNAVAILABLE_PAYMENT_METHOD.getMessage()))
+                .andExpect(jsonPath("$.code").value(ErrorType.UNAVAILABLE_PAYMENT_METHOD.getCode()))
+                .andExpect(jsonPath("$.msg").value(ErrorType.UNAVAILABLE_PAYMENT_METHOD.getMessage()))
         ;
         verify(payService).pay(memberNo, rightAmount, inactivePaymentMethod);
     }
@@ -99,7 +99,7 @@ class PayApiTest {
         verify(payService).pay(memberNo, rightAmount, activePaymentMethod);
         resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(ErrorCode.SUCCESS.getCode()))
-                .andExpect(jsonPath("$.msg").value(ErrorCode.SUCCESS.getMessage()));;
+                .andExpect(jsonPath("$.code").value(ErrorType.SUCCESS.getCode()))
+                .andExpect(jsonPath("$.msg").value(ErrorType.SUCCESS.getMessage()));;
     }
 }

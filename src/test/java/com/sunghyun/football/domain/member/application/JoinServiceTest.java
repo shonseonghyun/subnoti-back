@@ -7,8 +7,8 @@ import com.sunghyun.football.domain.member.domain.enums.Gender;
 import com.sunghyun.football.domain.member.domain.repository.MemberRepository;
 import com.sunghyun.football.domain.member.domain.service.MemberDuplicationChecker;
 import com.sunghyun.football.global.event.event.NotificationSentEvent;
-import com.sunghyun.football.global.exception.ErrorCode;
-import com.sunghyun.football.global.exception.exceptions.member.JoinException;
+import com.sunghyun.football.global.exception.ErrorType;
+import com.sunghyun.football.global.exception.member.exception.JoinException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,7 +62,7 @@ class JoinServiceTest {
     void memberJoinFailByDuplicatedEmail(){
         //given
         MemberJoinReqDto duplicatedEmailMemberJoinReqDto = createMemberJoinReqDto();
-        doThrow(new JoinException(ErrorCode.DUPLICATED_EMAIL_REGISTER))
+        doThrow(new JoinException(ErrorType.DUPLICATED_EMAIL_REGISTER))
                 .when(memberDuplicationChecker)
                 .checkDuplicatiedFields(any())
         ;

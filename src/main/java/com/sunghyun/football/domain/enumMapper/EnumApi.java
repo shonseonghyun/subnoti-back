@@ -1,7 +1,7 @@
 package com.sunghyun.football.domain.enumMapper;
 
 import com.sunghyun.football.domain.enumMapper.enums.EnumMapper;
-import com.sunghyun.football.global.exception.ErrorCode;
+import com.sunghyun.football.global.exception.ErrorType;
 import com.sunghyun.football.global.response.ApiResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ public class EnumApi {
 
     @GetMapping("/{key}")
     public ApiResponseDto getEnum(@PathVariable String key){
-        return ApiResponseDto.toResponse(ErrorCode.SUCCESS,enumRuleMapper.get(key));
+        return ApiResponseDto.toResponse(ErrorType.SUCCESS,enumRuleMapper.get(key));
     }
 
 }

@@ -1,8 +1,8 @@
 package com.sunghyun.football.domain.subscription.domain.model;
 
 import com.sunghyun.football.global.aop.Auditable;
-import com.sunghyun.football.global.exception.ErrorCode;
-import com.sunghyun.football.global.exception.exceptions.subscription.NoRemainingSubscriptionCountException;
+import com.sunghyun.football.global.exception.ErrorType;
+import com.sunghyun.football.global.exception.subscription.exception.NoRemainingSubscriptionCountException;
 import com.sunghyun.football.global.utils.MatchDateUtils;
 import lombok.*;
 
@@ -66,7 +66,7 @@ public class Subscription extends Auditable {
 
     public void use() {
         if(remainingCount<=0){
-            throw new NoRemainingSubscriptionCountException(ErrorCode.NO_SUBSCRIPTION_REMAINING);
+            throw new NoRemainingSubscriptionCountException(ErrorType.NO_SUBSCRIPTION_REMAINING);
         }
 
         remainingCount--;

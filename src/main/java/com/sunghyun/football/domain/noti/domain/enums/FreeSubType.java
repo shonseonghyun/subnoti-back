@@ -1,8 +1,8 @@
 package com.sunghyun.football.domain.noti.domain.enums;
 
 import com.sunghyun.football.domain.enumMapper.enums.EnumMapperType;
-import com.sunghyun.football.global.exception.ErrorCode;
-import com.sunghyun.football.global.exception.exceptions.match.MatchStateNotFoundException;
+import com.sunghyun.football.global.exception.ErrorType;
+import com.sunghyun.football.global.exception.noti.exception.FreesubTypeNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -23,7 +23,7 @@ public enum FreeSubType implements EnumMapperType {
         return Arrays.stream(FreeSubType.values())
                 .filter(freeSubType -> freeSubType.getType().equals(value))
                 .findFirst()
-                .orElseThrow(()->new MatchStateNotFoundException(ErrorCode.MATCH_STATE_NOT_FOUND));
+                .orElseThrow(()->new FreesubTypeNotFoundException(ErrorType.FREESUB_TYPE_NOT_FOUND));
     }
 
     @Override

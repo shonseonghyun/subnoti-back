@@ -1,8 +1,8 @@
 package com.sunghyun.football.domain.pay.domain.service;
 
 import com.sunghyun.football.domain.pay.domain.model.PaymentMethod;
-import com.sunghyun.football.global.exception.ErrorCode;
-import com.sunghyun.football.global.exception.exceptions.pay.UnsupportedPaymentMethodException;
+import com.sunghyun.football.global.exception.ErrorType;
+import com.sunghyun.football.global.exception.pay.exception.UnsupportedPaymentMethodException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +25,7 @@ public class PaymentBuilderFactory {
         PaymentProcessor paymentProcessor=paymentProcessorMap.get(paymentMethod);
         if(paymentProcessor==null){
             log.warn("존재하지 않는 지불수단입니다.");
-            throw new UnsupportedPaymentMethodException(ErrorCode.UNSUPPORTED_PAYMENT_METHOD);
+            throw new UnsupportedPaymentMethodException(ErrorType.UNSUPPORTED_PAYMENT_METHOD);
         }
 
         return paymentProcessor;

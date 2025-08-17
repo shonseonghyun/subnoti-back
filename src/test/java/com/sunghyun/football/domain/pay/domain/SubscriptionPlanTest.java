@@ -1,7 +1,7 @@
 package com.sunghyun.football.domain.pay.domain;
 
 import com.sunghyun.football.domain.subscription.domain.model.SubscriptionPlan;
-import com.sunghyun.football.global.exception.exceptions.subscription.InvalidSubscriptionAmountException;
+import com.sunghyun.football.global.exception.subscription.exception.InvalidSubscriptionAmountException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

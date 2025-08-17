@@ -1,8 +1,7 @@
 package com.sunghyun.football.global.utils;
 
-import com.sunghyun.football.domain.noti.infrastructure.entity.FreeSubNotiEntity;
-import com.sunghyun.football.global.exception.ErrorCode;
-import com.sunghyun.football.global.exception.exceptions.dto.DtoConvertException;
+import com.sunghyun.football.global.exception.ErrorType;
+import com.sunghyun.football.global.exception.dto.exception.DtoConvertException;
 import jakarta.persistence.OneToMany;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
@@ -37,7 +36,7 @@ public class EntityDtoConverter {
             try {
                 result.add(convertEntity(entity, dtoClass));
             } catch (DtoConvertException e) {
-                log.warn("Read Error 발생되었으나 무시 = {}, 대상 item: {}",e.getErrorCode().getMessage(),entity,e);
+                log.warn("Read Error 발생되었으나 무시 = {}, 대상 item: {}",e.getErrorType().getMessage(),entity,e);
             }
         }
         return result;
@@ -61,7 +60,7 @@ public class EntityDtoConverter {
 
             return dto;
         }catch (Exception e){
-            throw new DtoConvertException(ErrorCode.DTO_CONVERT_FAIL);
+            throw new DtoConvertException(ErrorType.DTO_CONVERT_FAIL);
         }
         // 1) DTO 인스턴스 생성 (리플렉션 기반)
     }

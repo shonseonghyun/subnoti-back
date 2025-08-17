@@ -1,7 +1,7 @@
 package com.sunghyun.football.domain.noti.domain.enums;
 
-import com.sunghyun.football.global.exception.ErrorCode;
-import com.sunghyun.football.global.exception.exceptions.match.MatchStateNotFoundException;
+import com.sunghyun.football.global.exception.ErrorType;
+import com.sunghyun.football.global.exception.noti.exception.SendFlgNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -21,7 +21,7 @@ public enum SendFlg {
         return Arrays.stream(SendFlg.values())
                 .filter(sendFlg -> sendFlg.getFlg().equals(value))
                 .findFirst()
-                .orElseThrow(()->new MatchStateNotFoundException(ErrorCode.MATCH_STATE_NOT_FOUND));
+                .orElseThrow(()->new SendFlgNotFoundException(ErrorType.SEND_FLG_NOT_FOUND));
     }
 
 }

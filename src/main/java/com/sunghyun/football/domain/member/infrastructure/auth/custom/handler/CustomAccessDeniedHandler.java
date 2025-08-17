@@ -1,7 +1,7 @@
 package com.sunghyun.football.domain.member.infrastructure.auth.custom.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sunghyun.football.global.exception.ErrorCode;
+import com.sunghyun.football.global.exception.ErrorType;
 import com.sunghyun.football.global.response.ApiResponseDto;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,11 +21,11 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        final ErrorCode errorCode = ErrorCode.ACCESSED_DENIED;
-        ApiResponseDto apiResponseDto = ApiResponseDto.toResponse(errorCode);
+        final ErrorType errorType = ErrorType.ACCESSED_DENIED;
+        ApiResponseDto apiResponseDto = ApiResponseDto.toResponse(errorType);
         final String jsonErrorResponse = om.writeValueAsString(apiResponseDto);
 
-        response.setStatus(errorCode.getHttpStatus().value());
+        response.setStatus(errorType.getHttpStatus().value());
         response.setCharacterEncoding("utf-8");
         response.setContentType(MediaType.APPLICATION_JSON_VALUE); // application/json
         response.getWriter().write(jsonErrorResponse);

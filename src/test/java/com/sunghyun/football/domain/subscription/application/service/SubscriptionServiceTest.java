@@ -5,9 +5,9 @@ import com.sunghyun.football.domain.subscription.domain.model.Subscription;
 import com.sunghyun.football.domain.subscription.domain.model.SubscriptionPlan;
 import com.sunghyun.football.domain.subscription.domain.repository.SubscriptionRepository;
 import com.sunghyun.football.domain.subscription.domain.service.SubscriptionDeletionService;
-import com.sunghyun.football.global.exception.ErrorCode;
-import com.sunghyun.football.global.exception.exceptions.pay.PayNotFoundException;
-import com.sunghyun.football.global.exception.exceptions.subscription.SubscriptionNotFoundException;
+import com.sunghyun.football.global.exception.ErrorType;
+import com.sunghyun.football.global.exception.pay.exception.PayNotFoundException;
+import com.sunghyun.football.global.exception.subscription.exception.SubscriptionNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,7 +47,7 @@ class SubscriptionServiceTest {
                 memberNo,
                 today)
         )
-        .thenThrow(new SubscriptionNotFoundException(ErrorCode.SUBSCRIPTION_NOT_FOUND))
+        .thenThrow(new SubscriptionNotFoundException(ErrorType.SUBSCRIPTION_NOT_FOUND))
         ;
 
         //when
@@ -79,7 +79,7 @@ class SubscriptionServiceTest {
         )
                 .thenReturn(subscription)
         ;
-        doThrow(new PayNotFoundException(ErrorCode.PAY_NOT_FOUND))
+        doThrow(new PayNotFoundException(ErrorType.PAY_NOT_FOUND))
                 .when(payServicePortForSubscription)
                 .refund(subscriptionNo);
                 ;

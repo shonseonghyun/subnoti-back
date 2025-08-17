@@ -2,8 +2,8 @@ package com.sunghyun.football.domain.member.infrastructure.auth.custom.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sunghyun.football.domain.member.application.dto.MemberLoginReqDto;
-import com.sunghyun.football.global.exception.ErrorCode;
-import com.sunghyun.football.global.exception.exceptions.member.auth.HttpMethodNotSupportException;
+import com.sunghyun.football.global.exception.ErrorType;
+import com.sunghyun.football.global.exception.member.auth.HttpMethodNotSupportException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,7 +44,7 @@ public class CustomLoginFilter extends AbstractAuthenticationProcessingFilter {
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException , IOException {
         if(!isPost(request.getMethod())){
 //             throw new UsernameNotFoundException("8");
-            throw new HttpMethodNotSupportException(ErrorCode.HTTP_METHOD_NOT_SUPPORT.getCode());
+            throw new HttpMethodNotSupportException(ErrorType.HTTP_METHOD_NOT_SUPPORT.getCode());
         }
 
         MemberLoginReqDto memberLoginReqDto = om.readValue(request.getReader(), MemberLoginReqDto.class);

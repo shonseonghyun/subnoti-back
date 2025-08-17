@@ -5,9 +5,9 @@ import com.sunghyun.football.domain.pay.domain.model.PaymentMethod;
 import com.sunghyun.football.domain.pay.domain.repository.PayRepository;
 import com.sunghyun.football.domain.pay.domain.service.PaymentBuilderFactory;
 import com.sunghyun.football.domain.pay.domain.service.PaymentProcessor;
-import com.sunghyun.football.global.exception.ErrorCode;
-import com.sunghyun.football.global.exception.exceptions.pay.PayNotFoundException;
-import com.sunghyun.football.global.exception.exceptions.pay.UnsupportedPaymentMethodException;
+import com.sunghyun.football.global.exception.ErrorType;
+import com.sunghyun.football.global.exception.pay.exception.PayNotFoundException;
+import com.sunghyun.football.global.exception.pay.exception.UnsupportedPaymentMethodException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -62,7 +62,7 @@ class PayAdapterTest {
                 .thenReturn(Optional.ofNullable(pay))
         ;
         when(paymentBuilderFactory.getPaymentProcessor(any()))
-                .thenThrow(new UnsupportedPaymentMethodException(ErrorCode.UNSUPPORTED_PAYMENT_METHOD))
+                .thenThrow(new UnsupportedPaymentMethodException(ErrorType.UNSUPPORTED_PAYMENT_METHOD))
         ;
 
         assertThatThrownBy(()->target.refund(subscriptionNo))

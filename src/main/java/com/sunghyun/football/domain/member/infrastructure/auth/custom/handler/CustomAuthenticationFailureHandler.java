@@ -1,13 +1,12 @@
 package com.sunghyun.football.domain.member.infrastructure.auth.custom.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sunghyun.football.global.exception.ErrorCode;
+import com.sunghyun.football.global.exception.ErrorType;
 import com.sunghyun.football.global.response.ApiResponseDto;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -23,14 +22,14 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         //httpStatus를 건드리지 못하기에 아래로 개선하였다.
-//        om.writeValue(response.getOutputStream(), ApiResponseDto.toResponse(ErrorCode.EMAIL_NOT_FOUND));
+//        om.writeValue(response.getOutputStream(), ApiResponseDto.toResponse(ErrorType.EMAIL_NOT_FOUND));
         final String code = exception.getMessage();
-        ErrorCode errorCode = ErrorCode.getErrorCodeEnum(code);
+        ErrorType errorType = ErrorType.getErrorCodeEnum(code);
 
-        ApiResponseDto apiResponseDto =ApiResponseDto.toResponse(errorCode);
+        ApiResponseDto apiResponseDto =ApiResponseDto.toResponse(errorType);
         String jsonErrorResponse = om.writeValueAsString(apiResponseDto);
 
-        response.setStatus(errorCode.getHttpStatus().value());
+        response.setStatus(errorType.getHttpStatus().value());
         response.setCharacterEncoding("utf-8");
         response.setContentType(MediaType.APPLICATION_JSON_VALUE); // application/json
         response.getWriter().write(jsonErrorResponse);

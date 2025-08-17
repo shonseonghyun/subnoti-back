@@ -1,7 +1,7 @@
 package com.sunghyun.football.domain.pay.domain.model;
 
-import com.sunghyun.football.global.exception.ErrorCode;
-import com.sunghyun.football.global.exception.exceptions.pay.UnavailablePaymentMethodException;
+import com.sunghyun.football.global.exception.ErrorType;
+import com.sunghyun.football.global.exception.pay.exception.UnavailablePaymentMethodException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,7 +20,7 @@ public enum PaymentMethod {
     public void checkAvailable() {
         if(this.flg==1){
 //            log.warn("[{}] 현재 사용 불가한 결제수단입니다.", this.desc); //도메인 서비스엔 로그를 남기지 않고 application 에서 catch로 잡아 남기자.
-            throw new UnavailablePaymentMethodException(ErrorCode.UNAVAILABLE_PAYMENT_METHOD);
+            throw new UnavailablePaymentMethodException(ErrorType.UNAVAILABLE_PAYMENT_METHOD);
         }
 
         log.info("[{}] 사용 가능한 결제수단입니다.",this.desc);

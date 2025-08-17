@@ -2,7 +2,7 @@ package com.sunghyun.football.domain.history.api;
 
 import com.sunghyun.football.domain.history.application.dto.SaveMailReqDto;
 import com.sunghyun.football.domain.history.application.service.MailHistoryService;
-import com.sunghyun.football.global.exception.ErrorCode;
+import com.sunghyun.football.global.exception.ErrorType;
 import com.sunghyun.football.global.response.ApiResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class MailHistoryApi {
     @PostMapping
     public ApiResponseDto saveMailHistory(@RequestBody @Valid final SaveMailReqDto saveMailReqDto){
         mailHistoryService.saveMailHistory(saveMailReqDto);
-        return ApiResponseDto.toResponse(ErrorCode.SUCCESS);
+        return ApiResponseDto.toResponse(ErrorType.SUCCESS);
     }
 
 }

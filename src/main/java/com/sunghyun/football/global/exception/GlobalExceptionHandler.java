@@ -2,7 +2,6 @@ package com.sunghyun.football.global.exception;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sunghyun.football.global.exception.exception.AppException;
 import com.sunghyun.football.global.response.ApiResponseDto;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
@@ -34,23 +33,23 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({AppException.class})
     public ResponseEntity<ApiResponseDto> handleAppException(final AppException e){
-        log.warn("[AppException] {}", e.getErrorCode().getMessage());
-        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
-                .body(ApiResponseDto.toResponse(e.getErrorCode()));
+        log.warn("[AppException] {}", e.getErrorType().getMessage());
+        return ResponseEntity.status(e.getErrorType().getHttpStatus())
+                .body(ApiResponseDto.toResponse(e.getErrorType()));
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({MethodArgumentTypeMismatchException.class})
     public ApiResponseDto handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e){
         log.warn("[MethodArgumentTypeMismatchException] {} 필드 인입값이 올바르지 않습니다. 실제 인입된 값: {}",e.getName(),e.getValue());
-        return ApiResponseDto.toResponse(ErrorCode.INVALID_PARAMETER);
+        return ApiResponseDto.toResponse(ErrorType.INVALID_PARAMETER);
     }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         log.warn("MethodArgumentNotValidException happened");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponseDto.toResponse(ErrorCode.INVALID_PARAMETER));
+                .body(ApiResponseDto.toResponse(ErrorType.INVALID_PARAMETER));
     }
 
     //@Pattern
@@ -58,7 +57,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleHandlerMethodValidationException(HandlerMethodValidationException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         log.warn("MethodArgumentNotValidException happened");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponseDto.toResponse(ErrorCode.INVALID_PARAMETER));
+                .body(ApiResponseDto.toResponse(ErrorType.INVALID_PARAMETER));
     }
 
     @Override
@@ -71,7 +70,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.warn("HttpMessageNotReadableException happened");
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponseDto.toResponse(ErrorCode.INVALID_PARAMETER));
+                .body(ApiResponseDto.toResponse(ErrorType.INVALID_PARAMETER));
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -79,11 +78,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity handleFeignException(final FeignException e) throws JsonProcessingException {
         log.error("여기에 다 잡혓나?");
         if(e.status()==HttpStatus.METHOD_NOT_ALLOWED.value()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.toResponse(ErrorCode.METHOD_NOT_ALLOWED));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.toResponse(ErrorType.METHOD_NOT_ALLOWED));
         }
 
         else if(e.status()==HttpStatus.NOT_FOUND.value()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.toResponse(ErrorCode.MATCH_NOT_FOUND));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.toResponse(ErrorType.MATCH_NOT_FOUND));
         }
 
         String responseJson = e.contentUTF8();

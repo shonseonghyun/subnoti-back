@@ -6,7 +6,7 @@ import com.sunghyun.football.domain.member.domain.repository.TokenRepository;
 import com.sunghyun.football.domain.member.infrastructure.auth.UserDetails.CustomUserDetails;
 import com.sunghyun.football.domain.member.infrastructure.auth.dto.MemberLoginResDto;
 import com.sunghyun.football.domain.member.infrastructure.auth.jwt.JwtProvider;
-import com.sunghyun.football.global.exception.ErrorCode;
+import com.sunghyun.football.global.exception.ErrorType;
 import com.sunghyun.football.global.response.ApiResponseDto;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -69,5 +69,5 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         tokenRepository.save(new RefreshTokenRedis(refreshToken,email));
 
         //유저정보 body
-        om.writeValue(response.getOutputStream(), ApiResponseDto.toResponse(ErrorCode.SUCCESS, MemberLoginResDto.from(customUserDetails)));    }
+        om.writeValue(response.getOutputStream(), ApiResponseDto.toResponse(ErrorType.SUCCESS, MemberLoginResDto.from(customUserDetails)));    }
 }

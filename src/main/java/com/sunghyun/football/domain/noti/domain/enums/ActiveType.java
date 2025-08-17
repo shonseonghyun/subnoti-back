@@ -1,7 +1,7 @@
 package com.sunghyun.football.domain.noti.domain.enums;
 
-import com.sunghyun.football.global.exception.ErrorCode;
-import com.sunghyun.football.global.exception.exceptions.match.MatchStateNotFoundException;
+import com.sunghyun.football.global.exception.ErrorType;
+import com.sunghyun.football.global.exception.noti.exception.ActiveTypeNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -21,6 +21,6 @@ public enum ActiveType {
         return Arrays.stream(ActiveType.values())
                 .filter(activeType -> activeType.getType().equals(value))
                 .findFirst()
-                .orElseThrow(()->new MatchStateNotFoundException(ErrorCode.MATCH_STATE_NOT_FOUND));
+                .orElseThrow(()->new ActiveTypeNotFoundException(ErrorType.ACTIVE_TYPE_NOT_FOUND));
     }
 }

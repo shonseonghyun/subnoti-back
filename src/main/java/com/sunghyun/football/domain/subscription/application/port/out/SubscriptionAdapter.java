@@ -5,8 +5,8 @@ import com.sunghyun.football.domain.pay.application.port.out.SubscriptionService
 import com.sunghyun.football.domain.subscription.domain.model.Subscription;
 import com.sunghyun.football.domain.subscription.domain.repository.SubscriptionRepository;
 import com.sunghyun.football.domain.subscription.domain.service.SubscriptionCreationService;
-import com.sunghyun.football.global.exception.ErrorCode;
-import com.sunghyun.football.global.exception.exceptions.subscription.SubscriptionNotFoundException;
+import com.sunghyun.football.global.exception.ErrorType;
+import com.sunghyun.football.global.exception.subscription.exception.SubscriptionNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -53,7 +53,7 @@ public class SubscriptionAdapter implements SubscriptionServicePortForPay, Subsc
     public void use(final Long memberNo,final String today) {
         //구독권 존재 여부 검증
         Subscription subscription = subscriptionRepository.findValidSubscriptionByMemberNoAndToday(memberNo,today)
-                .orElseThrow(()->new SubscriptionNotFoundException(ErrorCode.SUBSCRIPTION_NOT_FOUND));
+                .orElseThrow(()->new SubscriptionNotFoundException(ErrorType.SUBSCRIPTION_NOT_FOUND));
 
         //구독권 사용
         subscription.use();

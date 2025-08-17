@@ -5,10 +5,10 @@ import com.sunghyun.football.domain.subscription.domain.model.Subscription;
 import com.sunghyun.football.domain.subscription.domain.model.SubscriptionPlan;
 import com.sunghyun.football.domain.subscription.domain.repository.SubscriptionRepository;
 import com.sunghyun.football.domain.subscription.domain.service.SubscriptionCreationService;
-import com.sunghyun.football.global.exception.ErrorCode;
-import com.sunghyun.football.global.exception.exceptions.subscription.NoRemainingSubscriptionCountException;
-import com.sunghyun.football.global.exception.exceptions.subscription.SubscriptionAlreadyExistsException;
-import com.sunghyun.football.global.exception.exceptions.subscription.SubscriptionNotFoundException;
+import com.sunghyun.football.global.exception.ErrorType;
+import com.sunghyun.football.global.exception.subscription.exception.NoRemainingSubscriptionCountException;
+import com.sunghyun.football.global.exception.subscription.exception.SubscriptionAlreadyExistsException;
+import com.sunghyun.football.global.exception.subscription.exception.SubscriptionNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,7 +49,7 @@ class SubscriptionAdapterTest {
         final String today = "20250807";
 
         when(subscriptionCreationService.createSubscriptionDomain(any(),anyInt(),any()))
-                .thenThrow(new SubscriptionAlreadyExistsException(ErrorCode.SUBSCRIPTION_ALREADY_EXIST_THIS_MONTH));
+                .thenThrow(new SubscriptionAlreadyExistsException(ErrorType.SUBSCRIPTION_ALREADY_EXIST_THIS_MONTH));
         ;
 
         //when,then
@@ -88,7 +88,7 @@ class SubscriptionAdapterTest {
         final String today= "20250807";
 
         when(subscriptionRepository.findValidSubscriptionByMemberNoAndToday(memberNo,today))
-                .thenThrow(new SubscriptionNotFoundException(ErrorCode.SUBSCRIPTION_NOT_FOUND));
+                .thenThrow(new SubscriptionNotFoundException(ErrorType.SUBSCRIPTION_NOT_FOUND));
 
         //when,then
         assertThatThrownBy(()->target.use(1L,today))
@@ -106,7 +106,7 @@ class SubscriptionAdapterTest {
         when(subscriptionRepository.findValidSubscriptionByMemberNoAndToday(memberNo,today))
                 .thenReturn(Optional.of(subscription));
 
-        doThrow(new NoRemainingSubscriptionCountException(ErrorCode.NO_SUBSCRIPTION_REMAINING))
+        doThrow(new NoRemainingSubscriptionCountException(ErrorType.NO_SUBSCRIPTION_REMAINING))
                 .when(subscription).use();
 
         //when,then

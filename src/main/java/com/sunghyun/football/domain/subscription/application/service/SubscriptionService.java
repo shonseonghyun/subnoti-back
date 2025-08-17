@@ -4,7 +4,7 @@ import com.sunghyun.football.domain.subscription.application.service.port.out.Pa
 import com.sunghyun.football.domain.subscription.domain.model.Subscription;
 import com.sunghyun.football.domain.subscription.domain.repository.SubscriptionRepository;
 import com.sunghyun.football.domain.subscription.domain.service.SubscriptionDeletionService;
-import com.sunghyun.football.global.exception.exceptions.subscription.SubscriptionException;
+import com.sunghyun.football.global.exception.subscription.SubscriptionException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -3,10 +3,10 @@ package com.sunghyun.football.domain.subscription.domain.service;
 import com.sunghyun.football.domain.subscription.domain.model.Subscription;
 import com.sunghyun.football.domain.subscription.domain.model.SubscriptionStatus;
 import com.sunghyun.football.domain.subscription.domain.repository.SubscriptionRepository;
-import com.sunghyun.football.global.exception.ErrorCode;
-import com.sunghyun.football.global.exception.exceptions.subscription.SubscriptionAlreadyCancelException;
-import com.sunghyun.football.global.exception.exceptions.subscription.SubscriptionAlreadyUsedException;
-import com.sunghyun.football.global.exception.exceptions.subscription.SubscriptionNotFoundException;
+import com.sunghyun.football.global.exception.ErrorType;
+import com.sunghyun.football.global.exception.subscription.exception.SubscriptionAlreadyCancelException;
+import com.sunghyun.football.global.exception.subscription.exception.SubscriptionAlreadyUsedException;
+import com.sunghyun.football.global.exception.subscription.exception.SubscriptionNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -34,18 +34,18 @@ public class SubscriptionDeletionService {
     public Subscription getIfDeletable(final Long memberNo,final Long subscriptionNo,final String today){
         //1. 회원번호+구독권번호+구독권유효기간 포함에 부합하는지 검증
         Subscription subscription = subscriptionRepository.findValidSubscriptionBySubscriptionNoAndMemberNoAndToday(memberNo,subscriptionNo, today)
-                .orElseThrow(()->new SubscriptionNotFoundException(ErrorCode.SUBSCRIPTION_NOT_FOUND));
+                .orElseThrow(()->new SubscriptionNotFoundException(ErrorType.SUBSCRIPTION_NOT_FOUND));
 
         //2. 구독권을 한 번이라도 사용한 적 있는지 검증
         if(subscription.hasBeenUsed()){
-            throw new SubscriptionAlreadyUsedException(ErrorCode.SUBSCRIPTION_ALREADY_USE);
+            throw new SubscriptionAlreadyUsedException(ErrorType.SUBSCRIPTION_ALREADY_USE);
         }
 
         //3. 1회 이상 구독권 환불 진행한 적 있는지 검증
         subscriptionRepository.findSubscriptionByMemberNoAndTodayAndStatus(memberNo,today, SubscriptionStatus.CANCEL)
                 .ifPresent(domain->{
                     System.out.println("존재해");
-                    throw new SubscriptionAlreadyCancelException(ErrorCode.SUBSCRIPTION_ALREADY_CANCELED);
+                    throw new SubscriptionAlreadyCancelException(ErrorType.SUBSCRIPTION_ALREADY_CANCELED);
                 })
         ;
 

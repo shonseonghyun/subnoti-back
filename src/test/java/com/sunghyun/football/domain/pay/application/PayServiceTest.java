@@ -7,10 +7,10 @@ import com.sunghyun.football.domain.pay.domain.repository.PayRepository;
 import com.sunghyun.football.domain.pay.domain.service.PayCreationService;
 import com.sunghyun.football.domain.pay.domain.service.PaymentBuilderFactory;
 import com.sunghyun.football.domain.pay.domain.service.PaymentProcessor;
-import com.sunghyun.football.global.exception.ErrorCode;
-import com.sunghyun.football.global.exception.exceptions.pay.UnavailablePaymentMethodException;
-import com.sunghyun.football.global.exception.exceptions.pay.UnsupportedPaymentMethodException;
-import com.sunghyun.football.global.exception.exceptions.subscription.InvalidSubscriptionAmountException;
+import com.sunghyun.football.global.exception.ErrorType;
+import com.sunghyun.football.global.exception.pay.exception.UnavailablePaymentMethodException;
+import com.sunghyun.football.global.exception.pay.exception.UnsupportedPaymentMethodException;
+import com.sunghyun.football.global.exception.subscription.exception.InvalidSubscriptionAmountException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -53,7 +53,7 @@ class PayServiceTest {
     void 사용_불가한_결제수단이면_UnavailablePaymentMethodException_발생(){
         //given
         when(payCreationService.createPayDomain(any(),any(),anyInt(),any()))
-                .thenThrow(new UnavailablePaymentMethodException(ErrorCode.UNAVAILABLE_PAYMENT_METHOD));
+                .thenThrow(new UnavailablePaymentMethodException(ErrorType.UNAVAILABLE_PAYMENT_METHOD));
         ;
 
         //when,then
@@ -65,7 +65,7 @@ class PayServiceTest {
     void 결제수단_없으면_UnsupportedPaymentMethodException_발생(){
         //given
         when(paymentBuilderFactory.getPaymentProcessor(any(PaymentMethod.class)))
-                .thenThrow(new UnsupportedPaymentMethodException(ErrorCode.UNSUPPORTED_PAYMENT_METHOD))
+                .thenThrow(new UnsupportedPaymentMethodException(ErrorType.UNSUPPORTED_PAYMENT_METHOD))
         ;
 
         //when,then
@@ -85,7 +85,7 @@ class PayServiceTest {
 //        when(payRepository.save(any(Pay.class)))
 //                .thenReturn(pay)
 //        ;
-        doThrow(new InvalidSubscriptionAmountException(ErrorCode.INVALID_AMOUNT))
+        doThrow(new InvalidSubscriptionAmountException(ErrorType.INVALID_AMOUNT))
                 .when(subscriptionServicePort).createSubscription(anyLong(), anyInt(), anyString());
 
         assertThatThrownBy(()->target.pay(memberNo,wrongAmount,inactivePaymentMethod))
@@ -122,7 +122,7 @@ class PayServiceTest {
 //                .thenReturn(Optional.ofNullable(pay))
 //        ;
 //        when(paymentBuilderFactory.getPaymentProcessor(any()))
-//                .thenThrow(new UnsupportedPaymentMethodException(ErrorCode.UNSUPPORTED_PAYMENT_METHOD))
+//                .thenThrow(new UnsupportedPaymentMethodException(ErrorType.UNSUPPORTED_PAYMENT_METHOD))
 //        ;
 //
 //        assertThatThrownBy(()->target.refund(subscriptionNo))

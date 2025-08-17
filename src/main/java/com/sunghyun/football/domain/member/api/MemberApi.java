@@ -6,13 +6,11 @@ import com.sunghyun.football.domain.member.application.dto.MemberJoinReqDto;
 import com.sunghyun.football.domain.member.application.dto.MemberJoinResDto;
 import com.sunghyun.football.domain.member.application.dto.SelectMemberResDto;
 import com.sunghyun.football.domain.member.domain.dto.MemberUpdReqDto;
-import com.sunghyun.football.global.exception.ErrorCode;
+import com.sunghyun.football.global.exception.ErrorType;
 import com.sunghyun.football.global.response.ApiResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -27,31 +25,31 @@ public class MemberApi {
     @GetMapping("/{memberNo}")
     public ApiResponseDto getMember(@PathVariable("memberNo") final Long memberNo){
         SelectMemberResDto selectMemberResDto = memberApplication.getMember(memberNo);
-        return ApiResponseDto.toResponse(ErrorCode.SUCCESS,selectMemberResDto);
+        return ApiResponseDto.toResponse(ErrorType.SUCCESS,selectMemberResDto);
     }
 
     @PutMapping("/{memberNo}")
     public ApiResponseDto update(@PathVariable("memberNo") final Long memberNo,@RequestBody @Valid final MemberUpdReqDto memberUpdReqDto){
         memberApplication.updateMember(memberNo,memberUpdReqDto);
-        return ApiResponseDto.toResponse(ErrorCode.SUCCESS);
+        return ApiResponseDto.toResponse(ErrorType.SUCCESS);
     }
 
     @DeleteMapping("/{memberNo}")
     public ApiResponseDto delete(@PathVariable("memberNo") Long memberNo){
         memberApplication.deleteMember(memberNo);
-        return ApiResponseDto.toResponse(ErrorCode.SUCCESS);
+        return ApiResponseDto.toResponse(ErrorType.SUCCESS);
     }
 
     @PostMapping("")
     public ApiResponseDto join(@RequestBody @Valid MemberJoinReqDto memberJoinReqDto){
         MemberJoinResDto memberJoinResDto = joinService.join(memberJoinReqDto);
-        return ApiResponseDto.toResponse(ErrorCode.SUCCESS,memberJoinResDto);
+        return ApiResponseDto.toResponse(ErrorType.SUCCESS,memberJoinResDto);
     }
 
     @GetMapping("/email/duplicate/{email}")
     public ApiResponseDto checkEmailDuplication(@PathVariable("email") String email){
         boolean flg = joinService.checkEmailDuplication(email);
-        return ApiResponseDto.toResponse(ErrorCode.SUCCESS,flg);
+        return ApiResponseDto.toResponse(ErrorType.SUCCESS,flg);
     }
 
 }

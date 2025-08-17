@@ -2,7 +2,7 @@ package com.sunghyun.football.domain.member.api;
 
 import com.sunghyun.football.domain.member.application.dto.TokenResDto;
 import com.sunghyun.football.domain.member.infrastructure.auth.jwt.JwtProvider;
-import com.sunghyun.football.global.exception.ErrorCode;
+import com.sunghyun.football.global.exception.ErrorType;
 import com.sunghyun.football.global.response.ApiResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +25,6 @@ public class AuthApi {
         String newAccessToken = jwtProvider.generateNewAccessTokenWithRefreshToken(refreshToken);
 //        String newAccessToken = jwtProvider.generateNewAccessTokenWithRefreshToken(refreshToken);
 
-        return ApiResponseDto.toResponse(ErrorCode.SUCCESS,new TokenResDto(newAccessToken,refreshToken));
+        return ApiResponseDto.toResponse(ErrorType.SUCCESS,new TokenResDto(newAccessToken,refreshToken));
     }
 }

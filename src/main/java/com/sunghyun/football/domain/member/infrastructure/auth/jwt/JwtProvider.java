@@ -2,9 +2,9 @@ package com.sunghyun.football.domain.member.infrastructure.auth.jwt;
 
 import com.sunghyun.football.domain.member.domain.RefreshTokenRedis;
 import com.sunghyun.football.domain.member.domain.repository.TokenRepository;
-import com.sunghyun.football.global.exception.ErrorCode;
-import com.sunghyun.football.global.exception.exceptions.member.auth.jwt.JwtExpiredException;
-import com.sunghyun.football.global.exception.exceptions.member.auth.jwt.JwtParseException;
+import com.sunghyun.football.global.exception.ErrorType;
+import com.sunghyun.football.global.exception.member.auth.jwt.JwtExpiredException;
+import com.sunghyun.football.global.exception.member.auth.jwt.JwtParseException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +57,7 @@ public class JwtProvider {
     public Claims parseAccessToken(final String token){
         if(!token.startsWith("Bearer")){
             log.info("토큰 Bearer 형식으로 이루어져 있지 않습니다.");
-            throw new JwtParseException(ErrorCode.JWT_PARSE_FAIL);
+            throw new JwtParseException(ErrorType.JWT_PARSE_FAIL);
         }
         String accessTokenWithoutPrefix = token.split(" ")[1];
         try{
@@ -69,10 +69,10 @@ public class JwtProvider {
                     ;
         }catch(SignatureException | MalformedJwtException |IllegalArgumentException e){
             log.error("토큰 형식이 올바르지 않습니다.");
-            throw new JwtParseException(ErrorCode.JWT_PARSE_FAIL);
+            throw new JwtParseException(ErrorType.JWT_PARSE_FAIL);
         }catch(ExpiredJwtException e){
             log.error("토큰 유효기간 만료");
-            throw new JwtExpiredException(ErrorCode.JWT_EXPIRED);
+            throw new JwtExpiredException(ErrorType.JWT_EXPIRED);
         }
     }
 

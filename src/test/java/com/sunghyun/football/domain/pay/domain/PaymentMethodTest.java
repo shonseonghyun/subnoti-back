@@ -1,7 +1,7 @@
 package com.sunghyun.football.domain.pay.domain;
 
 import com.sunghyun.football.domain.pay.domain.model.PaymentMethod;
-import com.sunghyun.football.global.exception.exceptions.pay.UnavailablePaymentMethodException;
+import com.sunghyun.football.global.exception.pay.exception.UnavailablePaymentMethodException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

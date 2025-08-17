@@ -7,7 +7,7 @@ import com.sunghyun.football.domain.pay.domain.model.PaymentMethod;
 import com.sunghyun.football.domain.pay.domain.repository.PayRepository;
 import com.sunghyun.football.domain.subscription.domain.model.Subscription;
 import com.sunghyun.football.domain.subscription.domain.repository.SubscriptionRepository;
-import com.sunghyun.football.global.exception.ErrorCode;
+import com.sunghyun.football.global.exception.ErrorType;
 import com.sunghyun.football.global.utils.MatchDateUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -83,8 +83,8 @@ public class PayIntegrationTest {
 
         resultActions
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_AMOUNT.getCode()))
-                .andExpect(jsonPath("$.msg").value(ErrorCode.INVALID_AMOUNT.getMessage()))
+                .andExpect(jsonPath("$.code").value(ErrorType.INVALID_AMOUNT.getCode()))
+                .andExpect(jsonPath("$.msg").value(ErrorType.INVALID_AMOUNT.getMessage()))
         ;
     }
 
@@ -114,8 +114,8 @@ public class PayIntegrationTest {
 
         resultActions
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value(ErrorCode.UNAVAILABLE_PAYMENT_METHOD.getCode()))
-                .andExpect(jsonPath("$.msg").value(ErrorCode.UNAVAILABLE_PAYMENT_METHOD.getMessage()))
+                .andExpect(jsonPath("$.code").value(ErrorType.UNAVAILABLE_PAYMENT_METHOD.getCode()))
+                .andExpect(jsonPath("$.msg").value(ErrorType.UNAVAILABLE_PAYMENT_METHOD.getMessage()))
         ;
     }
 
@@ -144,8 +144,8 @@ public class PayIntegrationTest {
 
         resultActions
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value(ErrorCode.UNSUPPORTED_PAYMENT_METHOD.getCode()))
-                .andExpect(jsonPath("$.msg").value(ErrorCode.UNSUPPORTED_PAYMENT_METHOD.getMessage()))
+                .andExpect(jsonPath("$.code").value(ErrorType.UNSUPPORTED_PAYMENT_METHOD.getCode()))
+                .andExpect(jsonPath("$.msg").value(ErrorType.UNSUPPORTED_PAYMENT_METHOD.getMessage()))
         ;
     }
 

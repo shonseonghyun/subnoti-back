@@ -1,6 +1,6 @@
 package com.sunghyun.football.domain.subscription.domain.model;
 
-import com.sunghyun.football.global.exception.exceptions.subscription.NoRemainingSubscriptionCountException;
+import com.sunghyun.football.global.exception.subscription.exception.NoRemainingSubscriptionCountException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

@@ -1,7 +1,7 @@
 //package com.sunghyun.football.global.file;
 //
 //import com.sunghyun.football.domain.stadium.domain.StadiumImage;
-//import com.sunghyun.football.global.exception.ErrorCode;
+//import com.sunghyun.football.global.exception.ErrorType;
 //import com.sunghyun.football.global.exception.exceptions.file.FileUploadFailException;
 //import lombok.extern.slf4j.Slf4j;
 //import org.springframework.beans.factory.annotation.Value;
@@ -89,7 +89,7 @@
 //            multipartFile.transferTo(new File(filePath+File.separator+newFileName));
 //        } catch (IOException e) {
 //            log.info("[{}] 파일 업로드 실패하였습니다.",multipartFile.getOriginalFilename());
-//            throw new FileUploadFailException(ErrorCode.FILE_UPLOAD_FAIL);
+//            throw new FileUploadFailException(ErrorType.FILE_UPLOAD_FAIL);
 //        }
 //    }
 //}

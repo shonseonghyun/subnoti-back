@@ -1,7 +1,7 @@
 package com.sunghyun.football.domain.subscription.domain.model;
 
-import com.sunghyun.football.global.exception.ErrorCode;
-import com.sunghyun.football.global.exception.exceptions.subscription.InvalidSubscriptionAmountException;
+import com.sunghyun.football.global.exception.ErrorType;
+import com.sunghyun.football.global.exception.subscription.exception.InvalidSubscriptionAmountException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -23,7 +23,7 @@ public enum SubscriptionPlan {
         return Arrays.stream(SubscriptionPlan.values())
                 .filter(payPlan-> payPlan.getAmount()==amount)
                 .findFirst()
-                .orElseThrow(()-> new InvalidSubscriptionAmountException(ErrorCode.INVALID_AMOUNT))
+                .orElseThrow(()-> new InvalidSubscriptionAmountException(ErrorType.INVALID_AMOUNT))
                 ;
     }
 }

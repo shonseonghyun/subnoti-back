@@ -5,8 +5,8 @@ import com.sunghyun.football.domain.pay.domain.repository.PayRepository;
 import com.sunghyun.football.domain.pay.domain.service.PaymentBuilderFactory;
 import com.sunghyun.football.domain.pay.domain.service.PaymentProcessor;
 import com.sunghyun.football.domain.subscription.application.service.port.out.PayServicePortForSubscription;
-import com.sunghyun.football.global.exception.ErrorCode;
-import com.sunghyun.football.global.exception.exceptions.pay.PayNotFoundException;
+import com.sunghyun.football.global.exception.ErrorType;
+import com.sunghyun.football.global.exception.pay.exception.PayNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -24,7 +24,7 @@ public class PayAdapter implements PayServicePortForSubscription {
     public void refund(final Long subscriptionNo){
         //존재여부 검증
         Pay pay = payRepository.findBySubscriptionNo(subscriptionNo)
-                .orElseThrow(()->new PayNotFoundException(ErrorCode.PAY_NOT_FOUND));
+                .orElseThrow(()->new PayNotFoundException(ErrorType.PAY_NOT_FOUND));
 
         //지불수단 담당 객체
         PaymentProcessor paymentProcessor = paymentBuilderFactory.getPaymentProcessor(pay.getPaymentMethod());

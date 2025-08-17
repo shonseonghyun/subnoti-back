@@ -2,8 +2,8 @@ package com.sunghyun.football.domain.member.domain.service;
 
 import com.sunghyun.football.domain.member.application.dto.MemberJoinReqDto;
 import com.sunghyun.football.domain.member.infrastructure.MemberRepositoryImpl;
-import com.sunghyun.football.global.exception.ErrorCode;
-import com.sunghyun.football.global.exception.exceptions.member.JoinException;
+import com.sunghyun.football.global.exception.ErrorType;
+import com.sunghyun.football.global.exception.member.exception.JoinException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,14 +22,14 @@ public class MemberDuplicationChecker {
     private void checkDuplicatedTel(String tel){
         memberRepository.findByTel(tel)
                 .ifPresent(m -> {
-                    throw new JoinException(ErrorCode.DUPLICATED_TEL_REGISTER);
+                    throw new JoinException(ErrorType.DUPLICATED_TEL_REGISTER);
                 });
     }
 
     private void checkDuplicatedEmail(String email){
         memberRepository.findByEmail(email)
                 .ifPresent(m -> {
-                    throw new JoinException(ErrorCode.DUPLICATED_EMAIL_REGISTER);
+                    throw new JoinException(ErrorType.DUPLICATED_EMAIL_REGISTER);
                 });
     }
 }

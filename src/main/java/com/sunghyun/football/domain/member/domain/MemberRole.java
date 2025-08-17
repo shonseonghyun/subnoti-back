@@ -1,7 +1,6 @@
 package com.sunghyun.football.domain.member.domain;
 
 import com.sunghyun.football.domain.member.domain.enums.Role;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

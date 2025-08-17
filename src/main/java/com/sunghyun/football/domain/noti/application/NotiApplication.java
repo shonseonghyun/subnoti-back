@@ -1,14 +1,14 @@
 package com.sunghyun.football.domain.noti.application;
 
-import com.sunghyun.football.domain.noti.application.port.out.SubscriptionServicePortForNoti;
 import com.sunghyun.football.domain.noti.application.dto.FreeSubNotiListDto;
 import com.sunghyun.football.domain.noti.application.dto.FreeSubNotiRegReqDto;
 import com.sunghyun.football.domain.noti.application.dto.FreeSubNotiSelectResDto;
+import com.sunghyun.football.domain.noti.application.port.out.SubscriptionServicePortForNoti;
 import com.sunghyun.football.domain.noti.domain.FreeSubNoti;
 import com.sunghyun.football.domain.noti.domain.repository.FreeSubNotiRepository;
-import com.sunghyun.football.global.exception.ErrorCode;
-import com.sunghyun.football.global.exception.exceptions.noti.FreeSubNotiAlreadyRequestedException;
-import com.sunghyun.football.global.exception.exceptions.noti.MatchAlreadyDoneException;
+import com.sunghyun.football.global.exception.ErrorType;
+import com.sunghyun.football.global.exception.noti.exception.FreeSubNotiAlreadyRequestedException;
+import com.sunghyun.football.global.exception.noti.exception.MatchAlreadyDoneException;
 import com.sunghyun.football.global.feign.PlabFootBallOpenFeignClient;
 import com.sunghyun.football.global.feign.dto.PlabMatchInfoResDto;
 import com.sunghyun.football.global.utils.MatchDateUtils;
@@ -34,7 +34,7 @@ public class NotiApplication {
         freeSubNotiRepository.getFreeSubTypes(freeSubNotiRegReqDto.getEmail(), freeSubNotiRegReqDto.getMatchNo()).stream()
                 .filter(item->item.equals(freeSubNotiRegReqDto.getSubType()))
                 .findFirst()
-                .ifPresent(item->{throw new FreeSubNotiAlreadyRequestedException(ErrorCode.FREESUB_NOTI_ALREADY_REQUEST);}
+                .ifPresent(item->{throw new FreeSubNotiAlreadyRequestedException(ErrorType.FREESUB_NOTI_ALREADY_REQUEST);}
                 );
 
         //플랩 api 통신
@@ -42,7 +42,7 @@ public class NotiApplication {
 
         //유효성 검증 처리
         if(MatchDateUtils.hasAlreadyPassedOfMatch(MatchDateUtils.getDtStr(response.getSchedule()),MatchDateUtils.getTmStr(response.getSchedule()))){
-            throw new MatchAlreadyDoneException(ErrorCode.MATCH_ALREADY_DONE);
+            throw new MatchAlreadyDoneException(ErrorType.MATCH_ALREADY_DONE);
         }
 
         //도메인 생성

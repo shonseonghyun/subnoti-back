@@ -3,9 +3,9 @@ package com.sunghyun.football.domain.member.application;
 import com.sunghyun.football.domain.member.domain.Member;
 import com.sunghyun.football.domain.member.domain.repository.MemberRepository;
 import com.sunghyun.football.domain.member.infrastructure.auth.UserDetails.CustomUserDetails;
-import com.sunghyun.football.global.exception.ErrorCode;
-import com.sunghyun.football.global.exception.exceptions.member.MemberNotFoundException;
-import com.sunghyun.football.global.exception.exceptions.member.auth.EmailNotFoundException;
+import com.sunghyun.football.global.exception.ErrorType;
+import com.sunghyun.football.global.exception.member.auth.EmailNotFoundException;
+import com.sunghyun.football.global.exception.member.exception.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,7 +20,7 @@ public class MemberServiceHelper implements UserDetailsService {
 
     public Member findExistingMember(Long memberNo){
         Member selectedMember = memberRepository.findByMemberNo(memberNo)
-                .orElseThrow(()-> new MemberNotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(()-> new MemberNotFoundException(ErrorType.MEMBER_NOT_FOUND));
         return selectedMember;
     }
 
@@ -30,7 +30,7 @@ public class MemberServiceHelper implements UserDetailsService {
         final String email = username;
 
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(()->new EmailNotFoundException(ErrorCode.EMAIL_NOT_FOUND.getCode())); //auth handler에서 잡힌다.
+                .orElseThrow(()->new EmailNotFoundException(ErrorType.EMAIL_NOT_FOUND.getCode())); //auth handler에서 잡힌다.
 
         return CustomUserDetails.from(member);
     }

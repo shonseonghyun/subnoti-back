@@ -2,7 +2,6 @@ package com.sunghyun.football.domain.noti.domain.repository;
 
 import com.sunghyun.football.domain.noti.domain.FreeSubNoti;
 import com.sunghyun.football.domain.noti.domain.enums.FreeSubType;
-import com.sunghyun.football.domain.noti.infrastructure.entity.FreeSubNotiEntity;
 
 import java.util.List;
 

@@ -2,8 +2,8 @@
 
     import com.sunghyun.football.domain.member.application.dto.SelectMemberResDto;
     import com.sunghyun.football.domain.member.domain.Member;
-    import com.sunghyun.football.domain.member.domain.repository.MemberRepository;
     import com.sunghyun.football.domain.member.domain.dto.MemberUpdReqDto;
+    import com.sunghyun.football.domain.member.domain.repository.MemberRepository;
     import lombok.RequiredArgsConstructor;
     import org.springframework.security.crypto.password.PasswordEncoder;
     import org.springframework.stereotype.Service;
