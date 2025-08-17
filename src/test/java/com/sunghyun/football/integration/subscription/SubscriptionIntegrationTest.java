@@ -76,7 +76,7 @@ public class SubscriptionIntegrationTest {
         resultActions
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(ErrorType.SUBSCRIPTION_NOT_FOUND.getCode()))
-                .andExpect(jsonPath("$.msg").value(ErrorType.SUBSCRIPTION_NOT_FOUND.getMessage()))
+                .andExpect(jsonPath("$.msg").value(ErrorType.SUBSCRIPTION_NOT_FOUND.getMsg()))
                 ;
     }
 
@@ -121,7 +121,7 @@ public class SubscriptionIntegrationTest {
         resultActions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(ErrorType.SUCCESS.getCode()))
-                .andExpect(jsonPath("$.msg").value(ErrorType.SUCCESS.getMessage()))
+                .andExpect(jsonPath("$.msg").value(ErrorType.SUCCESS.getMsg()))
         ;
     }
 

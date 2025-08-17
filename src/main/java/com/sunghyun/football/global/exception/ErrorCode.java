@@ -89,7 +89,7 @@ public enum ErrorCode {
     P02("결제 이력이 존재하지 않습니다. 재확인바랍니다.")
     ;
 
-    private final String message;
+    private final String msg;
 
     public String getCode() {
         return this.name();

@@ -84,7 +84,7 @@ public class PayIntegrationTest {
         resultActions
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(ErrorType.INVALID_AMOUNT.getCode()))
-                .andExpect(jsonPath("$.msg").value(ErrorType.INVALID_AMOUNT.getMessage()))
+                .andExpect(jsonPath("$.msg").value(ErrorType.INVALID_AMOUNT.getMsg()))
         ;
     }
 
@@ -115,7 +115,7 @@ public class PayIntegrationTest {
         resultActions
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(ErrorType.UNAVAILABLE_PAYMENT_METHOD.getCode()))
-                .andExpect(jsonPath("$.msg").value(ErrorType.UNAVAILABLE_PAYMENT_METHOD.getMessage()))
+                .andExpect(jsonPath("$.msg").value(ErrorType.UNAVAILABLE_PAYMENT_METHOD.getMsg()))
         ;
     }
 
@@ -145,7 +145,7 @@ public class PayIntegrationTest {
         resultActions
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(ErrorType.UNSUPPORTED_PAYMENT_METHOD.getCode()))
-                .andExpect(jsonPath("$.msg").value(ErrorType.UNSUPPORTED_PAYMENT_METHOD.getMessage()))
+                .andExpect(jsonPath("$.msg").value(ErrorType.UNSUPPORTED_PAYMENT_METHOD.getMsg()))
         ;
     }
 

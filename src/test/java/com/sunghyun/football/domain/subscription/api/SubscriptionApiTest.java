@@ -71,7 +71,7 @@ class SubscriptionApiTest {
         resultActions
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(ErrorType.SUBSCRIPTION_NOT_FOUND.getCode()))
-                .andExpect(jsonPath("$.msg").value(ErrorType.SUBSCRIPTION_NOT_FOUND.getMessage()))
+                .andExpect(jsonPath("$.msg").value(ErrorType.SUBSCRIPTION_NOT_FOUND.getMsg()))
         ;
         verify(subscriptionService).cancel(memberNo, subscriptionNo,today);
     }
@@ -95,7 +95,7 @@ class SubscriptionApiTest {
         resultActions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(ErrorType.SUCCESS.getCode()))
-                .andExpect(jsonPath("$.msg").value(ErrorType.SUCCESS.getMessage()))
+                .andExpect(jsonPath("$.msg").value(ErrorType.SUCCESS.getMsg()))
         ;
         verify(subscriptionService).cancel(memberNo, subscriptionNo,today);
     }

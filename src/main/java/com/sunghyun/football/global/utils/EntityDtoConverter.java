@@ -36,7 +36,7 @@ public class EntityDtoConverter {
             try {
                 result.add(convertEntity(entity, dtoClass));
             } catch (DtoConvertException e) {
-                log.warn("Read Error 발생되었으나 무시 = {}, 대상 item: {}",e.getErrorType().getMessage(),entity,e);
+                log.warn("Read Error 발생되었으나 무시 = {}, 대상 item: {}",e.getErrorType().getMsg(),entity,e);
             }
         }
         return result;

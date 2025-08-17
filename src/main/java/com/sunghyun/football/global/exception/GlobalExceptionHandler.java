@@ -33,7 +33,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({AppException.class})
     public ResponseEntity<ApiResponseDto> handleAppException(final AppException e){
-        log.warn("[AppException] {}", e.getErrorType().getMessage());
+        log.warn("[AppException] {}", e.getErrorType().getMsg());
         return ResponseEntity.status(e.getErrorType().getHttpStatus())
                 .body(ApiResponseDto.toResponse(e.getErrorType()));
     }

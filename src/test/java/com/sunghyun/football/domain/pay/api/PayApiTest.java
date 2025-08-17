@@ -78,7 +78,7 @@ class PayApiTest {
         resultActions
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(ErrorType.UNAVAILABLE_PAYMENT_METHOD.getCode()))
-                .andExpect(jsonPath("$.msg").value(ErrorType.UNAVAILABLE_PAYMENT_METHOD.getMessage()))
+                .andExpect(jsonPath("$.msg").value(ErrorType.UNAVAILABLE_PAYMENT_METHOD.getMsg()))
         ;
         verify(payService).pay(memberNo, rightAmount, inactivePaymentMethod);
     }
@@ -100,6 +100,6 @@ class PayApiTest {
         resultActions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(ErrorType.SUCCESS.getCode()))
-                .andExpect(jsonPath("$.msg").value(ErrorType.SUCCESS.getMessage()));;
+                .andExpect(jsonPath("$.msg").value(ErrorType.SUCCESS.getMsg()));;
     }
 }

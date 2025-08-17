@@ -100,8 +100,8 @@ public enum ErrorType {
         return this.getErrorCode().getCode();
     }
 
-    public String getMessage(){
-        return this.getErrorCode().getMessage();
+    public String getMsg(){
+        return this.getErrorCode().getMsg();
     }
 
     public static ErrorType getErrorCodeEnum(String code) {

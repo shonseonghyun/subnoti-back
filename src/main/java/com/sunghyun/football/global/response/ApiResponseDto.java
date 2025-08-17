@@ -30,7 +30,7 @@ public class ApiResponseDto<T> {
         final ErrorCode errorCode = errorType.getErrorCode();
 
         this.code = errorCode.getCode();
-        this.msg = errorCode.getMessage();
+        this.msg = errorCode.getMsg();
         this.data = data;
     }
 
@@ -38,6 +38,6 @@ public class ApiResponseDto<T> {
         final ErrorCode errorCode = errorType.getErrorCode();
 
         this.code = errorCode.getCode();
-        this.msg = errorCode.getMessage();
+        this.msg = errorCode.getMsg();
     }
 }
