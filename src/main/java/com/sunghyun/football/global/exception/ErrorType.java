@@ -64,7 +64,7 @@ public enum ErrorType implements EnumMapperType {
     MATCH_ALREADY_REQ_SAME_TIME(HttpStatus.BAD_REQUEST, ErrorCode.MT08, "이미 같은 시간대에 매치를 요청했습니다."),
     MATCH_ALREADY_DONE(HttpStatus.BAD_REQUEST, ErrorCode.MT09, "이미 종료된 매치입니다."),
     DTO_CONVERT_FAIL(HttpStatus.BAD_REQUEST, ErrorCode.MT10, "DTO 변환에 실패했습니다."),
-    LEVEL_RULE_REJECT(HttpStatus.BAD_REQUEST, ErrorCode.L00, "레벨 조건이 맞지 않습니다."),
+    LEVEL_RULE_REJECT(HttpStatus.BAD_REQUEST, ErrorCode.MT11, "레벨 조건이 맞지 않습니다."),
 
     // =========================
     // Noti 도메인
