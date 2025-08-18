@@ -1,7 +1,6 @@
 package com.sunghyun.football.global.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.sunghyun.football.global.exception.ErrorCode;
 import com.sunghyun.football.global.exception.ErrorType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,9 +13,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponseDto<T> {
-    private String code; //errcode의 code
-    private String msg; //errcode의 desc
-    private T data; //있는 경우 세팅
+    private String code;
+    private String msg;
+    private T data; //있는 경우 세팅w
 
     public static ApiResponseDto toResponse(final ErrorType errorType) {
         return new ApiResponseDto(errorType);
@@ -27,17 +26,13 @@ public class ApiResponseDto<T> {
     }
 
     private ApiResponseDto(final ErrorType errorType, final T data){
-        final ErrorCode errorCode = errorType.getErrorCode();
-
-        this.code = errorCode.getCode();
-        this.msg = errorCode.getMsg();
+        this.code = errorType.getCode();
+        this.msg = errorType.getMsg();
         this.data = data;
     }
 
     private ApiResponseDto(final ErrorType errorType){
-        final ErrorCode errorCode = errorType.getErrorCode();
-
-        this.code = errorCode.getCode();
-        this.msg = errorCode.getMsg();
+        this.code = errorType.getCode();
+        this.msg = errorType.getMsg();
     }
 }
