@@ -1,9 +1,12 @@
     package com.sunghyun.football.domain.member.application;
 
     import com.sunghyun.football.domain.member.application.dto.SelectMemberResDto;
+    import com.sunghyun.football.domain.member.application.dto.SubscriptionInfo;
+    import com.sunghyun.football.domain.member.application.port.out.SubscriptionServicePortForMember;
     import com.sunghyun.football.domain.member.domain.Member;
     import com.sunghyun.football.domain.member.domain.dto.MemberUpdReqDto;
     import com.sunghyun.football.domain.member.domain.repository.MemberRepository;
+    import com.sunghyun.football.global.utils.MatchDateUtils;
     import lombok.RequiredArgsConstructor;
     import org.springframework.security.crypto.password.PasswordEncoder;
     import org.springframework.stereotype.Service;
@@ -17,12 +20,15 @@
         private final MemberRepository memberRepository;
         private final MemberServiceHelper memberServiceHelper;
         private final PasswordEncoder passwordEncoder;
+        private final SubscriptionServicePortForMember subscriptionServicePort;
 
         @Transactional
         public SelectMemberResDto getMember(Long memberNo) {
             Member selectedMember = memberServiceHelper.findExistingMember(memberNo);
 
-            return SelectMemberResDto.from(selectedMember);
+            SubscriptionInfo subscriptionInfo = subscriptionServicePort.getSubscription(memberNo, MatchDateUtils.getNowDtStr());
+
+            return SelectMemberResDto.from(selectedMember,subscriptionInfo);
         }
 
         @Transactional

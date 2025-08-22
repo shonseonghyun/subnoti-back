@@ -1,5 +1,6 @@
 package com.sunghyun.football.domain.subscription.domain.model;
 
+import com.sunghyun.football.domain.enumMapper.enums.EnumMapperType;
 import com.sunghyun.football.global.exception.ErrorType;
 import com.sunghyun.football.global.exception.subscription.exception.InvalidSubscriptionAmountException;
 import lombok.AllArgsConstructor;
@@ -9,9 +10,9 @@ import java.util.Arrays;
 
 @Getter
 @AllArgsConstructor
-public enum SubscriptionPlan {
+public enum SubscriptionPlan implements EnumMapperType {
     PLAN_9900("무제한 등록제",9900,Integer.MAX_VALUE),
-    PLAN_4900("중간 등록제",4900,5),
+    PLAN_4900("알뜰 등록제",4900,5),
     PLAN_990("맛보기 등록제",990,1)
     ;
 
@@ -25,5 +26,10 @@ public enum SubscriptionPlan {
                 .findFirst()
                 .orElseThrow(()-> new InvalidSubscriptionAmountException(ErrorType.INVALID_AMOUNT))
                 ;
+    }
+
+    @Override
+    public String getName() {
+        return name();
     }
 }

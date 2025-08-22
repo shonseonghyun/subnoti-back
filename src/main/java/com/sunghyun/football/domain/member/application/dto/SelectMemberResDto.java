@@ -28,21 +28,34 @@ public class SelectMemberResDto {
 
     private String tel;
 
-//    private MemberLevelType level;
 
     private List<Role> role;
 
+    private SubscriptionInfo subscriptionInfo;
+
     public static SelectMemberResDto from(Member member) {
-        SelectMemberResDto selectMemberResDto = new SelectMemberResDto();
-        selectMemberResDto.memberNo = member.getMemberNo();
-        selectMemberResDto.email = member.getEmail();
-        selectMemberResDto.name = member.getName();
-        selectMemberResDto.birthDt = member.getBirthDt();
-        selectMemberResDto.gender = member.getGender();
-        selectMemberResDto.tel = member.getTel();
-//        selectMemberResDto.level = member.getLevel();
-        selectMemberResDto.role = member.getRole().stream().map(MemberRole::getRole).toList();
-        return selectMemberResDto;
+        return SelectMemberResDto.builder()
+                .memberNo(member.getMemberNo())
+                .email(member.getEmail())
+                .name(member.getName())
+                .birthDt(member.getBirthDt())
+                .gender(member.getGender())
+                .tel(member.getTel())
+                .role(member.getRole().stream().map(MemberRole::getRole).toList())
+                .build();
+    }
+
+    public static SelectMemberResDto from(Member member,SubscriptionInfo subscriptionInfo) {
+        return SelectMemberResDto.builder()
+                .memberNo(member.getMemberNo())
+                .email(member.getEmail())
+                .name(member.getName())
+                .birthDt(member.getBirthDt())
+                .gender(member.getGender())
+                .tel(member.getTel())
+                .role(member.getRole().stream().map(MemberRole::getRole).toList())
+                .subscriptionInfo(subscriptionInfo)
+                .build();
     }
 }
 

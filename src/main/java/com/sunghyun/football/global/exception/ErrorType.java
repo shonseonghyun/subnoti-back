@@ -76,14 +76,14 @@ public enum ErrorType implements EnumMapperType {
 
     // =========================
     // Subscription 도메인
-    // =========================
-    SUBSCRIPTION_ALREADY_EXIST_THIS_MONTH(HttpStatus.CONFLICT, ErrorCode.SB00, "이번 달 구독권이 이미 존재합니다."),
+    // ======================== =
+    SUBSCRIPTION_ALREADY_EXIST_THIS_MONTH(HttpStatus.CONFLICT, ErrorCode.SB00, "해당 월 구독권이 이미 존재합니다."),
     INVALID_AMOUNT(HttpStatus.BAD_REQUEST, ErrorCode.SB01, "잘못된 금액입니다."),
-    NO_SUBSCRIPTION_REMAINING(HttpStatus.BAD_REQUEST, ErrorCode.SB02, "남은 구독권이 없습니다."),
+    NO_SUBSCRIPTION_REMAINING(HttpStatus.BAD_REQUEST, ErrorCode.SB02, "구독권의 잔여횟수가 없습니다."),
     SUBSCRIPTION_EXPIRED(HttpStatus.BAD_REQUEST, ErrorCode.SB03, "만료된 구독권입니다."),
     SUBSCRIPTION_ALREADY_USE(HttpStatus.BAD_REQUEST, ErrorCode.SB04, "이미 사용된 구독권입니다."),
     SUBSCRIPTION_ALREADY_CANCELED(HttpStatus.BAD_REQUEST, ErrorCode.SB05, "이미 취소된 구독권입니다."),
-    SUBSCRIPTION_NOT_FOUND(HttpStatus.NOT_FOUND, ErrorCode.SB06, "존재하지 않는 구독권입니다."),
+    SUBSCRIPTION_NOT_FOUND(HttpStatus.NOT_FOUND, ErrorCode.SB06, "구독권이 존재하지 않습니다. 구독권 등록 여부를 확인해주세요."),
 
     // =========================
     // Pay 도메인

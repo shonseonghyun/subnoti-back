@@ -1,5 +1,7 @@
 package com.sunghyun.football.domain.subscription.application.port.out;
 
+import com.sunghyun.football.domain.member.application.dto.SubscriptionInfo;
+import com.sunghyun.football.domain.member.application.port.out.SubscriptionServicePortForMember;
 import com.sunghyun.football.domain.noti.application.port.out.SubscriptionServicePortForNoti;
 import com.sunghyun.football.domain.pay.application.port.out.SubscriptionServicePortForPay;
 import com.sunghyun.football.domain.subscription.domain.model.Subscription;
@@ -19,7 +21,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SubscriptionAdapter implements SubscriptionServicePortForPay, SubscriptionServicePortForNoti {
+public class SubscriptionAdapter implements SubscriptionServicePortForPay, SubscriptionServicePortForNoti , SubscriptionServicePortForMember {
 
     private final SubscriptionCreationService subscriptionCreationService;
     private final SubscriptionRepository subscriptionRepository;
@@ -60,5 +62,14 @@ public class SubscriptionAdapter implements SubscriptionServicePortForPay, Subsc
 
         //저장
         subscriptionRepository.save(subscription);
+    }
+
+    @Override
+    @Transactional
+    public SubscriptionInfo getSubscription(final Long memberNo,String today) {
+        Subscription subscription = subscriptionRepository.findValidSubscriptionByMemberNoAndToday(memberNo,today)
+                .orElse(null);
+
+        return subscription == null ? null  : SubscriptionInfo.from(subscription);
     }
 }
